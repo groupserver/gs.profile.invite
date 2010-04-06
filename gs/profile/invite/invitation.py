@@ -17,7 +17,7 @@ class Invitation(self):
             self.__invite = query.get_invitation(invitationId)
         return self.__invite
         
-    def userId(self)
+    def userId(self):
         return self.invite['user_id']
 
     def invitingUserId(self):

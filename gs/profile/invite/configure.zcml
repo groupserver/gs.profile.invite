@@ -3,13 +3,7 @@
   xmlns:browser="http://namespaces.zope.org/browser"
   xmlns:five="http://namespaces.zope.org/five"
   i18n_domain="groupserver">
-  <interface 
-    interface=".interfaces.IGSRequestRegistration" />
-  <interface 
-    interface=".interfaces.IGSRequestRegistrationMarker"
-    type="zope.app.content.interfaces.IContentType" />
-
-   <browser:page
+  <browser:page
     for="Products.CustomUserFolder.interfaces.ICustomUser"
     name="invitation_accepted.html"
     class=".error.InvitationAccepted"
