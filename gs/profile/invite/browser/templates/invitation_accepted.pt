@@ -27,19 +27,13 @@
             you followed has already been used.
             <!--The following is based on a guess that the member is
               - trying to get back to his or  her group. -->
-            <span id="accepted"><a href="#" 
-                tal:attributes="href view/groupInfo/uri">Go to the 
-                homepage for
-                <span class="group" tal:content="view/groupInfo/name">the group</span></a>
-              and <strong>bookmark</strong> it (add it to your 
-              <strong>favourites</strong>) so you can return to it
-              quickly and easily in the future.</span><!--accepted-->
-            <!--I have no idea why someone would follow a rejected 
-              - invite-->
-            <span id="rejected"><a href="#" 
-                tal:attributes="href view/profileLogin">Login and go to your 
-                profile</a>
-              to view your groups.</span><!--rejected-->
+            <a href="#" 
+              tal:attributes="href view/groupInfo/uri">Go to the 
+              homepage for
+              <span class="group" tal:content="view/groupInfo/name">the group</span></a>
+            and <strong>bookmark</strong> it (add it to your 
+            <strong>favourites</strong>) so you can return to it
+            quickly and easily in the future.</span><!--accepted-->
           </p>
           <p tal:define="siteId view/siteInfo/id;
             gse python:modules['Products.XWFCore.XWFUtils'].get_support_email;

@@ -1,7 +1,7 @@
 Introduction
 ============
 
-This part of the GroupServer usr-profile code concerned with sign up 
+This part of the GroupServer user-profile code concerned with sign up 
 when an administrator invites someone to join a group. An `existing user`_
 or a `new user`_ can be invited.
 
@@ -14,6 +14,28 @@ shows the prospective member all the pending invitations.
 New User
 --------
 
+A new user is sent an email that contains two links:
+
+#. One to accept the invitation, and
+#. Another to reject the invitation.
+
+A redirector accepts or rejects the invitation, and takes the user to
+the correct page.
+
+Error Pages
+-----------
+
+Invitation Followed
+~~~~~~~~~~~~~~~~~~~
+
+This page is shown when a user, who has already accepted an invitation,
+follows the invitation link again.
+
+Invitation Rejected
+~~~~~~~~~~~~~~~~~~~
+
+This page is shown when a user, who has already rejected an invitation,
+follows the invitation link again.
 
 Note about Forms
 ================
