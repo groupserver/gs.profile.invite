@@ -10,7 +10,7 @@ class Invitation(self):
         self.__invite = None
         
     @property
-    def invite
+    def invite(self):
         if self.__invite == None:
             da = self.context.zsqlalchemy
             query = InvitationQuery(self.context, da)
@@ -25,4 +25,4 @@ class Invitation(self):
 
     def groupId(self):
         return self.invite('group_id')
-    
+

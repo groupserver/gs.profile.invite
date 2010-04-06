@@ -27,7 +27,7 @@ class InvitationAccepted(BrowserView):
     
     @property
     def groupInfo(self):
-        if self.__groupInfo == None
+        if self.__groupInfo == None:
             self.__groupInfo = createObject('groupserver.GroupInfo', 
                 self.context, self.invitation.groupId)
         return self.__groupInfo
