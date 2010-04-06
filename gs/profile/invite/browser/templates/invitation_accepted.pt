@@ -1,0 +1,67 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:tal="http://xml.zope.org/namespaces/tal">
+  <tal:block metal:use-macro="context/@@groupserver_site_home_layout/page">
+    <head>
+      <title metal:fill-slot="title">
+        Invitation Accepted:
+        <tal:block replace="view/groupInfo/name" />:
+        <tal:block replace="view/siteInfo/name"/>
+      </title>
+    </head>
+    <body>
+      <div metal:fill-slot="contextnavigation" />
+      <div metal:fill-slot="breadcrumb" />      
+      <div metal:fill-slot="body">
+        <h1>Invitation Accepted</h1>
+        <!--Apologise, and state what went wrong -->
+        <p id="apology">
+          Sorry, the invitation link you followed has already been 
+          used.
+        </p>
+        <!-- Give a detailed explanation about what went wrong, and -->
+        <!--   what can be done.-->
+        <div id="explanation">
+          <p>
+            An invitation link can only be used once, and the invitation
+            you followed has already been used.
+            <!--The following is based on a guess that the member is
+              - trying to get back to his or  her group. -->
+            <span id="accepted"><a href="#" 
+                tal:attributes="href view/groupInfo/uri">Go to the 
+                homepage for
+                <span class="group" tal:content="view/groupInfo/name">the group</span></a>
+              and <strong>bookmark</strong> it (add it to your 
+              <strong>favourites</strong>) so you can return to it
+              quickly and easily in the future.</span><!--accepted-->
+            <!--I have no idea why someone would follow a rejected 
+              - invite-->
+            <span id="rejected"><a href="#" 
+                tal:attributes="href view/profileLogin">Login and go to your 
+                profile</a>
+              to view your groups.</span><!--rejected-->
+          </p>
+          <p tal:define="siteId view/siteInfo/id;
+            gse python:modules['Products.XWFCore.XWFUtils'].get_support_email;
+            supportEmail python:gse(context,siteId);">
+            If you are still having trouble
+            <a href="#" title="Email support on this site"
+              tal:define="m: string:Hi there! I followed the invitation link ${view/uri} but I saw the Invitation Accepted page. What I expected to see was...;
+                msg: python:view.quote(m);"
+              tal:attributes="href string:mailto:${supportEmail}?Subject=Invitation%20Accepted&amp;body=${msg}"
+              class="email">contact us</a>
+            and we will see what we can do to help.
+          </p>
+        </div><!--explanation-->
+        <!--Lastly, give the technical details about the error. Bots may-->
+        <!--find this useful.-->
+        <p id="technical">If you want to get all technical about it, 
+          <code>Invitation Accepted: 
+            <span class="uri" tal:content="view/uri"/></code>. 
+          Make of that what you will. 
+        </p>
+      </div>
+    </body>
+  </tal:block>
+</html>
+

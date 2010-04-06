@@ -13,7 +13,7 @@
     for="Products.CustomUserFolder.interfaces.ICustomUser"
     name="invitation_accepted.html"
     class=".error.InvitationAccepted"
-    template="browser/templates/signup_remote.pt"
+    template="browser/templates/invitation_accepted.pt"
     permission="zope2.ManageProperties" />
 </configure>
 
