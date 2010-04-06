@@ -1,5 +1,5 @@
 # coding=utf-8
-from Products.GSProfile.queries import InvitationQuery
+from queries import InvitationQuery
 
 class Invitation(self):
     def __init__(self, context, invitationId):
