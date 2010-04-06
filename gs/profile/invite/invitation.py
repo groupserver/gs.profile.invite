@@ -1,7 +1,7 @@
 # coding=utf-8
 from queries import InvitationQuery
 
-class Invitation(self):
+class Invitation(object):
     def __init__(self, context, invitationId):
         assert context, 'No context'
         assert invitationId, 'No Invitation ID'
