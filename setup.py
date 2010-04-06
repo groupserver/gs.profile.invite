@@ -5,10 +5,10 @@ from version import get_version
 
 version = get_version()
 
-setup(name='gs.profile.signup',
+setup(name='gs.profile.invite',
     version=version,
-    description="The profile pages that are required for user-initiated"\
-        "sign up (registration)",
+    description="The profile pages that are required for "\
+        "administrator-initiated sign up (registration)",
     long_description=open("README.txt").read() + "\n" +
                     open(os.path.join("docs", "HISTORY.txt")).read(),
     # Get more strings from http://www.python.org/pypi?%3Aaction=list_classifiers

@@ -1,9 +1,18 @@
 Introduction
 ============
 
-This part of the GroupServer usr-profile code concerned with sign up (alias
-registration). It contains the pages, and templates, that are specific to
-sign up.
+This part of the GroupServer usr-profile code concerned with sign up 
+when an administrator invites someone to join a group. An `existing user`_
+or a `new user`_ can be invited.
+
+Existing User
+-------------
+
+When an existing user is invited he or she is taken to a page that
+shows the prospective member all the pending invitations.
+
+New User
+--------
 
 
 Note about Forms

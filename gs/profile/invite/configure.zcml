@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<configure xmlns="http://namespaces.zope.org/zope"
+  xmlns:browser="http://namespaces.zope.org/browser"
+  xmlns:five="http://namespaces.zope.org/five"
+  i18n_domain="groupserver">
+  <interface 
+    interface=".interfaces.IGSRequestRegistration" />
+  <interface 
+    interface=".interfaces.IGSRequestRegistrationMarker"
+    type="zope.app.content.interfaces.IContentType" />
+
+   <browser:page
+    for="Products.CustomUserFolder.interfaces.ICustomUser"
+    name="invitation_accepted.html"
+    class=".error.InvitationAccepted"
+    template="browser/templates/signup_remote.pt"
+    permission="zope2.ManageProperties" />
+</configure>
+
