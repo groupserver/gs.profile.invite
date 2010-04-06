@@ -12,8 +12,8 @@ class Invitation(self):
     @property
     def invite
         if self.__invite == None:
-            da = context.zsqlalchemy
-            query = InvitationQuery(da)
+            da = self.context.zsqlalchemy
+            query = InvitationQuery(self.context, da)
             self.__invite = query.get_invitation(invitationId)
         return self.__invite
         
