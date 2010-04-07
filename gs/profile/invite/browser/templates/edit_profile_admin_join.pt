@@ -1,0 +1,108 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  metal:use-macro="context/@@groupserver_layout/page">
+  <head>
+    <title metal:fill-slot="title">
+      <span tal:replace="string:${view/label}: ${view/groupInfo/get_name}: ${view/siteInfo/get_name}">
+        Edit Profile
+      </span>
+    </title>
+  </head>
+  <body>
+    <div metal:fill-slot="messages" tal:condition="view/status" 
+      class="message-error"
+      tal:define="e view/errors"
+      tal:attributes="class python:e and 'message-error' or 'message-result'">
+      <p class="form-status" tal:content="structure view/status"/>
+      <dl tal:condition="view/errors">
+        <tal:block repeat="widget view/widgets">
+          <tal:block tal:condition="widget/error">
+            <dt tal:content="widget/label">Widget Name</dt>
+            <dd class="error" 
+              tal:content="structure widget/error">Error message</dd>
+          </tal:block>
+        </tal:block>
+      </dl>
+    </div>
+    <tal:block metal:fill-slot="body">
+      <form enctype="multipart/form-data"  method="post" action="."
+        tal:attributes="action request/URL" id="edit-profile">
+        <h1 tal:content="view/label">Edit Profile</h1>
+        <p>To add a new member to the group, enter the user's details below
+          and click the 
+          <samp class="button"
+            tal:define="action python:[a for a in view.actions][0].label"
+            tal:content="action">Big R</samp>
+          button.
+          A new member will be created, and the member will be sent a 
+          message inviting him or her to join
+          <span class="group" 
+            tal:content="python:view.groupInfo.name">this group</span>.
+          If the member accepts the invitation, then the email address of
+          the member will be verified, and the user will become a normal
+          member of
+          <span class="group" 
+            tal:content="python:view.groupInfo.name">this group</span>.
+          If the member declines the invitation, then the profile will be
+          deleted, and your attempt to add an unwilling person to
+          <span class="site" 
+            tal:content="python:view.siteInfo.name">this site</span>
+          will be noted.</p>
+        <div id="invitationRelatedFields">        
+          <p>The following two fields are used to create the invitation to 
+            the new group member.
+            The invitation will be sent to the email address you specify,
+            with the optional message appearing before the links that the
+            new member will use to accept or decline the invitation.</p>
+          <tal:block define="widgets python:view.adminFields">
+            <tal:block
+              replace="structure provider:groupserver.FormWidgets"/>
+          </tal:block>
+        </div><!--invitationFields-->
+        <div id="standardProfileFields">
+          <h2>Standard Profile Information</h2>
+          <p>The following fields are the standard profile fields on
+            <span class="site" 
+              tal:content="python:view.siteInfo.name">this site</span>.
+            You must fill out all required fields, but may ignore the other
+            fields.</p>
+          <tal:block define="widgets python:view.standardFields">
+            <tal:block
+              replace="structure provider:groupserver.FormWidgets"/>
+          </tal:block>
+        </div><!--standardProfileFields-->
+        <div class="buttons" tal:condition="view/availableActions">
+          <tal:block repeat="action view/actions">
+            <div class="formelementbutton">
+              <span tal:replace="structure action/render">Button</span>
+            </div>
+          </tal:block>
+        </div><!--buttons-->
+      </form>
+    </tal:block>
+    <tal:block metal:fill-slot="javascript">
+      <script type="text/javascript"
+        src="/++resource++check_required-20071214.js">&#160;</script>
+      <script type="text/javascript"
+        tal:define="widgets view/widgets; 
+          button string:#form\\.actions\\.add"
+        tal:content="provider:groupserver.RequiredWidgetsJavaScript">
+        alert("I have not been replaced.");
+      </script>
+      <script type="text/javascript"
+        src="/++resource++popup_help-20071218.js">&#160;</script>
+      <script type="text/javascript">
+        jQuery.noConflict()
+        jQuery(document).ready( function () {
+            GSPopupFormHelp.init('#edit-profile');
+        });
+      </script>
+      <script type="text/javascript" 
+        src="/++resource++wymeditor-20090831/jquery.wymeditor.js">&#160;</script>
+      <script type="text/javascript"
+        src="/++resource++gswym.js">&#160;</script>
+    </tal:block>
+  </body>
+</html>
+
