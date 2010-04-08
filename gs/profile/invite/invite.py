@@ -1,6 +1,7 @@
 # coding=utf-8
 '''The form that allows an admin to invite a new person to join a group.'''
 from zope.component import createObject
+from Products.Five.formlib.formbase import PageForm
 from Products.CustomUserFolder.interfaces import IGSUserInfo
 from Products.GSGroupMember.groupmembership import \
   user_member_of_group, invite_to_groups, user_admin_of_group
@@ -12,7 +13,7 @@ from Products.GSProfile.emailaddress import NewEmailAddress, \
 from Products.GSGroup.changebasicprivacy import radio_widget
 from utils import set_digest, send_add_user_notification
 
-class InviteEditProfileForm(EditProfileForm):
+class InviteEditProfileForm(PageForm):
     label = u'Invite a New Group Member'
     pageTemplateFileName = 'browser/templates/edit_profile_invite.pt'
     template = ZopeTwoPageTemplateFile(pageTemplateFileName)
@@ -22,11 +23,11 @@ class InviteEditProfileForm(EditProfileForm):
 
         siteInfo = self.siteInfo = \
           createObject('groupserver.SiteInfo', context)
-        self.__groupsInfo = self.__groupInfo =  self.__formFields = None
-        self.__config = self.__interface = self.__interfaceName = None
-        self.__standardFieldIds = self.__standardFields = None
-        self.__adminFields = self.__widgetNames = None
-
+        self.__groupInfo =  self.__formFields =  self.__config = None
+        self.__interface =  self.__profileFieldIds = None
+        self.__profileFields =  self.__adminFields = None
+        self.__widgetNames = self.__adminInterface = None
+        
     def setUpWidgets(self, ignore_request=False):
         siteTz = self.siteInfo.get_property('tz', 'UTC')
         defaultTz = self.groupInfo.get_property('tz', siteTz)
@@ -45,12 +46,18 @@ class InviteEditProfileForm(EditProfileForm):
             self.__formFields['biography'].custom_widget = wym_editor_widget
             self.__formFields['delivery'].custom_widget = radio_widget
         return self.formFields
-    
-    @form.action(label=u'Add', failure='handle_add_action_failure')
-    def handle_add(self, action, data):
+        
+    @form.action(label=u'Invite', failure='handle_invite_action_failure')
+    def handle_invite(self, action, data):
         self.actual_handle_add(action, data)
+        
+    def handle_invite_action_failure(self, action, data, errors):
+        if len(errors) == 1:
+            self.status = u'<p>There is an error:</p>'
+        else:
+            self.status = u'<p>There are errors:</p>'
 
-    # Non-Standard widgets below this point
+    # Non-Standard methods below this point
     
     @property
     def config(self):
@@ -61,27 +68,25 @@ class InviteEditProfileForm(EditProfileForm):
         return self.__config
         
     @property
-    def interface(self):
+    def profileInterface(self):
         if self.__interface == None:
-            self.__interface = getattr(interfaces, self.interfaceName)
+            interfaceName =\
+                self.config.getProperty('profileInterface', 'IGSCoreProfile')
+            assert hasattr(interfaces, interfaceName), \
+                'Interface "%s" not found.' % interfaceName
+            self.__interface = getattr(interfaces, interfaceName)
         return self.__interface
         
     @property
-    def interfaceName(self):
-        if self.__interfaceName == None:
-            self.__interfaceName = '%sAdminJoinSingle' %\
-              self.config.getProperty('profileInterface', 'IGSCoreProfile')
-            assert hasattr(interfaces, self.__interfaceName), \
-                'Interface "%s" not found.' % self.__interfaceName
-        return self.__interfaceName
-    
-    @property
-    def groupsInfo(self):
-        if self.__groupsInfo == None:
-            self.__groupsInfo = \
-                createObject('groupserver.GroupsInfo', self.context)
-        return self.__groupsInfo
-
+    def adminInterface(self):
+        if self.__adminInterface == None:
+            adminInterfaceName = '%sAdminJoinSingle' %\
+                self.config.getProperty('profileInterface', 'IGSCoreProfile')
+            assert hasattr(interfaces, adminInterfaceName), \
+                'Interface "%s" not found.' % adminInterfaceName
+            self.__adminInterface = getattr(interfaces, adminInterfaceName)
+        return self.__adminInterface
+        
     @property
     def groupInfo(self):
         if self.__groupInfo == None:
@@ -90,32 +95,23 @@ class InviteEditProfileForm(EditProfileForm):
         return self.__groupInfo
         
     @property
-    def standardFieldIds(self):
-        if self.__standardFieldIds == None:
-            self.standardFieldIds = \
-                [f[0] for f in getFieldsInOrder(self.interface)]
-        return self.__standardFieldIds
-        
-    @property
-    def widgetNames(self):
-        if self.__widgetNames == None:
-            self.__widgetNames = [w.name.split(w._prefix)[1]
-                 for w in self.widgets]
-        return self.__widgetNames
-        
-    @property
-    def standardFields(self):
-        if self.__standardFields == None:
-            sfIds = self.standardFieldIds; wns = self.widgetNames
-            self.__standardFields = [n for n in wns if n in sfIds]
-        assert type(self.__standardFields) == list
-        return self.__standardFields
+    def profileFields(self):
+        '''These fields are the standard profile fields for this site.
+            They form the second-part of the form.'''
+        if self.__profileFields == None:
+            self.__profileFields = \
+                [f[0] for f in getFieldsInOrder(self.profileInterface)]
+        assert type(self.__profileFields) == list
+        return self.__profileFields
         
     @property
     def adminFields(self):
+        '''These fields are specific to the Invite a New Member 
+            interface. They form the first part of the form.'''
         if self.__adminFields == None:
-            sfIds = self.standardFieldIds; wns = self.widgetNames
-            self.__adminFields = [n for n in wns if n not in sfIds]
+            sfIds = self.profileFieldIds; wns = self.widgetNames
+            self.__adminFields = \
+                [f[0] for f in getFieldsInOrder(self.adminInterface)]
             self.__adminFields.sort()
         assert type(self.__adminFields) == list
         return self.__adminFields
@@ -177,7 +173,7 @@ given the email address %s.</li>''' % (u, e)
                 
         user = create_user_from_email(self.context, email)
         # Add profile attributes 
-        enforce_schema(user, self.interface)
+        enforce_schema(user, self.profileInterface)
         changed = form.applyChanges(user, self.form_fields, data)
         set_digest(user, data)                
         # Send notification

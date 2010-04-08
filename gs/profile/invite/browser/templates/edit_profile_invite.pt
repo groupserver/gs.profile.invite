@@ -29,7 +29,7 @@
       <form enctype="multipart/form-data"  method="post" action="."
         tal:attributes="action request/URL" id="edit-profile">
         <h1 tal:content="view/label">Edit Profile</h1>
-        <p>To add a new member to the group, enter the user's details below
+        <p>To invite a new member to the group, enter the user's details below
           and click the 
           <samp class="button"
             tal:define="action python:[a for a in view.actions][0].label"
@@ -39,38 +39,27 @@
           message inviting him or her to join
           <span class="group" 
             tal:content="python:view.groupInfo.name">this group</span>.
-          If the member accepts the invitation, then the email address of
-          the member will be verified, and the user will become a normal
-          member of
-          <span class="group" 
-            tal:content="python:view.groupInfo.name">this group</span>.
-          If the member declines the invitation, then the profile will be
-          deleted, and your attempt to add an unwilling person to
-          <span class="site" 
-            tal:content="python:view.siteInfo.name">this site</span>
-          will be noted.</p>
+        </p>
         <div id="invitationRelatedFields">        
-          <p>The following two fields are used to create the invitation to 
-            the new group member.
-            The invitation will be sent to the email address you specify,
-            with the optional message appearing before the links that the
-            new member will use to accept or decline the invitation.</p>
-          <tal:block define="widgets python:view.adminFields">
+          <p>Think of something good&#8230;</p>
+          <!--tal:block define="widgets view/adminFields">
             <tal:block
               replace="structure provider:groupserver.FormWidgets"/>
-          </tal:block>
+          </tal:block-->
         </div><!--invitationFields-->
         <div id="standardProfileFields">
           <h2>Standard Profile Information</h2>
           <p>The following fields are the standard profile fields on
             <span class="site" 
               tal:content="python:view.siteInfo.name">this site</span>.
-            You must fill out all required fields, but may ignore the other
+            You must fill out all required fields, which are marked 
+            <span class="required"><label style="display:inline;margin:0px;">like
+              this</label></span>; you can ignore the other
             fields.</p>
-          <tal:block define="widgets python:view.standardFields">
-            <tal:block
-              replace="structure provider:groupserver.FormWidgets"/>
-          </tal:block>
+          <p tal:content="widgets python:view.standardFields">
+            <!--tal:block
+              replace="structure provider:groupserver.FormWidgets"/-->
+          </p>
         </div><!--standardProfileFields-->
         <div class="buttons" tal:condition="view/availableActions">
           <tal:block repeat="action view/actions">
