@@ -1,10 +1,14 @@
 # coding=utf-8
 '''The form that allows an admin to invite a new person to join a group.'''
 from zope.component import createObject
+from zope.formlib import form
+from zope.app.apidoc.interface import getFieldsInOrder
 from Products.Five.formlib.formbase import PageForm
+from Products.Five.browser.pagetemplatefile import ZopeTwoPageTemplateFile
 from Products.CustomUserFolder.interfaces import IGSUserInfo
 from Products.GSGroupMember.groupmembership import \
   user_member_of_group, invite_to_groups, user_admin_of_group
+from Products.GSProfile.edit_profile import select_widget, wym_editor_widget
 from Products.GSProfile import interfaces
 from Products.GSProfile.utils import create_user_from_email, \
     enforce_schema
@@ -23,10 +27,21 @@ class InviteEditProfileForm(PageForm):
 
         siteInfo = self.siteInfo = \
           createObject('groupserver.SiteInfo', context)
-        self.__groupInfo =  self.__formFields =  self.__config = None
-        self.__interface =  self.__profileFieldIds = None
+        self.__groupInfo = self.__formFields =  self.__config = None
+        self.__interface = self.__profileFieldIds = None
         self.__profileFields =  self.__adminFields = None
         self.__widgetNames = self.__adminInterface = None
+
+    @property
+    def form_fields(self):
+        if self.__formFields == None:
+            self.__formFields = form.Fields(self.adminInterface, 
+                render_context=False)
+            tz = self.__formFields['tz']
+            tz.custom_widget = select_widget
+            self.__formFields['biography'].custom_widget = wym_editor_widget
+            self.__formFields['delivery'].custom_widget = radio_widget
+        return self.__formFields
         
     def setUpWidgets(self, ignore_request=False):
         siteTz = self.siteInfo.get_property('tz', 'UTC')
@@ -36,16 +51,6 @@ class InviteEditProfileForm(PageForm):
             self.form_fields, self.prefix, self.context,
             self.request, form=self, data=data,
             ignore_request=ignore_request)
-
-    @property
-    def form_fields(self):
-        if self.__formFields == None:
-            self.__formFields = form.Fields(interface, render_context=False)
-            tz = self.__formFields['tz']
-            tz.custom_widget = select_widget
-            self.__formFields['biography'].custom_widget = wym_editor_widget
-            self.__formFields['delivery'].custom_widget = radio_widget
-        return self.formFields
         
     @form.action(label=u'Invite', failure='handle_invite_action_failure')
     def handle_invite(self, action, data):
@@ -68,16 +73,6 @@ class InviteEditProfileForm(PageForm):
         return self.__config
         
     @property
-    def profileInterface(self):
-        if self.__interface == None:
-            interfaceName =\
-                self.config.getProperty('profileInterface', 'IGSCoreProfile')
-            assert hasattr(interfaces, interfaceName), \
-                'Interface "%s" not found.' % interfaceName
-            self.__interface = getattr(interfaces, interfaceName)
-        return self.__interface
-        
-    @property
     def adminInterface(self):
         if self.__adminInterface == None:
             adminInterfaceName = '%sAdminJoinSingle' %\
@@ -88,34 +83,60 @@ class InviteEditProfileForm(PageForm):
         return self.__adminInterface
         
     @property
+    def adminFieldIds(self):
+        '''These fields are specific to the Invite a New Member 
+            interface. They form the first part of the form.'''
+        if self.__adminFields == None:
+            sfIds = self.profileFieldIds
+            self.__adminFields = \
+                [f[0] for f in getFieldsInOrder(self.adminInterface)
+                    if f[0] not in sfIds]
+        assert type(self.__adminFields) == list
+        return self.__adminFields
+            
+    @property
+    def adminWidgets(self):
+        adminWidgetIds = ['form.%s' % i for i in self.adminFieldIds]
+        retval = [w for w in self.widgets if w.name in adminWidgetIds]
+        return retval
+
+    @property
     def groupInfo(self):
         if self.__groupInfo == None:
             self.__groupInfo = \
-                createObject('groupserver.GroupInfo', context)
+                createObject('groupserver.GroupInfo', self.context)
         return self.__groupInfo
         
     @property
-    def profileFields(self):
+    def profileInterface(self):
+        if self.__interface == None:
+            interfaceName =\
+                self.config.getProperty('profileInterface', 'IGSCoreProfile')
+            assert hasattr(interfaces, interfaceName), \
+                'Interface "%s" not found.' % interfaceName
+            self.__interface = getattr(interfaces, interfaceName)
+        return self.__interface
+        
+    @property
+    def profileFieldIds(self):
         '''These fields are the standard profile fields for this site.
-            They form the second-part of the form.'''
+            They form the second-part of the form.
+            
+            RETURNS
+            
+            A list of field IDs that are part of the standard profile interface'''
         if self.__profileFields == None:
             self.__profileFields = \
                 [f[0] for f in getFieldsInOrder(self.profileInterface)]
         assert type(self.__profileFields) == list
         return self.__profileFields
-        
+
     @property
-    def adminFields(self):
-        '''These fields are specific to the Invite a New Member 
-            interface. They form the first part of the form.'''
-        if self.__adminFields == None:
-            sfIds = self.profileFieldIds; wns = self.widgetNames
-            self.__adminFields = \
-                [f[0] for f in getFieldsInOrder(self.adminInterface)]
-            self.__adminFields.sort()
-        assert type(self.__adminFields) == list
-        return self.__adminFields
-            
+    def profileWidgets(self):
+        profileWidgetIds = ['form.%s' % i for i in self.profileFieldIds]
+        retval = [w for w in self.widgets if w.name in profileWidgetIds]
+        return retval
+        
     def actual_handle_add(self, action, data):
         acl_users = self.context.acl_users
         email = data['email'].strip()

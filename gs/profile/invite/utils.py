@@ -1,5 +1,5 @@
 # coding=utf-8
-from Products.GSProfile import userInfo_to_user, \  
+from Products.GSProfile.utils import userInfo_to_user, \
   verificationId_from_email
 
 def set_digest(user, data):

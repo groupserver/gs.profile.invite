@@ -41,11 +41,10 @@
             tal:content="python:view.groupInfo.name">this group</span>.
         </p>
         <div id="invitationRelatedFields">        
-          <p>Think of something good&#8230;</p>
-          <!--tal:block define="widgets view/adminFields">
+          <tal:block define="widgets view/adminWidgets">
             <tal:block
               replace="structure provider:groupserver.FormWidgets"/>
-          </tal:block-->
+          </tal:block>
         </div><!--invitationFields-->
         <div id="standardProfileFields">
           <h2>Standard Profile Information</h2>
@@ -56,10 +55,10 @@
             <span class="required"><label style="display:inline;margin:0px;">like
               this</label></span>; you can ignore the other
             fields.</p>
-          <p tal:content="widgets python:view.standardFields">
-            <!--tal:block
-              replace="structure provider:groupserver.FormWidgets"/-->
-          </p>
+          <tal:block define="widgets view/profileWidgets">
+            <tal:block
+              replace="structure provider:groupserver.FormWidgets"/>
+          </tal:block>
         </div><!--standardProfileFields-->
         <div class="buttons" tal:condition="view/availableActions">
           <tal:block repeat="action view/actions">
