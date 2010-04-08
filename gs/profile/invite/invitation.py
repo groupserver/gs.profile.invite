@@ -1,4 +1,5 @@
 # coding=utf-8
+from zope.component import createObject
 from queries import InvitationQuery
 
 class Invitation(object):
@@ -24,5 +25,11 @@ class Invitation(object):
         return self.invite['inviting_user_id']
 
     def groupId(self):
-        return self.invite('group_id')
+        return self.invite['group_id']
+    
+    @property
+    def groupInfo(self):
+        retval = createObject('groupserver.GroupInfo', self.context, 
+            self.invite['group_id'])
+        return retval
 
