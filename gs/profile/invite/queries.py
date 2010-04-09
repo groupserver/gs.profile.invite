@@ -114,8 +114,6 @@ class InvitationQuery(object):
 
         retval = []
         if r.rowcount:
-        return retval
-        if r.rowcount:
             retval = [self.marshal_invite(x) for x in r]
         assert type(retval) == list
         return retval

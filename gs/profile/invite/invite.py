@@ -7,7 +7,7 @@ from Products.Five.formlib.formbase import PageForm
 from Products.Five.browser.pagetemplatefile import ZopeTwoPageTemplateFile
 from Products.CustomUserFolder.interfaces import IGSUserInfo
 from Products.GSGroupMember.groupmembership import \
-  user_member_of_group, invite_to_groups, user_admin_of_group
+  user_member_of_group, user_admin_of_group
 from Products.GSProfile.edit_profile import select_widget, wym_editor_widget
 from Products.GSProfile import interfaces
 from Products.GSProfile.utils import create_user_from_email, \
@@ -15,7 +15,8 @@ from Products.GSProfile.utils import create_user_from_email, \
 from Products.GSProfile.emailaddress import NewEmailAddress, \
     EmailAddressExists
 from Products.GSGroup.changebasicprivacy import radio_widget
-from utils import set_digest, send_add_user_notification
+from utils import set_digest, invite_to_groups, \
+    send_add_user_notification
 
 class InviteEditProfileForm(PageForm):
     label = u'Invite a New Group Member'
