@@ -6,13 +6,14 @@ from queries import InvitationQuery
 from Products.GSGroupMember.groupmembership import user_member_of_group,\
     userInfo_to_user, userInfo_to_user
 
-def set_digest(user, data):
+def set_digest(userInfo, data):
     delivery = 'delivery'
     email = 'email'
     digest = 'digest'
     web = 'web'
     assert data.has_key(delivery)
     assert data[delivery] in [email, digest, web]
+    user = userInfo_to_user(userInfo)
     assert hasattr(user, 'set_enableDigestByKey')
     
     if data[delivery] == email:
@@ -23,8 +24,8 @@ def set_digest(user, data):
     elif data[delivery] == web:
         user.set_disableDeliveryByKey(self.groupInfo.id)
 
-def invite_id(siteId, groupId, userId, adminId):
-    istr = time.asctime() + siteId + groupId + userId + adminId
+def invite_id(siteId, groupId, userId, adminId, miscStr=''):
+    istr = time.asctime() + siteId + groupId + userId + adminId + miscStr
     inum = long(md5.new(istr).hexdigest(), 16)
     retval = str(convert_int2b62(inum))
     assert retval

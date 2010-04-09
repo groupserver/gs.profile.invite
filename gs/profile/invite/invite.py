@@ -1,22 +1,24 @@
 # coding=utf-8
 '''The form that allows an admin to invite a new person to join a group.'''
+from operator import concat
 from zope.component import createObject
 from zope.formlib import form
-from zope.app.apidoc.interface import getFieldsInOrder
 from Products.Five.formlib.formbase import PageForm
 from Products.Five.browser.pagetemplatefile import ZopeTwoPageTemplateFile
-from Products.CustomUserFolder.interfaces import IGSUserInfo
+from Products.CustomUserFolder.interfaces import IGSUserInfo, \
+    userInfo_to_anchor
 from Products.GSGroupMember.groupmembership import \
   user_member_of_group, user_admin_of_group
 from Products.GSProfile.edit_profile import select_widget, wym_editor_widget
-from Products.GSProfile import interfaces
 from Products.GSProfile.utils import create_user_from_email, \
     enforce_schema
 from Products.GSProfile.emailaddress import NewEmailAddress, \
     EmailAddressExists
 from Products.GSGroup.changebasicprivacy import radio_widget
-from utils import set_digest, invite_to_groups, \
+from queries import InvitationQuery
+from utils import set_digest, invite_to_groups, invite_id, \
     send_add_user_notification
+from invitefields import InviteFields
 
 class InviteEditProfileForm(PageForm):
     label = u'Invite a New Group Member'
@@ -29,14 +31,13 @@ class InviteEditProfileForm(PageForm):
         siteInfo = self.siteInfo = \
           createObject('groupserver.SiteInfo', context)
         self.__groupInfo = self.__formFields =  self.__config = None
-        self.__interface = self.__profileFieldIds = None
-        self.__profileFields =  self.__adminFields = None
-        self.__widgetNames = self.__adminInterface = None
+        self.__adminInfo = self.__invitationQuery = None
+        self.inviteFields = InviteFields(context)
 
     @property
     def form_fields(self):
         if self.__formFields == None:
-            self.__formFields = form.Fields(self.adminInterface, 
+            self.__formFields = form.Fields(self.inviteFields.adminInterface, 
                 render_context=False)
             tz = self.__formFields['tz']
             tz.custom_widget = select_widget
@@ -64,43 +65,6 @@ class InviteEditProfileForm(PageForm):
             self.status = u'<p>There are errors:</p>'
 
     # Non-Standard methods below this point
-    
-    @property
-    def config(self):
-        if self.__config == None:
-            site_root = self.context.site_root()
-            assert hasattr(site_root, 'GlobalConfiguration')
-            self.__config = site_root.GlobalConfiguration
-        return self.__config
-        
-    @property
-    def adminInterface(self):
-        if self.__adminInterface == None:
-            adminInterfaceName = '%sAdminJoinSingle' %\
-                self.config.getProperty('profileInterface', 'IGSCoreProfile')
-            assert hasattr(interfaces, adminInterfaceName), \
-                'Interface "%s" not found.' % adminInterfaceName
-            self.__adminInterface = getattr(interfaces, adminInterfaceName)
-        return self.__adminInterface
-        
-    @property
-    def adminFieldIds(self):
-        '''These fields are specific to the Invite a New Member 
-            interface. They form the first part of the form.'''
-        if self.__adminFields == None:
-            sfIds = self.profileFieldIds
-            self.__adminFields = \
-                [f[0] for f in getFieldsInOrder(self.adminInterface)
-                    if f[0] not in sfIds]
-        assert type(self.__adminFields) == list
-        return self.__adminFields
-            
-    @property
-    def adminWidgets(self):
-        adminWidgetIds = ['form.%s' % i for i in self.adminFieldIds]
-        retval = [w for w in self.widgets if w.name in adminWidgetIds]
-        return retval
-
     @property
     def groupInfo(self):
         if self.__groupInfo == None:
@@ -109,34 +73,18 @@ class InviteEditProfileForm(PageForm):
         return self.__groupInfo
         
     @property
-    def profileInterface(self):
-        if self.__interface == None:
-            interfaceName =\
-                self.config.getProperty('profileInterface', 'IGSCoreProfile')
-            assert hasattr(interfaces, interfaceName), \
-                'Interface "%s" not found.' % interfaceName
-            self.__interface = getattr(interfaces, interfaceName)
-        return self.__interface
-        
+    def adminInfo(self):
+        if self.__adminInfo == None:
+            self.__adminInfo = createObject('groupserver.LoggedInUser', 
+                self.context)
+        return self.__adminInfo
+    
     @property
-    def profileFieldIds(self):
-        '''These fields are the standard profile fields for this site.
-            They form the second-part of the form.
-            
-            RETURNS
-            
-            A list of field IDs that are part of the standard profile interface'''
-        if self.__profileFields == None:
-            self.__profileFields = \
-                [f[0] for f in getFieldsInOrder(self.profileInterface)]
-        assert type(self.__profileFields) == list
-        return self.__profileFields
-
-    @property
-    def profileWidgets(self):
-        profileWidgetIds = ['form.%s' % i for i in self.profileFieldIds]
-        retval = [w for w in self.widgets if w.name in profileWidgetIds]
-        return retval
+    def invitationQuery(self):
+        if self.__invitationQuery == None:
+            da = self.context.zsqlalchemy
+            self.__invitationQuery = InvitationQuery(da)
+        return self.__invitationQuery
         
     def actual_handle_add(self, action, data):
         acl_users = self.context.acl_users
@@ -144,9 +92,6 @@ class InviteEditProfileForm(PageForm):
         
         # TODO: Audit
         
-        # --=mpj17=-- As an EmailAddress field is used, we know that the
-        #  email data is valid. However, the address could already on
-        #  our system. So we use a NewEmailAddress field to check this :)
         emailChecker = NewEmailAddress(title=u'Email')
         emailChecker.context = self.context # --=mpj17=-- Legit?
         e = u'<code class="email">%s</code>' % email
@@ -158,30 +103,32 @@ class InviteEditProfileForm(PageForm):
             user = acl_users.get_userByEmail(email)
             assert user, 'User for address <%s> not found' % email
             userInfo = IGSUserInfo(user)
-            u = u'<a href="%s" class="fn">%s</a>' % (userInfo.url, 
-                userInfo.name)
+            u = userInfo_to_anchor(userInfo)
+            
             if user_member_of_group(user, self.groupInfo):
-                self.status=u'''<li>The user with the email address %s 
+                self.status=u'''<li>The person with the email address %s 
 &#8213; %s &#8213; is already a member of %s.</li>'''% (e, u, g)
                 self.status = u'%s<li>No changes have been made.</li>' % \
                   self.status
             else:
-                self.status=u'''<li>Inviting the existing user with the
+                self.status=u'''<li>Inviting the existing person with the
 email address %s &#8213; %s &#8213; to join %s.</li>'''% (e, u, g)
-                invite_to_groups(userInfo, adminInfo, self.groupInfo)
+                #TODO check: invite_to_groups(userInfo, adminInfo, self.groupInfo)
         else:
             # Email address does not exist, but it is a legitimate address
-            user = self.create_user(data)
+            user = create_user_from_email(self.context, email)
             userInfo = IGSUserInfo(user)
-            u = u'<a href="%s" class="fn">%s</a>' % (userInfo.url, 
-                userInfo.name)
-            self.status = u'''<li>The user %s has been created, and
+            self.add_profile_attributes(userInfo, data)
+            inviteId = self.create_invitation(userInfo, data)
+            self.send_notification(userInfo, inviteId)
+            
+            u = userInfo_to_anchor(userInfo)
+            self.status = u'''<li>A profile for %s has been created, and
 given the email address %s.</li>''' % (u, e)
-            #TODO Join the group on accept
-            # join_group(user, self.groupInfo) 
             self.status = u'%s<li>An invitation to join %s has been'\
                 'sent to %s.</li>' % (self.status, g, u)
         assert user, 'User not created or found'
+        assert self.status
         
     def handle_add_action_failure(self, action, data, errors):
         if len(errors) == 1:
@@ -189,19 +136,21 @@ given the email address %s.</li>''' % (u, e)
         else:
             self.status = u'<p>There are errors:</p>'
 
-    def create_user(self, data):
-        email  = data['email'].strip()
-        # TODO: Audit
-                
-        user = create_user_from_email(self.context, email)
-        # Add profile attributes 
-        enforce_schema(user, self.profileInterface)
-        changed = form.applyChanges(user, self.form_fields, data)
-        set_digest(user, data)                
-        # Send notification
-        adminInfo = createObject('groupserver.LoggedInUser', self.context)
-        send_add_user_notification(user, adminInfo.user, 
-          self.groupInfo, data.get('message', ''))
-        assert user
-        return user
+    def add_profile_attributes(self, userInfo, data)
+        enforce_schema(userInfo.user, self.inviteFields.profileInterface)
+        changed = form.applyChanges(userInfo,user, self.form_fields, data)
+        set_digest(userInfo, data)
+
+    def create_invitation(self, userInfo, data):
+        miscStr = reduce(concat, [str(i) for i in data.values()], '')
+        inviteId = inviteId(self.siteInfo.id, self.groupInfo.id, 
+            self.adminInfo.id, miscStr)
+        self.invitationQuery.add_invitation(inviteId, self.siteInfo.id,
+            self.groupInfo.id, self.userInfo.id, self.adminInfo.id, True)
+        return inviteId
+        
+    def send_notificataion(self, userInfo, inviteId):
+        # TODO: Fix
+        send_add_user_notification(userInfo.user, self.adminInfo.user, self.groupInfo, 
+                                    data.get('message', ''))
 

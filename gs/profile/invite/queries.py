@@ -5,7 +5,8 @@ class InvitationQuery(object):
     def __init__(self, da):
         self.userInvitationTable = da.createTable('user_group_member_invitation')
 
-    def add_invitation(self, invitiationId, siteId, groupId, userId, invtUsrId):
+    def add_invitation(self, invitiationId, siteId, groupId, userId, 
+                       invtUsrId, initialInvite = False):
         assert invitiationId, 'invitiationId is %s' % invitiationId
         assert siteId, 'siteId is %s' % siteId
         assert groupId, 'groupId is %s' % groupId
@@ -19,7 +20,8 @@ class InvitationQuery(object):
           group_id = groupId,
           user_id = userId,
           inviting_user_id = invtUsrId,
-          invitation_date = d)
+          invitation_date = d,
+          initial_invite = initialInvite)
 
     def marshal_invite(self, x):
         retval = {
