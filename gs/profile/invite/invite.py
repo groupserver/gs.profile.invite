@@ -19,6 +19,7 @@ from queries import InvitationQuery
 from utils import set_digest, invite_to_groups, invite_id, \
     send_add_user_notification
 from invitefields import InviteFields
+from audit import Auditor
 
 class InviteEditProfileForm(PageForm):
     label = u'Invite a New Group Member'
@@ -98,10 +99,8 @@ class InviteEditProfileForm(PageForm):
         acl_users = self.context.acl_users
         email = data['email'].strip()
         
-        # TODO: Audit
-        
         emailChecker = NewEmailAddress(title=u'Email')
-        emailChecker.context = self.context # --=mpj17=-- Legit?
+        emailChecker.context = self.context
         e = u'<code class="email">%s</code>' % email
         g = u'<a class="group" href="%s">%s</a>' % (self.groupInfo.url,
             self.groupInfo.name)
@@ -111,6 +110,8 @@ class InviteEditProfileForm(PageForm):
             user = acl_users.get_userByEmail(email)
             assert user, 'User for address <%s> not found' % email
             userInfo = IGSUserInfo(user)
+            auditor = Auditor(self.siteInfo, self.groupInfo, 
+                self.adminInfo, userInfo)
             u = userInfo_to_anchor(userInfo)
             
             if user_member_of_group(user, self.groupInfo):
@@ -126,6 +127,8 @@ email address %s &#8213; %s &#8213; to join %s.</li>'''% (e, u, g)
             # Email address does not exist, but it is a legitimate address
             user = create_user_from_email(self.context, email)
             userInfo = IGSUserInfo(user)
+            auditor = Auditor(self.siteInfo, self.groupInfo, 
+                self.adminInfo, userInfo)
             self.add_profile_attributes(userInfo, data)
             inviteId = self.create_invitation(userInfo, data)
             self.send_notification(userInfo, inviteId)
