@@ -7,6 +7,7 @@ from Products.Five.formlib.formbase import PageForm
 from Products.Five.browser.pagetemplatefile import ZopeTwoPageTemplateFile
 from Products.CustomUserFolder.interfaces import IGSUserInfo
 from Products.CustomUserFolder.userinfo import userInfo_to_anchor
+from Products.GSGroup.groupInfo import groupInfo_to_anchor
 from Products.GSGroupMember.groupmembership import \
   user_member_of_group, user_admin_of_group
 from Products.GSProfile.edit_profile import select_widget, wym_editor_widget
@@ -102,8 +103,8 @@ class InviteEditProfileForm(PageForm):
         emailChecker = NewEmailAddress(title=u'Email')
         emailChecker.context = self.context
         e = u'<code class="email">%s</code>' % email
-        g = u'<a class="group" href="%s">%s</a>' % (self.groupInfo.url,
-            self.groupInfo.name)
+        g = groupInfo_to_anchor(self.groupInfo)
+        
         try:
             emailChecker.validate(email)
         except EmailAddressExists, e:
@@ -128,18 +129,18 @@ email address %s &#8213; %s &#8213; to join %s.</li>'''% (e, u, g)
             # Email address does not exist, but it is a legitimate address
             user = create_user_from_email(self.context, email)
             userInfo = IGSUserInfo(user)
-            auditor = Auditor(self.siteInfo, self.groupInfo, 
-                self.adminInfo, userInfo)
             self.add_profile_attributes(userInfo, data)
             inviteId = self.create_invitation(userInfo, data)
+            auditor = Auditor(self.siteInfo, self.groupInfo, 
+                self.adminInfo, userInfo)
             auditor.info(INVITE_OLD_USER, email)
             self.send_notification(userInfo, inviteId)
             
             u = userInfo_to_anchor(userInfo)
             self.status = u'''<li>A profile for %s has been created, and
-given the email address %s.</li>''' % (u, e)
+given the email address %s.</li>\n''' % (u, e)
             self.status = u'%s<li>An invitation to join %s has been'\
-                'sent to %s.</li>' % (self.status, g, u)
+                'sent to %s.</li>\n' % (self.status, g, u)
         assert user, 'User not created or found'
         assert self.status
         
@@ -149,12 +150,12 @@ given the email address %s.</li>''' % (u, e)
         else:
             self.status = u'<p>There are errors:</p>'
 
-    # TODO: The following three methods need to be shared with the CSV code
     def add_profile_attributes(self, userInfo, data):
         enforce_schema(userInfo.user, self.inviteFields.profileInterface)
         changed = form.applyChanges(userInfo,user, self.form_fields, data)
         set_digest(userInfo, data)
 
+    # TODO: The following two methods need to be shared with the CSV code
     def create_invitation(self, userInfo, data):
         miscStr = reduce(concat, [str(i) for i in data.values()], '')
         inviteId = inviteId(self.siteInfo.id, self.groupInfo.id, 
@@ -165,6 +166,7 @@ given the email address %s.</li>''' % (u, e)
         
     def send_notificataion(self, userInfo, inviteId):
         # TODO: Fix
-        send_add_user_notification(userInfo.user, self.adminInfo.user, self.groupInfo, 
-                                    data.get('message', ''))
+        pass
+        #send_add_user_notification(userInfo.user, self.adminInfo.user, self.groupInfo, 
+        #                            data.get('message', ''))
 
