@@ -2,12 +2,13 @@
 from zope.app.apidoc.interface import getFieldsInOrder
 from Products.GSProfile import interfaces
 
-class InviteFields(object)
+class InviteFields(object):
     def __init__(self, context):
         self.context = context
+        self.__adminInterface = self.__interface = None
         self.__profileFieldIds = self.__profileFields =  None
         self.__adminWidgets = self.__adminInterface = None
-        self.__widgetNames = None
+        self.__widgetNames = self.__config = None
 
     @property
     def config(self):
@@ -30,7 +31,9 @@ class InviteFields(object)
     def get_admin_widgets(self, widgets):
         '''These widgets are specific to the Invite a New Member 
             interface. They form the first part of the form.'''
+        print 'Here  0'
         if self.__adminWidgets == None:
+            assert widgets
             sfIds = self.profileFieldIds
             adminWidgetIds = \
                 ['form.%s' % f[0] 
@@ -38,6 +41,7 @@ class InviteFields(object)
                     if f[0] not in sfIds]
             self.__adminWidgets = [w for w in widgets
                                     if w.name in adminWidgetIds]
+        print 'Here  5'
         assert self.__adminWidgets
         return self.__adminWidgets
 
@@ -59,11 +63,11 @@ class InviteFields(object)
         assert type(self.__profileFields) == list
         return self.__profileFields
 
-    @property
-    def profileWidgets(self):
+    def get_profile_widgets(self, widgets):
         '''These widgets are the standard profile fields for this site.
             They form the second-part of the form.'''
+        assert widgets
         profileWidgetIds = ['form.%s' % i for i in self.profileFieldIds]
-        retval = [w for w in self.widgets if w.name in profileWidgetIds]
+        retval = [w for w in widgets if w.name in profileWidgetIds]
         return retval
 

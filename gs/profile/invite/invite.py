@@ -5,8 +5,8 @@ from zope.component import createObject
 from zope.formlib import form
 from Products.Five.formlib.formbase import PageForm
 from Products.Five.browser.pagetemplatefile import ZopeTwoPageTemplateFile
-from Products.CustomUserFolder.interfaces import IGSUserInfo, \
-    userInfo_to_anchor
+from Products.CustomUserFolder.interfaces import IGSUserInfo
+from Products.CustomUserFolder.userinfo import userInfo_to_anchor
 from Products.GSGroupMember.groupmembership import \
   user_member_of_group, user_admin_of_group
 from Products.GSProfile.edit_profile import select_widget, wym_editor_widget
@@ -80,6 +80,14 @@ class InviteEditProfileForm(PageForm):
         return self.__adminInfo
     
     @property
+    def adminWidgets(self):
+        return self.inviteFields.get_admin_widgets(self.widgets)
+
+    @property
+    def profileWidgets(self):
+        return self.inviteFields.get_profile_widgets(self.widgets)    
+        
+    @property
     def invitationQuery(self):
         if self.__invitationQuery == None:
             da = self.context.zsqlalchemy
@@ -136,7 +144,8 @@ given the email address %s.</li>''' % (u, e)
         else:
             self.status = u'<p>There are errors:</p>'
 
-    def add_profile_attributes(self, userInfo, data)
+    # TODO: The following three methods need to be shared with the CSV code
+    def add_profile_attributes(self, userInfo, data):
         enforce_schema(userInfo.user, self.inviteFields.profileInterface)
         changed = form.applyChanges(userInfo,user, self.form_fields, data)
         set_digest(userInfo, data)
