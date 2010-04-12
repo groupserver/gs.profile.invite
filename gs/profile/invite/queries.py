@@ -1,4 +1,6 @@
 # coding=utf-8
+import pytz
+from datetime import  datetime
 import sqlalchemy as sa
 
 class InvitationQuery(object):
@@ -13,7 +15,7 @@ class InvitationQuery(object):
         assert userId, 'userId is %s' % userId
         assert invtUsrId, 'invtUsrId is %s' % invtUsrId
         
-        d = datetime.datetime.utcnow().replace(tzinfo=pytz.utc)
+        d = datetime.utcnow().replace(tzinfo=pytz.utc)
         i = self.userInvitationTable.insert()
         i.execute(invitation_id = invitiationId,
           site_id = siteId,
@@ -147,7 +149,7 @@ class InvitationQuery(object):
         assert userId
         assert type(status) == bool
 
-        d = datetime.datetime.utcnow().replace(tzinfo=pytz.utc)        
+        d = datetime.utcnow().replace(tzinfo=pytz.utc)        
         uit = self.userInvitationTable
         c = sa.and_(
           uit.c.site_id  == siteId, 

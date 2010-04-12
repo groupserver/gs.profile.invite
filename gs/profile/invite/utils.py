@@ -1,10 +1,13 @@
 # coding=utf-8
+import md5
+from time import asctime
 from Products.CustomUserFolder.interfaces import IGSUserInfo, ICustomUser
 from Products.GSProfile.utils import userInfo_to_user, \
   verificationId_from_email
 from queries import InvitationQuery
 from Products.GSGroupMember.groupmembership import user_member_of_group,\
     userInfo_to_user, userInfo_to_user
+from Products.XWFCore.XWFUtils import convert_int2b62
 
 def set_digest(userInfo, data):
     delivery = 'delivery'
@@ -25,7 +28,7 @@ def set_digest(userInfo, data):
         user.set_disableDeliveryByKey(self.groupInfo.id)
 
 def invite_id(siteId, groupId, userId, adminId, miscStr=''):
-    istr = time.asctime() + siteId + groupId + userId + adminId + miscStr
+    istr = asctime() + siteId + groupId + userId + adminId + miscStr
     inum = long(md5.new(istr).hexdigest(), 16)
     retval = str(convert_int2b62(inum))
     assert retval

@@ -60,7 +60,7 @@ class InviteNewUserEvent(BasicAuditEvent):
         siteInfo, instanceDatum,  supplementaryDatum):
         
         BasicAuditEvent.__init__(self, context, id, 
-          REGISTER, d, userInfo, instanceUserInfo, 
+          INVITE_NEW_USER, d, userInfo, instanceUserInfo, 
           siteInfo, None,  instanceDatum, supplementaryDatum, 
           SUBSYSTEM)
     
@@ -99,7 +99,7 @@ class InviteOldUserEvent(BasicAuditEvent):
         siteInfo, instanceDatum,  supplementaryDatum):
         
         BasicAuditEvent.__init__(self, context, id, 
-          REGISTER, d, userInfo, instanceUserInfo, 
+          INVITE_OLD_USER, d, userInfo, instanceUserInfo, 
           siteInfo, None,  instanceDatum, supplementaryDatum, 
           SUBSYSTEM)
     
@@ -142,12 +142,12 @@ class Auditor(object):
     def info(self, code, instanceDatum = '', supplementaryDatum = ''):
         d = datetime.now(UTC)
         eventId = event_id_from_data(self.adminInfo, self.userInfo,
-            self.siteInfo, self.groupInfo, code, instanceDatum, 
-            supplementaryDatum)
+            self.siteInfo, code, instanceDatum, supplementaryDatum)
           
-        e = self.factory(self.user, eventId,  code, d, self.userInfo, 
-                self.instanceUserInfo, self.siteInfo, self.groupInfo,
-                instanceDatum, supplementaryDatum, SUBSYSTEM)
+        e = self.factory(self.userInfo.user, eventId,  code, d, 
+                self.adminInfo,  self.userInfo, self.siteInfo, 
+                self.groupInfo, instanceDatum, supplementaryDatum, 
+                SUBSYSTEM)
           
         self.queries.store(e)
         log.info(e)

@@ -152,19 +152,20 @@ given the email address %s.</li>\n''' % (u, e)
 
     def add_profile_attributes(self, userInfo, data):
         enforce_schema(userInfo.user, self.inviteFields.profileInterface)
-        changed = form.applyChanges(userInfo,user, self.form_fields, data)
+        fields = self.form_fields.select(*self.inviteFields.profileFieldIds)
+        changed = form.applyChanges(userInfo.user, fields, data)
         set_digest(userInfo, data)
 
     # TODO: The following two methods need to be shared with the CSV code
     def create_invitation(self, userInfo, data):
         miscStr = reduce(concat, [str(i) for i in data.values()], '')
-        inviteId = inviteId(self.siteInfo.id, self.groupInfo.id, 
+        inviteId = invite_id(self.siteInfo.id, self.groupInfo.id, 
             self.adminInfo.id, miscStr)
         self.invitationQuery.add_invitation(inviteId, self.siteInfo.id,
-            self.groupInfo.id, self.userInfo.id, self.adminInfo.id, True)
+            self.groupInfo.id, userInfo.id, self.adminInfo.id, True)
         return inviteId
         
-    def send_notificataion(self, userInfo, inviteId):
+    def send_notification(self, userInfo, inviteId):
         # TODO: Fix
         pass
         #send_add_user_notification(userInfo.user, self.adminInfo.user, self.groupInfo, 
