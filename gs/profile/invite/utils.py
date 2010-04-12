@@ -9,7 +9,7 @@ from Products.GSGroupMember.groupmembership import user_member_of_group,\
     userInfo_to_user, userInfo_to_user
 from Products.XWFCore.XWFUtils import convert_int2b62
 
-def set_digest(userInfo, data):
+def set_digest(userInfo, groupInfo, data):
     delivery = 'delivery'
     email = 'email'
     digest = 'digest'
@@ -23,9 +23,9 @@ def set_digest(userInfo, data):
         # --=mpj17=-- The default is one email per post
         pass
     elif data[delivery] == digest:
-        user.set_enableDigestByKey(self.groupInfo.id)
+        user.set_enableDigestByKey(groupInfo.id)
     elif data[delivery] == web:
-        user.set_disableDeliveryByKey(self.groupInfo.id)
+        user.set_disableDeliveryByKey(groupInfo.id)
 
 def invite_id(siteId, groupId, userId, adminId, miscStr=''):
     istr = asctime() + siteId + groupId + userId + adminId + miscStr

@@ -133,14 +133,14 @@ email address %s &#8213; %s &#8213; to join %s.</li>'''% (e, u, g)
             inviteId = self.create_invitation(userInfo, data)
             auditor = Auditor(self.siteInfo, self.groupInfo, 
                 self.adminInfo, userInfo)
-            auditor.info(INVITE_OLD_USER, email)
+            auditor.info(INVITE_NEW_USER, email)
             self.send_notification(userInfo, inviteId)
             
             u = userInfo_to_anchor(userInfo)
             self.status = u'''<li>A profile for %s has been created, and
 given the email address %s.</li>\n''' % (u, e)
-            self.status = u'%s<li>An invitation to join %s has been'\
-                'sent to %s.</li>\n' % (self.status, g, u)
+            self.status = u'%s<li>%s has been sent an invitation to '\
+              u'join %s.</li>\n' % (self.status, u, g)
         assert user, 'User not created or found'
         assert self.status
         
@@ -154,7 +154,7 @@ given the email address %s.</li>\n''' % (u, e)
         enforce_schema(userInfo.user, self.inviteFields.profileInterface)
         fields = self.form_fields.select(*self.inviteFields.profileFieldIds)
         changed = form.applyChanges(userInfo.user, fields, data)
-        set_digest(userInfo, data)
+        set_digest(userInfo, self.groupInfo, data)
 
     # TODO: The following two methods need to be shared with the CSV code
     def create_invitation(self, userInfo, data):

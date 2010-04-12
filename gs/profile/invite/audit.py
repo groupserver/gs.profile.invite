@@ -33,11 +33,11 @@ class AuditEventFactory(object):
 
         if (code == INVITE_NEW_USER):
             event = InviteNewUserEvent(context, event_id, date, 
-              userInfo, instanceUserInfo, siteInfo,
+              userInfo, instanceUserInfo, siteInfo, groupInfo,
               instanceDatum, supplementaryDatum)
         elif (code == INVITE_OLD_USER):
             event = InviteOldUserEvent(context, event_id, date, 
-              userInfo, instanceUserInfo, siteInfo,
+              userInfo, instanceUserInfo, siteInfo, groupInfo,
               instanceDatum, supplementaryDatum)
         else:
             event = BasicAuditEvent(context, event_id, UNKNOWN, date, 
@@ -57,11 +57,11 @@ class InviteNewUserEvent(BasicAuditEvent):
     implements(IAuditEvent)
 
     def __init__(self, context, id, d, userInfo, instanceUserInfo, 
-        siteInfo, instanceDatum,  supplementaryDatum):
+        siteInfo, groupInfo, instanceDatum,  supplementaryDatum):
         
         BasicAuditEvent.__init__(self, context, id, 
           INVITE_NEW_USER, d, userInfo, instanceUserInfo, 
-          siteInfo, None,  instanceDatum, supplementaryDatum, 
+          siteInfo, groupInfo,  instanceDatum, supplementaryDatum, 
           SUBSYSTEM)
     
     def __str__(self):
@@ -96,11 +96,11 @@ class InviteOldUserEvent(BasicAuditEvent):
     implements(IAuditEvent)
 
     def __init__(self, context, id, d, userInfo, instanceUserInfo, 
-        siteInfo, instanceDatum,  supplementaryDatum):
+        siteInfo, groupInfo, instanceDatum,  supplementaryDatum):
         
         BasicAuditEvent.__init__(self, context, id, 
           INVITE_OLD_USER, d, userInfo, instanceUserInfo, 
-          siteInfo, None,  instanceDatum, supplementaryDatum, 
+          siteInfo, groupInfo, instanceDatum, supplementaryDatum, 
           SUBSYSTEM)
     
     def __str__(self):
