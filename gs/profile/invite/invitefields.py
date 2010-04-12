@@ -31,7 +31,6 @@ class InviteFields(object):
     def get_admin_widgets(self, widgets):
         '''These widgets are specific to the Invite a New Member 
             interface. They form the first part of the form.'''
-        print 'Here  0'
         if self.__adminWidgets == None:
             assert widgets
             sfIds = self.profileFieldIds
@@ -41,7 +40,6 @@ class InviteFields(object):
                     if f[0] not in sfIds]
             self.__adminWidgets = [w for w in widgets
                                     if w.name in adminWidgetIds]
-        print 'Here  5'
         assert self.__adminWidgets
         return self.__adminWidgets
 

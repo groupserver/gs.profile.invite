@@ -19,7 +19,7 @@ from queries import InvitationQuery
 from utils import set_digest, invite_to_groups, invite_id, \
     send_add_user_notification
 from invitefields import InviteFields
-from audit import Auditor
+from audit import Auditor, INVITE_NEW_USER, INVITE_OLD_USER
 
 class InviteEditProfileForm(PageForm):
     label = u'Invite a New Group Member'
@@ -110,8 +110,6 @@ class InviteEditProfileForm(PageForm):
             user = acl_users.get_userByEmail(email)
             assert user, 'User for address <%s> not found' % email
             userInfo = IGSUserInfo(user)
-            auditor = Auditor(self.siteInfo, self.groupInfo, 
-                self.adminInfo, userInfo)
             u = userInfo_to_anchor(userInfo)
             
             if user_member_of_group(user, self.groupInfo):
@@ -120,9 +118,12 @@ class InviteEditProfileForm(PageForm):
                 self.status = u'%s<li>No changes have been made.</li>' % \
                   self.status
             else:
+                auditor = Auditor(self.siteInfo, self.groupInfo, 
+                    self.adminInfo, userInfo)
                 self.status=u'''<li>Inviting the existing person with the
 email address %s &#8213; %s &#8213; to join %s.</li>'''% (e, u, g)
                 #TODO check: invite_to_groups(userInfo, adminInfo, self.groupInfo)
+                auditor.info(INVITE_OLD_USER, email)
         else:
             # Email address does not exist, but it is a legitimate address
             user = create_user_from_email(self.context, email)
@@ -131,6 +132,7 @@ email address %s &#8213; %s &#8213; to join %s.</li>'''% (e, u, g)
                 self.adminInfo, userInfo)
             self.add_profile_attributes(userInfo, data)
             inviteId = self.create_invitation(userInfo, data)
+            auditor.info(INVITE_OLD_USER, email)
             self.send_notification(userInfo, inviteId)
             
             u = userInfo_to_anchor(userInfo)
