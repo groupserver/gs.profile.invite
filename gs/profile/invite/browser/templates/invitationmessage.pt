@@ -3,19 +3,17 @@
   xmlns:tal="http://xml.zope.org/namespaces/tal"
   xmlns:metal="http://xml.zope.org/namespaces/metal">
   <head>
-    <title metal:fill-slot="title">
-      <span tal:replace="string:${view/label}: ${view/groupInfo/get_name}: ${view/siteInfo/get_name}">
-        Edit Profile
-      </span>
+    <title tal:content="string:${view/label}: ${view/groupInfo/get_name}: ${view/siteInfo/get_name}">
+      Edit Profile
     </title>
   </head>
   <body>
-    <tal:block define="text python:False;
-      to string:mpj17@onlinegroups.net;
-      from string:support@my.cup;
+    <tal:block define="text python:True;
+      toAddr string:mpj17@onlinegroups.net;
+      fromAddr string:support@my.cup;
       subject string:Hi There!;
       body string:zahphood rocks."
-      replace="groupserver.InvitationMessage"/>
+      replace="structure provider:groupserver.InvitationMessage"/>
   </body>
 </html>
 

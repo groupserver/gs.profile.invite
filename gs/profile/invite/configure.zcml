@@ -30,5 +30,20 @@
     class=".error.InvitationAccepted"
     template="browser/templates/invitation_accepted.pt"
     permission="zope2.ManageProperties" />
+
+  <interface 
+    interface=".interfaces.IGSInvitationMessageContentProvider"
+    type="zope.contentprovider.interfaces.ITALNamespaceData"/>
+
+  <adapter
+    factory=".invitationmessagecontentprovider.InvitationMessageContentProvider"
+    provides="zope.contentprovider.interfaces.IContentProvider"
+    name="groupserver.InvitationMessage"/>
+
+  <browser:page
+    for="Products.XWFChat.interfaces.IGSGroupFolder"
+    name="admin_invitation_message_preview.html"
+    class=".invitationmessage.InvitationMessage"
+    permission="zope2.ManageUsers"/>
 </configure>
 

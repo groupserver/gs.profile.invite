@@ -15,8 +15,7 @@ class IGSSetPasswordAdminInvite(Interface):
         u'join the group.',
       required=True)
 
-
-class IGSInvitationMessageContentProvider(Interface):
+class IGSInvitationMessage(Interface):
     text = Bool(title=u'Text',
         description=u'Display the invitation as pure text, rather than '\
             u'a HTML pre-element. Call it command  coupling if you '\
@@ -41,11 +40,11 @@ class IGSInvitationMessageContentProvider(Interface):
     body = Text(title=u'Body',
         description=u'The body of the invitation.',
         required=True)
-        
+
+class IGSInvitationMessageContentProvider(IGSInvitationMessage):
     pageTemplateFileName = Text(title=u"Page Template File Name",
       description=u'The name of the ZPT file that is used to render the '\
         u'status message.',
       required=False,
-      default=u"browser/templates/invitationmessagaecontentprovider.pt")
-
+      default=u"browser/templates/invitationmessagecontentprovider.pt")
 

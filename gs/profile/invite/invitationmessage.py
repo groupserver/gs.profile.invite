@@ -2,12 +2,14 @@
 from zope.component import createObject
 from zope.formlib import form
 from Products.Five.formlib.formbase import PageForm
+from Products.Five.browser.pagetemplatefile import ZopeTwoPageTemplateFile
+from interfaces import IGSInvitationMessage
 
 class InvitationMessage(PageForm):
     label = u'Invite a New Group Member'
-    pageTemplateFileName = 'browser/templates/invitation_message.pt'
+    pageTemplateFileName = 'browser/templates/invitationmessage.pt'
     template = ZopeTwoPageTemplateFile(pageTemplateFileName)
-    self.form_fields = form.Fields(IGSInvitationMessage, render_context=False)
+    form_fields = form.Fields(IGSInvitationMessage, render_context=False)
     
     def __init__(self, context, request):
         PageForm.__init__(self, context, request)
@@ -16,7 +18,6 @@ class InvitationMessage(PageForm):
           createObject('groupserver.SiteInfo', context)
         self.__groupInfo = self.__formFields =  self.__config = None
         self.__adminInfo = self.__invitationQuery = None
-        self.inviteFields = InviteFields(context)
         
     @form.action(label=u'Invite', failure='handle_invite_action_failure')
     def handle_invite(self, action, data):

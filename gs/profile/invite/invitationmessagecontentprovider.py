@@ -1,8 +1,7 @@
 # coding=utf-8
 from zope.component import createObject, provideAdapter, adapts
 from zope.pagetemplate.pagetemplatefile import PageTemplateFile
-from zope.contentprovider.interfaces import IContentProvider, \
-  UpdateNotCalled
+from zope.contentprovider.interfaces import UpdateNotCalled
 from zope.interface import Interface, implements
 from zope.publisher.interfaces.browser import IDefaultBrowserLayer
 from interfaces import IGSInvitationMessageContentProvider
@@ -45,8 +44,4 @@ class InvitationMessageContentProvider(object):
     #########################################
     # Non standard methods below this point #
     #########################################
-    
-provideAdapter(InvitationMessageContentProvider,
-               provides=IContentProvider,
-               name="groupserver.InvitationMessage")
 

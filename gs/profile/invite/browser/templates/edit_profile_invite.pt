@@ -87,7 +87,7 @@
         jQuery.noConflict()
         
         var popupPreview = function (event) {
-            var uri = '/new-not-found.html';
+            var uri = 'admin_invitation_message_preview.html';
             var specs = 'height=360,width=620,menubar=no,status=no,tolbar=no';
             window.open(uri, 'Message Preview', specs)
         }
