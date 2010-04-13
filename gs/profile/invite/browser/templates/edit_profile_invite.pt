@@ -40,12 +40,15 @@
           <span class="group" 
             tal:content="python:view.groupInfo.name">this group</span>.
         </p>
-        <div id="invitationRelatedFields">        
+        <div id="invitationRelatedFields">
+          <p><strong>To:</strong></p>
+          <p><strong>From:</strong></p>
           <tal:block define="widgets view/adminWidgets">
             <tal:block
               replace="structure provider:groupserver.FormWidgets"/>
           </tal:block>
         </div><!--invitationFields-->
+        <p id="preview">Preview</p>
         <div id="standardProfileFields">
           <h2>Standard Profile Information</h2>
           <p>The following fields are the standard profile fields on
@@ -82,8 +85,16 @@
         src="/++resource++popup_help-20071218.js">&#160;</script>
       <script type="text/javascript">
         jQuery.noConflict()
+        
+        var popupPreview = function (event) {
+            var uri = '/new-not-found.html';
+            var specs = 'height=360,width=620,menubar=no,status=no,tolbar=no';
+            window.open(uri, 'Message Preview', specs)
+        }
+        
         jQuery(document).ready( function () {
             GSPopupFormHelp.init('#edit-profile');
+            jQuery('#preview').click(popupPreview);
         });
       </script>
       <script type="text/javascript" 

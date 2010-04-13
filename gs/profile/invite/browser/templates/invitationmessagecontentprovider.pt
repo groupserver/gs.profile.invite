@@ -1,0 +1,9 @@
+<pre xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  tal:omit-tag="view/text"><strong tal:omit-tag="view/text">To: </strong> <em tal:omit-tag="view/text">user@domain</em>
+<strong tal:omit-tag="view/text">From:</strong> <em tal:omit-tag="view/text">user@domain</em>
+<strong tal:omit-tag="view/text">Subject:</strong> <em tal:omit-tag="view/text">The Subject</em>
+
+<em tal:omit-tag="view/text">Message body goes here</em>
+</pre>
+

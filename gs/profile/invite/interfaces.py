@@ -15,3 +15,37 @@ class IGSSetPasswordAdminInvite(Interface):
         u'join the group.',
       required=True)
 
+
+class IGSInvitationMessageContentProvider(Interface):
+    text = Bool(title=u'Text',
+        description=u'Display the invitation as pure text, rather than '\
+            u'a HTML pre-element. Call it command  coupling if you '\
+            u'want, it is how the code works.',
+        required=False,
+        default=False)
+
+    toAddr = ASCIILine(title=u'To', 
+        description=u'The email address of the person receiving the '\
+            u'invitation.',
+        required=True)
+
+    fromAddr = ASCIILine(title=u'To', 
+        description=u'The email address of the person sending the '\
+            u'invitation.',
+        required=True)
+
+    subject = TextLine(title=u'Subject',
+        description=u'The subject-line of the invitation.',
+        required=True)
+
+    body = Text(title=u'Body',
+        description=u'The body of the invitation.',
+        required=True)
+        
+    pageTemplateFileName = Text(title=u"Page Template File Name",
+      description=u'The name of the ZPT file that is used to render the '\
+        u'status message.',
+      required=False,
+      default=u"browser/templates/invitationmessagaecontentprovider.pt")
+
+
