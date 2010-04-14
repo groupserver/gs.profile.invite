@@ -6,13 +6,38 @@
     <title tal:content="string:${view/label}: ${view/groupInfo/get_name}: ${view/siteInfo/get_name}">
       Edit Profile
     </title>
+    <style type="text/css">
+      * {
+        font-family: monospace;
+        font-size: 13px;
+        line-height: 1.39em;
+      }
+      body {
+        margin: 1.39em;
+      }
+      p {
+        font-family: sans-serif;
+        font-size: 12px;
+        padding: 1.39em;
+        background-color: #cccccc;
+      }
+      #close {
+        font-weight: bold;
+        text-decoration: none;
+        padding-left: 1.39em;
+      }
+    </style>
   </head>
   <body>
-    <tal:block define="text python:True;
-      toAddr string:mpj17@onlinegroups.net;
-      fromAddr string:support@my.cup;
-      subject string:Hi There!;
-      body string:zahphood rocks."
+    <p>
+      Message Preview
+      <a href="javascript:self.close()" id="close">Close</a>
+    </p>
+    <tal:block define="text python:False;
+      fromAddr view/request/form.fromAddr;
+      toAddr view/request/form.toAddr;
+      subject view/request/form.subject;
+      body view/body"
       replace="structure provider:groupserver.InvitationMessage"/>
   </body>
 </html>

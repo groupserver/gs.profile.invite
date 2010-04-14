@@ -34,12 +34,9 @@ class InviteFields(object):
         if self.__adminWidgets == None:
             assert widgets
             sfIds = self.profileFieldIds
-            adminWidgetIds = \
-                ['form.%s' % f[0] 
-                    for f in getFieldsInOrder(self.adminInterface)
-                    if f[0] not in sfIds]
-            self.__adminWidgets = [w for w in widgets
-                                    if w.name in adminWidgetIds]
+            adminWidgetIds = ['fromAddr', 'toAddr', 'subject', 
+                'message', 'delivery']
+            self.__adminWidgets = [widgets[w] for w in adminWidgetIds]
         assert self.__adminWidgets
         return self.__adminWidgets
 

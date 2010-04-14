@@ -48,9 +48,22 @@ class InviteEditProfileForm(PageForm):
         return self.__formFields
         
     def setUpWidgets(self, ignore_request=False):
+        data = {}
+
         siteTz = self.siteInfo.get_property('tz', 'UTC')
         defaultTz = self.groupInfo.get_property('tz', siteTz)
-        data = {'tz': defaultTz}
+        data['tz'] = defaultTz
+
+        subject = u'An Invitation to Join %s' % self.groupInfo.name
+        data['subject'] = subject
+        
+        message = u'''Hi there!
+
+Please accept this invitation to join %s. I have set up a profile for
+you, so you can start participating in the group as soon as you accept
+this invitation.''' % self.groupInfo.name
+        data['message'] = message
+        
         self.widgets = form.setUpWidgets(
             self.form_fields, self.prefix, self.context,
             self.request, form=self, data=data,

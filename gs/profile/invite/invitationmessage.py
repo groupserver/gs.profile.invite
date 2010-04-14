@@ -1,4 +1,5 @@
 # coding=utf-8
+from textwrap import wrap
 from zope.component import createObject
 from zope.formlib import form
 from Products.Five.formlib.formbase import PageForm
@@ -6,7 +7,7 @@ from Products.Five.browser.pagetemplatefile import ZopeTwoPageTemplateFile
 from interfaces import IGSInvitationMessage
 
 class InvitationMessage(PageForm):
-    label = u'Invite a New Group Member'
+    label = u'Invitation Preview'
     pageTemplateFileName = 'browser/templates/invitationmessage.pt'
     template = ZopeTwoPageTemplateFile(pageTemplateFileName)
     form_fields = form.Fields(IGSInvitationMessage, render_context=False)
@@ -18,7 +19,7 @@ class InvitationMessage(PageForm):
           createObject('groupserver.SiteInfo', context)
         self.__groupInfo = self.__formFields =  self.__config = None
         self.__adminInfo = self.__invitationQuery = None
-        
+                
     @form.action(label=u'Invite', failure='handle_invite_action_failure')
     def handle_invite(self, action, data):
         raise NotImplemented
@@ -36,4 +37,8 @@ class InvitationMessage(PageForm):
             self.__groupInfo = \
                 createObject('groupserver.GroupInfo', self.context)
         return self.__groupInfo
+
+    @property
+    def body(self):
+        return self.request.form['form.body']
 

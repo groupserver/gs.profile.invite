@@ -1,10 +1,10 @@
 <pre xmlns="http://www.w3.org/1999/xhtml"
   xmlns:tal="http://xml.zope.org/namespaces/tal"
   tal:define="view options/view"
-  tal:omit-tag="view/text"><strong tal:omit-tag="view/text">To: </strong> <em tal:omit-tag="view/text" tal:content="view/toAddr">user@domain</em>
-<strong tal:omit-tag="view/text">From:</strong> <em tal:omit-tag="view/text" tal:content="view/fromAddr">user@domain</em>
-<strong tal:omit-tag="view/text">Subject:</strong> <em tal:omit-tag="view/text" tal:content="view/subject">The Subject</em>
+  tal:omit-tag="view/text"><strong class="name" tal:omit-tag="view/text">From:</strong> <span tal:omit-tag="view/text" tal:content="view/fromAddr">user@domain</span>
+<strong class="name" tal:omit-tag="view/text">To:</strong> <span tal:omit-tag="view/text" tal:content="view/toAddr">user@domain</span>
+<strong class="name" tal:omit-tag="view/text">Subject:</strong> <span tal:omit-tag="view/text" tal:content="view/subject">The Subject</span>
 
-<em tal:omit-tag="view/text" tal:content="view/body">Message body goes here</em>
+<span id="body" tal:omit-tag="view/text" tal:content="view/body">Message body goes here</span>
 </pre>
 
