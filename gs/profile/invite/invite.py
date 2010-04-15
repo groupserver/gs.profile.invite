@@ -21,6 +21,7 @@ from utils import set_digest, invite_to_groups, invite_id, \
     send_add_user_notification
 from invitefields import InviteFields
 from audit import Auditor, INVITE_NEW_USER, INVITE_OLD_USER
+from createinvitation import create_invitation
 
 class InviteEditProfileForm(PageForm):
     label = u'Invite a New Group Member'
@@ -111,18 +112,18 @@ this invitation.''' % self.groupInfo.name
         
     def actual_handle_add(self, action, data):
         acl_users = self.context.acl_users
-        email = data['email'].strip()
+        toAddr = data['toAddr'].strip()
         
         emailChecker = NewEmailAddress(title=u'Email')
         emailChecker.context = self.context
-        e = u'<code class="email">%s</code>' % email
+        e = u'<code class="email">%s</code>' % toAddr
         g = groupInfo_to_anchor(self.groupInfo)
         
         try:
-            emailChecker.validate(email)
+            emailChecker.validate(toAddr)
         except EmailAddressExists, e:
-            user = acl_users.get_userByEmail(email)
-            assert user, 'User for address <%s> not found' % email
+            user = acl_users.get_userByEmail(toAddr)
+            assert user, 'User for address <%s> not found' % toAddr
             userInfo = IGSUserInfo(user)
             u = userInfo_to_anchor(userInfo)
             
@@ -137,17 +138,17 @@ this invitation.''' % self.groupInfo.name
                 self.status=u'''<li>Inviting the existing person with the
 email address %s &#8213; %s &#8213; to join %s.</li>'''% (e, u, g)
                 #TODO check: invite_to_groups(userInfo, adminInfo, self.groupInfo)
-                auditor.info(INVITE_OLD_USER, email)
+                auditor.info(INVITE_OLD_USER, toAddr)
         else:
             # Email address does not exist, but it is a legitimate address
-            user = create_user_from_email(self.context, email)
+            user = create_user_from_email(self.context, toAddr)
             userInfo = IGSUserInfo(user)
             self.add_profile_attributes(userInfo, data)
             inviteId = self.create_invitation(userInfo, data)
             auditor = Auditor(self.siteInfo, self.groupInfo, 
                 self.adminInfo, userInfo)
-            auditor.info(INVITE_NEW_USER, email)
-            self.send_notification(userInfo, inviteId)
+            auditor.info(INVITE_NEW_USER, toAddr)
+            self.send_notification(userInfo, inviteId, data)
             
             u = userInfo_to_anchor(userInfo)
             self.status = u'''<li>A profile for %s has been created, and
@@ -171,16 +172,17 @@ given the email address %s.</li>\n''' % (u, e)
 
     # TODO: The following two methods need to be shared with the CSV code
     def create_invitation(self, userInfo, data):
-        miscStr = reduce(concat, [str(i) for i in data.values()], '')
+        miscStr = reduce(concat, [unicode(i).encode('ascii', 'xmlcharrefreplace') 
+                                    for i in data.values()], '')
         inviteId = invite_id(self.siteInfo.id, self.groupInfo.id, 
             self.adminInfo.id, miscStr)
         self.invitationQuery.add_invitation(inviteId, self.siteInfo.id,
             self.groupInfo.id, userInfo.id, self.adminInfo.id, True)
         return inviteId
         
-    def send_notification(self, userInfo, inviteId):
+    def send_notification(self, userInfo, inviteId, data):
+        create_invitation(self, userInfo, inviteId, data)
         # TODO: Fix
-        pass
         #send_add_user_notification(userInfo.user, self.adminInfo.user, self.groupInfo, 
         #                            data.get('message', ''))
 

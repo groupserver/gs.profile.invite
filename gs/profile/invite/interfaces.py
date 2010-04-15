@@ -23,6 +23,11 @@ class IGSInvitationMessage(Interface):
         required=False,
         default=False)
 
+    preview = Bool(title=u'Preview',
+          description=u'True if the message is a preview.',
+          required=False,
+          default=False)
+
     toAddr = ASCIILine(title=u'To', 
         description=u'The email address of the person receiving the '\
             u'invitation.',
@@ -33,6 +38,10 @@ class IGSInvitationMessage(Interface):
             u'invitation.',
         required=True)
 
+    supportAddr = ASCIILine(title=u'Support', 
+        description=u'The email address of the support-group.',
+        required=True)
+
     subject = TextLine(title=u'Subject',
         description=u'The subject-line of the invitation.',
         required=True)
@@ -40,11 +49,17 @@ class IGSInvitationMessage(Interface):
     body = Text(title=u'Body',
         description=u'The body of the invitation.',
         required=True)
+    
+    invitationId = ASCIILine(title=u'Invitation Identifier',
+        description=u'The identifier for the invitation to join the '\
+            u'group',
+        required=False,
+        default='################')
 
 class IGSInvitationMessageContentProvider(IGSInvitationMessage):
     pageTemplateFileName = Text(title=u"Page Template File Name",
-      description=u'The name of the ZPT file that is used to render the '\
-        u'status message.',
-      required=False,
-      default=u"browser/templates/invitationmessagecontentprovider.pt")
+          description=u'The name of the ZPT file that is used to '\
+            u'render the status message.',
+          required=False,
+          default=u"browser/templates/invitationmessagecontentprovider.pt")
 

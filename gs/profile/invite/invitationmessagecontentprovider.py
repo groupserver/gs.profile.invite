@@ -29,8 +29,6 @@ class InvitationMessageContentProvider(object):
           self.context)
         self.groupInfo = createObject('groupserver.GroupInfo', 
           self.context)
-        self.groupsInfo = createObject('groupserver.GroupsInfo', 
-          self.context)
         self.userInfo = createObject('groupserver.LoggedInUser', 
           self.context)
 

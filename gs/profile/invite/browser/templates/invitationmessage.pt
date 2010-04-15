@@ -1,44 +1,12 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<html xmlns="http://www.w3.org/1999/xhtml"
-  xmlns:tal="http://xml.zope.org/namespaces/tal"
-  xmlns:metal="http://xml.zope.org/namespaces/metal">
-  <head>
-    <title tal:content="string:${view/label}: ${view/groupInfo/get_name}: ${view/siteInfo/get_name}">
-      Edit Profile
-    </title>
-    <style type="text/css">
-      * {
-        font-family: monospace;
-        font-size: 13px;
-        line-height: 1.39em;
-      }
-      body {
-        margin: 1.39em;
-      }
-      p {
-        font-family: sans-serif;
-        font-size: 12px;
-        padding: 1.39em;
-        background-color: #cccccc;
-      }
-      #close {
-        font-weight: bold;
-        text-decoration: none;
-        padding-left: 1.39em;
-      }
-    </style>
-  </head>
-  <body>
-    <p>
-      Message Preview
-      <a href="javascript:self.close()" id="close">Close</a>
-    </p>
-    <tal:block define="text python:False;
-      fromAddr view/request/form.fromAddr;
-      toAddr view/request/form.toAddr;
-      subject view/request/form.subject;
-      body view/body"
-      replace="structure provider:groupserver.InvitationMessage"/>
-  </body>
-</html>
+<div xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:tal="http://xml.zope.org/namespaces/tal" 
+  tal:define="text python:False;
+    preview python:True;
+    fromAddr view/request/form.fromAddr;
+    toAddr view/request/form.toAddr;
+    supportAddr view/support;
+    subject view/request/form.subject;
+    body view/body;"
+  tal:replace="structure provider:groupserver.InvitationMessage"/>
 

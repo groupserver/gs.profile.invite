@@ -1,9 +1,9 @@
 # coding=utf-8
-from textwrap import wrap
 from zope.component import createObject
 from zope.formlib import form
 from Products.Five.formlib.formbase import PageForm
 from Products.Five.browser.pagetemplatefile import ZopeTwoPageTemplateFile
+from Products.XWFCore.XWFUtils import get_support_email
 from interfaces import IGSInvitationMessage
 
 class InvitationMessage(PageForm):
@@ -40,5 +40,9 @@ class InvitationMessage(PageForm):
 
     @property
     def body(self):
-        return self.request.form['form.body']
+        return self.request.form['form.body'].replace('\n', '<br/>')
+
+    @property
+    def support(self):
+        return get_support_email(self.context, self.siteInfo.id)
 

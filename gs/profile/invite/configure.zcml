@@ -34,7 +34,6 @@
   <interface 
     interface=".interfaces.IGSInvitationMessageContentProvider"
     type="zope.contentprovider.interfaces.ITALNamespaceData"/>
-
   <adapter
     factory=".invitationmessagecontentprovider.InvitationMessageContentProvider"
     provides="zope.contentprovider.interfaces.IContentProvider"
