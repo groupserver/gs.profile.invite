@@ -31,20 +31,20 @@ class IGSInvitationMessage(Interface):
     toAddr = ASCIILine(title=u'To', 
         description=u'The email address of the person receiving the '\
             u'invitation.',
-        required=True)
+        required=False)
 
     fromAddr = ASCIILine(title=u'To', 
         description=u'The email address of the person sending the '\
             u'invitation.',
-        required=True)
+        required=False)
 
     supportAddr = ASCIILine(title=u'Support', 
         description=u'The email address of the support-group.',
-        required=True)
+        required=False)
 
     subject = TextLine(title=u'Subject',
         description=u'The subject-line of the invitation.',
-        required=True)
+        required=False)
 
     body = Text(title=u'Body',
         description=u'The body of the invitation.',

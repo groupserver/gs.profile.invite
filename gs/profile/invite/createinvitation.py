@@ -1,56 +1,70 @@
 # coding=utf-8
-'''The form that allows an admin to invite a new person to join a group.'''
-from textwrap import wrap
-from operator import concat
 from email.Message import Message
 from email.Header import Header
 from email.MIMEText import MIMEText
 from email.MIMEMultipart import MIMEMultipart
-from zope.contentprovider.tales import addTALNamespaceData
-from Products.XWFCore.XWFUtils import get_support_email
-from invitationmessagecontentprovider import InvitationMessageContentProvider
 
 utf8 = 'utf-8'
-def create_invitation(view, userInfo, inviteId, data):
-    cp = InvitationMessageContentProvider(view.context, view.request, view)
-    view.vars = {}
-    addTALNamespaceData(cp, view.context)
+def create_invitation_message(fromAddr, toAddr, supportAddr, subject, message, inviteId, contentProvider):
+    '''Construct the MIME message that contains the invitation.
     
-    cp.preview = False
-
-    toAddr = u'"%s" <%s>' % (userInfo.name, data['toAddr'].strip())
-    cp.toAddr = str(Header(toAddr, utf8))
+    ARGUMENTS
+    ---------
     
-    fromAddr = u'"%s" <%s>' % (view.adminInfo.name, data['fromAddr'].strip())
-    cp.fromAddr = str(Header(fromAddr, utf8))
+    ``fromAddr``
+        The Addressee from which the message is sent.
+        
+    ``toAddr``
+        The Addressee to which the message is sent.
+        
+    ``supportAddr``
+        The Addressee for the support-address of the site.
+        
+    ``subject``
+        The subject of the invitation (Unicode)
+        
+    ``message``
+        The message (Unicode).
+        
+    ``contentProvider``
+        The content provider used to format the message
+        
+    RETURNS
+    -------
     
-    subject = str(Header(data['subject'], utf8))
-    cp.subject = subject
+    A string (str) containing the entire message, MIME-encoded in both 
+    ``text/plain`` and ``text/html`` formats.
     
-    cp.body = data['message']
-    cp.invitationId = inviteId
-
-    cp.text = True
-    cp.update()
-    t = cp.render().strip()
-    text = MIMEText(t, 'plain', utf8)
+    SIDE EFFECTS
+    ------------
     
-    cp.text = False
-    cp.body = data['message'].strip().replace('\n', '<br/>')
-    h = cp.render()
-    html = MIMEText(h, 'html', utf8)
+    None.'''
     
     container = MIMEMultipart('alternative')
-    container.attach(text)
-    container.attach(html)
+    container['Subject'] = str(Header(subject, utf8))
+    container['From'] = str(fromAddr)
+    container['To'] = str(toAddr)
+    print str(toAddr)
+    container['Reply-to'] = str(supportAddr)
+    
+    contentProvider.preview = False
+    contentProvider.body = message
+    contentProvider.invitationId = inviteId
 
-    msg = Message()
-    msg['Subject'] = cp.subject
-    msg['From'] = cp.fromAddr
-    msg['To'] = cp.toAddr
-    e = get_support_email(view.context, view.siteInfo.id)
-    replyToAddr = u'"%s Support" <%s>' % (view.siteInfo.name, e)
-    msg['Reply-to'] = str(Header(replyToAddr, utf8))
-    msg.set_payload(container.as_string())
-    print msg.as_string()
+    contentProvider.text = True
+    contentProvider.update()
+    t = contentProvider.render()
+    text = MIMEText(t.strip().encode(utf8), 'plain', utf8)
+    container.attach(text)
+    
+    contentProvider.text = False
+    contentProvider.body = message.strip().replace('\n', '<br/>')
+    h = contentProvider.render()
+    html = MIMEText(h.encode(utf8), 'html', utf8)    
+    container.attach(html)
+    
+    retval = container.as_string()
+    assert retval
+    assert type(retval) == str
+    return retval
 

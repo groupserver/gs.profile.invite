@@ -3,6 +3,7 @@
 from operator import concat
 from zope.component import createObject
 from zope.formlib import form
+from zope.contentprovider.tales import addTALNamespaceData
 from Products.Five.formlib.formbase import PageForm
 from Products.Five.browser.pagetemplatefile import ZopeTwoPageTemplateFile
 from Products.CustomUserFolder.interfaces import IGSUserInfo
@@ -16,12 +17,15 @@ from Products.GSProfile.utils import create_user_from_email, \
 from Products.GSProfile.emailaddress import NewEmailAddress, \
     EmailAddressExists
 from Products.GSGroup.changebasicprivacy import radio_widget
+from gs.profile.notify.interfaces import IGSNotifyUser
+from gs.profile.notify.adressee import Addressee, SupportAddressee
 from queries import InvitationQuery
 from utils import set_digest, invite_to_groups, invite_id, \
     send_add_user_notification
 from invitefields import InviteFields
 from audit import Auditor, INVITE_NEW_USER, INVITE_OLD_USER
-from createinvitation import create_invitation
+from invitationmessagecontentprovider import InvitationMessageContentProvider
+from createinvitation import create_invitation_message
 
 class InviteEditProfileForm(PageForm):
     label = u'Invite a New Group Member'
@@ -181,8 +185,14 @@ given the email address %s.</li>\n''' % (u, e)
         return inviteId
         
     def send_notification(self, userInfo, inviteId, data):
-        create_invitation(self, userInfo, inviteId, data)
-        # TODO: Fix
-        #send_add_user_notification(userInfo.user, self.adminInfo.user, self.groupInfo, 
-        #                            data.get('message', ''))
+        mfrom = data['fromAddr'].strip()
+        mto = data['toAddr'].strip()
+        cp = InvitationMessageContentProvider(self.context, self.request, self)
+        self.vars = {} # --=mpj17=-- Ask me no questions\ldots
+        addTALNamespaceData(cp, self.context) # I tell you no lies.
+        msg = create_invitation_message(Addressee(self.adminInfo, mfrom), 
+            Addressee(userInfo, mto), SupportAddressee(self.context, self.siteInfo), 
+            data['subject'], data['message'], inviteId, cp)
+        notifiedUser = IGSNotifyUser(userInfo)
+        notifiedUser.send_message(msg, mto, mfrom)
 

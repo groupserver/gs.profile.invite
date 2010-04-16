@@ -72,7 +72,7 @@ class InviteNewUserEvent(BasicAuditEvent):
           self.instanceDatum,
           self.groupInfo.name, self.groupInfo.id,
           self.siteInfo.name, self.siteInfo.id)
-        return retval
+        return retval.encode('ascii', 'ignore')
 
     @property
     def xhtml(self):
@@ -111,7 +111,7 @@ class InviteOldUserEvent(BasicAuditEvent):
           self.instanceDatum,
           self.groupInfo.name, self.groupInfo.id,
           self.siteInfo.name, self.siteInfo.id)
-        return retval
+        return retval.encode('ascii', 'ignore')
 
     @property
     def xhtml(self):
