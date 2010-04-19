@@ -1,0 +1,128 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  metal:use-macro="context/@@groupserver_layout/page">
+  <head>
+    <title metal:fill-slot="title">
+      <span tal:replace="Respond to Invitation: ${view/groupInfo/get_name}: ${view/siteInfo/get_name}">
+        Edit Profile
+      </span>
+    </title>
+  </head>
+  <body>
+    <div metal:fill-slot="messages" tal:condition="view/status" 
+      class="message-error"
+      tal:define="e view/errors"
+      tal:attributes="class python:e and 'message-error' or 'message-result'">
+      <p class="form-status" tal:content="structure view/status"/>
+      <dl tal:condition="view/errors">
+        <tal:block repeat="widget view/widgets">
+          <tal:block tal:condition="widget/error">
+            <dt tal:content="widget/label">Widget Name</dt>
+            <dd class="error" 
+              tal:content="structure widget/error">Error message</dd>
+          </tal:block>
+        </tal:block>
+      </dl>
+    </div>
+    <tal:block metal:fill-slot="body">
+      <h1>Respond to the Invitation</h1>
+      
+      <p id="greeting">
+        Hi, <span class="fn">new user</span>!
+        <span class="fn">An administrator</span> has invited you to join
+        <strong class="group">this group</strong>.
+      </p><!--greeting-->
+      <p id="accept">
+        To <strong>accept</strong> the invitation
+        click the
+        <samp class="button"
+          tal:define="action python:[a for a in view.actions][0].label"
+          tal:content="action">Big R</samp>
+        button and then <strong>set a password.</strong>
+        That is it!
+        After that you will be able to participate in 
+        <span class="group">this group</span>.
+      </p><!--accept-->
+      <p id="decline">
+        To <strong>decline</strong> the invitation, select 
+        <samp class="option">Decline</samp>
+        and click the 
+          <samp class="button"
+            tal:define="action python:[a for a in view.actions][0].label"
+            tal:content="action">Big R</samp>
+        button.
+        After that we will bother you no more.
+      </p><!--decline-->
+      <form enctype="multipart/form-data"  method="post" action="."
+        tal:attributes="action request/URL" id="respond">
+        <tal:block define="widgets view/widgets">
+          <tal:block 
+            replace="structure provider:groupserver.FormWidgets">
+            Widgets and some such&#8230;
+          </tal:block>
+        </tal:block>
+        <div class="buttons" tal:condition="view/availableActions">
+          <tal:block repeat="action view/actions">
+            <div class="formelementbutton">
+              <span tal:replace="structure action/render">Button</span>
+            </div>
+          </tal:block>
+        </div><!--buttons-->
+      </form>
+      <div id="about-the-admin">
+        <div>
+          <p>A photo or some such</p>
+        </div>
+        <h2>About <span class="fn">The Administrator</h2>
+        <p>
+          <span class="fn">The administrator</span> 
+          is the administrator of
+          <span class="group">The group</span>.
+          The main role of an administrator is to manage the members of
+          a group.
+        <p>
+        <tal:block condition="adminInfo/property/biography">
+          <p>
+            The biography that 
+            <span class="fn">The administrator</span> wrote 
+            is below. 
+            (You can write your own biography once you accept the 
+            inviation!)</p>
+          </p>
+          <blockquote 
+            tal:content="structure adminInfo/property/biography">
+            Wow, I actually used a <code>blockquote</code> element!
+          </blockquote>
+        </tal:block>
+      </div><!--about-the-admin-->
+      <div id="about-the-group">
+        <h2>About <span class="group">The Group</span></h2>
+        <p id="about">
+          <span id="group-purpose"><span class="group">The group</span> 
+            is an online group for
+            <span id="real-life-group">real people doing real 
+              things</span>.</span><!--group-purpose-->
+          <span id="group-privacy">It is a 
+            <strong class="privacy">public, private or secret</strong>
+            group, which means 
+            <span class="explanation">something to someone</span>.
+          </span><!--group-privacy-->
+          <span id="group-membership">There are 
+            <span class="membership">a few</span> members in
+            <span class="group">the group</span>.
+          </span><!--group-membership-->
+        </p>
+        <p id="aup">
+          By signing up with <span class="site">this site</span>, you
+          agree to the acceptable use policy.
+        </p>
+        <p id="privacy">Your privacy is important, and will be 
+          maintained according to the privacy policy of
+          <span class="site">this site</span>.
+        </p>
+      </div><!--about-the-group-->
+    </tal:block>
+  </body>
+</html>
+
