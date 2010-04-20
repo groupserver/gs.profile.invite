@@ -4,9 +4,9 @@
   metal:use-macro="context/@@groupserver_layout/page">
   <head>
     <title metal:fill-slot="title">
-      <span tal:replace="Respond to Invitation: ${view/groupInfo/get_name}: ${view/siteInfo/get_name}">
-        Edit Profile
-      </span>
+      <tal:block replace="Respond to Your Invitation: ${view/groupInfo/name}: ${view/siteInfo/name}">
+        Respond to Your Invitation
+      </tal:block>
     </title>
   </head>
   <body>
@@ -26,12 +26,16 @@
       </dl>
     </div>
     <tal:block metal:fill-slot="body">
-      <h1>Respond to the Invitation</h1>
+      <h1>Respond to Your Invitation</h1>
       
       <p id="greeting">
-        Hi, <span class="fn">new user</span>!
-        <span class="fn">An administrator</span> has invited you to join
-        <strong class="group">this group</strong>.
+        Hi, <span class="fn" 
+          tal:content="view/userInfo/name">new user</span>!
+        <span class="fn"
+          tal:content="view/adminInfo/name">An administrator</span> 
+        has invited you to join
+        <strong class="group"
+          tal:content="view/groupInfo/name">this group</strong>.
       </p><!--greeting-->
       <p id="accept">
         To <strong>accept</strong> the invitation
@@ -42,7 +46,8 @@
         button and then <strong>set a password.</strong>
         That is it!
         After that you will be able to participate in 
-        <span class="group">this group</span>.
+        <span class="group"
+          tal:content="view/groupInfo/name">this group</span>.
       </p><!--accept-->
       <p id="decline">
         To <strong>decline</strong> the invitation, select 
@@ -71,47 +76,68 @@
         </div><!--buttons-->
       </form>
       <div id="about-the-admin">
-        <div>
-          <p>A photo or some such</p>
+        <div tal:define="user view/adminInfo/user"
+          tal:replace="structure provider:groupserver.UserImage">
+          A photo or some such&#8230;
         </div>
         <h2>About <span class="fn">The Administrator</h2>
         <p>
           <span class="fn">The administrator</span> 
           is the administrator of
-          <span class="group">The group</span>.
+          <span class="group">the group</span>.
           The main role of an administrator is to manage the members of
           a group.
         <p>
-        <tal:block condition="adminInfo/property/biography">
+        <tal:block condition="view/adminInfo/property/biography">
           <p>
-            The biography that 
-            <span class="fn">The administrator</span> wrote 
-            is below. 
+            The biography of 
+            <span class="fn">the administrator</span> is below. 
             (You can write your own biography once you accept the 
             inviation!)</p>
           </p>
           <blockquote 
-            tal:content="structure adminInfo/property/biography">
+            tal:content="structure view/adminInfo/property/biography">
             Wow, I actually used a <code>blockquote</code> element!
           </blockquote>
         </tal:block>
       </div><!--about-the-admin-->
       <div id="about-the-group">
-        <h2>About <span class="group">The Group</span></h2>
+        <h2>About 
+          <span class="group" 
+            tal:content="view/groupInfo/name">The Group</span></h2>
         <p id="about">
-          <span id="group-purpose"><span class="group">The group</span> 
+          <span id="group-purpose">
+            <span class="group"
+              tal:content="view/groupInfo/name">The group</span> 
             is an online group for
-            <span id="real-life-group">real people doing real 
-              things</span>.</span><!--group-purpose-->
+            <span id="real-life-group"
+              tal:content="view/groupInfo/property/real_life_group">real
+              people doing real things</span>.</span><!--group-purpose-->
           <span id="group-privacy">It is a 
-            <strong class="privacy">public, private or secret</strong>
+            <strong class="privacy"
+              tal:content="view/groupPrivacy/summary">public, private or
+                secret</strong>
             group, which means 
-            <span class="explanation">something to someone</span>.
+            <span class="explanation"
+              tal:content="view/groupPrivacy/summary">something to 
+                someone</span>.
           </span><!--group-privacy-->
           <span id="group-membership">There are 
-            <span class="membership">a few</span> members in
-            <span class="group">the group</span>.
-          </span><!--group-membership-->
+            <span class="val"
+              tal:conent="view/groupStats/members">a few</span> members
+              in
+              <span class="group">the group</span>.</span><!--group-membership-->
+          <span id="group-posting" 
+            tal:condition="view/groupStats/postsExist">
+            They post
+            <span class="val" id="min-posts"
+              tal:conent="view/groupStats/minPerDay">some</span>&#8211;<span class="val" id="max-posts"
+              tal:conent="view/groupStats/maxPerDay">a few</span> 
+            posts per day, 
+            normally around 
+            <span class="val" id="min-posts"
+              tal:conent="view/groupStats/avgInt">some</span> posts.
+          </span><!--group-posting-->
         </p>
         <p id="aup">
           By signing up with <span class="site">this site</span>, you
