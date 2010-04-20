@@ -29,36 +29,40 @@
       <h1>Respond to Your Invitation</h1>
       
       <p id="greeting">
-        Hi, <span class="fn" 
-          tal:content="view/userInfo/name">new user</span>!
+        <strong>Hi, <span class="fn" 
+          tal:content="view/userInfo/name">new user</span>!</strong>
+      </p><!--greeting-->
+      <p id="reason">
         <span class="fn"
           tal:content="view/adminInfo/name">An administrator</span> 
         has invited you to join
         <strong class="group"
           tal:content="view/groupInfo/name">this group</strong>.
-      </p><!--greeting-->
-      <p id="accept">
-        To <strong>accept</strong> the invitation
-        click the
-        <samp class="button"
-          tal:define="action python:[a for a in view.actions][0].label"
-          tal:content="action">Big R</samp>
-        button and then <strong>set a password.</strong>
-        That is it!
-        After that you will be able to participate in 
-        <span class="group"
-          tal:content="view/groupInfo/name">this group</span>.
-      </p><!--accept-->
-      <p id="decline">
-        To <strong>decline</strong> the invitation, select 
-        <samp class="option">Decline</samp>
-        and click the 
+      </p><!--reason-->
+      <ul>
+        <li id="accept">
+          To <strong>accept</strong> the invitation
+          click the
           <samp class="button"
             tal:define="action python:[a for a in view.actions][0].label"
             tal:content="action">Big R</samp>
-        button.
-        After that we will bother you no more.
-      </p><!--decline-->
+          button and then <strong>set a password.</strong>
+          That is it!
+          After that you will be able to participate in 
+          <span class="group"
+            tal:content="view/groupInfo/name">this group</span>.
+        </li><!--accept-->
+        <li id="decline">
+          To <strong>decline</strong> the invitation, select 
+          <samp class="option">Decline</samp>
+          and click the 
+            <samp class="button"
+              tal:define="action python:[a for a in view.actions][0].label"
+              tal:content="action">Big R</samp>
+          button.
+          After that we will bother you no more.
+        </li><!--decline-->
+      </ul>
       <form enctype="multipart/form-data"  method="post" action="."
         tal:attributes="action request/URL" id="respond">
         <tal:block define="widgets view/widgets">
@@ -80,29 +84,36 @@
           tal:replace="structure provider:groupserver.UserImage">
           A photo or some such&#8230;
         </div>
-        <h2>About <span class="fn">The Administrator</span></h2>
+        <h2>About 
+          <span class="fn" tal:content="view/adminInfo/name">The Admin</span></h2>
         <p>
-          <span class="fn">The administrator</span> 
+          <span class="fn" 
+            tal:content="view/adminInfo/name">The administrator</span> 
           is the administrator of
-          <span class="group">the group</span>.
+          <span class="group" 
+            tal:content="view/groupInfo/name">the group</span>.
           The main role of an administrator is to manage the members of
           a group.
         </p>
-        <!--div id="sec-bio" 
-          tal:condition="view/adminInfo/property/biography">
+        <div id="sec-bio" 
+          tal:define="bio python:view.adminInfo.get_property('biography')"
+          tal:condition="bio">
           <p>
-            The biography of 
-            <span class="fn">the administrator</span> is below. 
+            <strong>The biography</strong> of 
+            <span class="fn"
+            tal:content="view/adminInfo/name">the administrator</span> 
+            is below. 
             (You can write your own biography once you accept the 
             inviation!)
           </p>
           <blockquote 
-            tal:content="structure view/adminInfo/property/biography">
+            tal:content="structure bio">
             Wow, I actually used a <code>blockquote</code> element!
           </blockquote>
-        </div--><!--sec-bio-->
+        </div><!--sec-bio-->
       </div><!--about-the-admin-->
-      <div id="about-the-group">
+      <div id="about-the-group"
+        tal:define="rlg python:view.groupInfo.get_property('real_life_group')">
         <h2>About 
           <span class="group" 
             tal:content="view/groupInfo/name">The Group</span></h2>
@@ -111,9 +122,8 @@
             <span class="group"
               tal:content="view/groupInfo/name">The group</span> 
             is an online group for
-            <!--span id="real-life-group"
-              tal:content="view/groupInfo/property/real_life_group">real
-              people doing real things</span-->.</span><!--group-purpose-->
+            <span id="real-life-group" tal:content="rlg">real
+              people doing real things</span>.</span><!--group-purpose-->
           <!--span id="group-privacy">It is a 
             <strong class="privacy"
               tal:content="view/groupPrivacy/summary">public, private or
