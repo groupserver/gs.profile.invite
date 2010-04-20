@@ -20,8 +20,7 @@ from Products.GSGroup.changebasicprivacy import radio_widget
 from gs.profile.notify.interfaces import IGSNotifyUser
 from gs.profile.notify.adressee import Addressee, SupportAddressee
 from queries import InvitationQuery
-from utils import set_digest, invite_to_groups, invite_id, \
-    send_add_user_notification
+from utils import set_digest, invite_to_groups, invite_id
 from invitefields import InviteFields
 from audit import Auditor, INVITE_NEW_USER, INVITE_OLD_USER
 from invitationmessagecontentprovider import InvitationMessageContentProvider

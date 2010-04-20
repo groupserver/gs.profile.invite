@@ -20,6 +20,7 @@ log = logging.getLogger(SUBSYSTEM) #@UndefinedVariable
 UNKNOWN         = '0'
 INVITE_NEW_USER = '1'
 INVITE_OLD_USER = '2'
+INVITE_RESPOND  = '3'
 
 class AuditEventFactory(object):
     implements(IFactory)
