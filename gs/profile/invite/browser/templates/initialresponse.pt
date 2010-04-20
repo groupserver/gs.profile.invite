@@ -4,7 +4,7 @@
   metal:use-macro="context/@@groupserver_site_home_layout/page">
   <head>
     <title metal:fill-slot="title">
-      <tal:block replace="Respond to Your Invitation: ${view/groupInfo/name}: ${view/siteInfo/name}">
+      <tal:block replace="string:Respond to Your Invitation: ${view/groupInfo/name}: ${view/siteInfo/name}">
         Respond to Your Invitation
       </tal:block>
     </title>
@@ -80,26 +80,27 @@
           tal:replace="structure provider:groupserver.UserImage">
           A photo or some such&#8230;
         </div>
-        <h2>About <span class="fn">The Administrator</h2>
+        <h2>About <span class="fn">The Administrator</span></h2>
         <p>
           <span class="fn">The administrator</span> 
           is the administrator of
           <span class="group">the group</span>.
           The main role of an administrator is to manage the members of
           a group.
-        <p>
-        <tal:block condition="view/adminInfo/property/biography">
+        </p>
+        <div id="sec-bio" 
+          tal:condition="view/adminInfo/property/biography">
           <p>
             The biography of 
             <span class="fn">the administrator</span> is below. 
             (You can write your own biography once you accept the 
-            inviation!)</p>
+            inviation!)
           </p>
           <blockquote 
             tal:content="structure view/adminInfo/property/biography">
             Wow, I actually used a <code>blockquote</code> element!
           </blockquote>
-        </tal:block>
+        </div>
       </div><!--about-the-admin-->
       <div id="about-the-group">
         <h2>About 

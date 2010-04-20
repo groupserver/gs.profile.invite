@@ -8,13 +8,13 @@ from Products.CustomUserFolder.interfaces import IGSUserInfo
 from Products.GSGroup.changebasicprivacy import radio_widget
 from gs.profile.notify.interfaces import IGSNotifyUser
 from gs.profile.notify.adressee import Addressee, SupportAddressee
-from interface import IGSResponseFields
+from interfaces import IGSResponseFields
 from invitation import Invitation
 from utils import send_add_user_notification
 from audit import Auditor, INVITE_RESPOND
 
-class InviteEditProfileForm(PageForm):
-    label = u'Invite a New Group Member'
+class InitialResponseForm(PageForm):
+    label = u'Intial Response'
     pageTemplateFileName = 'browser/templates/initialresponse.pt'
     template = ZopeTwoPageTemplateFile(pageTemplateFileName)
 
