@@ -1,6 +1,7 @@
 # coding=utf-8
 from zope.schema import *
 from zope.interface.interface import Interface
+from zope.schema.vocabulary import SimpleVocabulary
 
 class IGSSetPasswordAdminInvite(Interface):
     password1 = ASCIILine(title=u'Password',
@@ -62,4 +63,15 @@ class IGSInvitationMessageContentProvider(IGSInvitationMessage):
             u'render the status message.',
           required=False,
           default=u"browser/templates/invitationmessagecontentprovider.pt")
+
+class IGSResponseFields(Interface):
+    invitationId = ASCIILine(title=u'Invitation Identifier',
+        description=u'The identifier for the invitation to join the '\
+            u'group',
+        required=True)
+        
+    response = Choice(title = u'Response',
+        description =  u'Your responce to the invitation.',
+        vocabulary=SimpleVocabulary.fromValues((u'Accept',u'Decline')),
+        default = u'Decline')
 

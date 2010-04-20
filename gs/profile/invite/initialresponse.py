@@ -8,7 +8,8 @@ from Products.CustomUserFolder.interfaces import IGSUserInfo
 from Products.GSGroup.changebasicprivacy import radio_widget
 from gs.profile.notify.interfaces import IGSNotifyUser
 from gs.profile.notify.adressee import Addressee, SupportAddressee
-from queries import InvitationQuery
+from interface import IGSResponseFields
+from invitation import Invitation
 from utils import send_add_user_notification
 from audit import Auditor, INVITE_RESPOND
 
@@ -21,8 +22,7 @@ class InviteEditProfileForm(PageForm):
         PageForm.__init__(self, context, request)
 
         self.siteInfo = createObject('groupserver.SiteInfo', context)
-        self.__formFields = self.__invitationQuery = None
-        self.__adminInfo = self.__userInfo = self.__groupInfo = None
+        self.__formFields = self.__invitation = None
         self.__groupPrivacy = self.__groupStats = None
         
     @property
@@ -46,29 +46,36 @@ class InviteEditProfileForm(PageForm):
             
     # Non-Standard methods below this point
     @property
+    def invitationId(self):
+        if self.__invitationId == None:
+            self.__invitiationId = self.request.get('form.invitationId', '')
+            assert self.__invitiationId, 'Invitation ID not passed to page'
+        return self.__invitiationId
+
+    @property
+    def invitation(self):
+        if self.__invitation == None:
+            i = Invitation(self.context, self.invitationId)
+            self.__invitation = i
+        return self.__invitation
+
+    @property
     def adminInfo(self):
-        pass
+        return self.invitation.adminInfo
 
     @property
     def userInfo(self):
-        pass
+        return self.invitation.userInfo
 
     @property
     def groupInfo(self):
-        pass
+        return self.invitation.groupInfo
 
     @property
     def groupPrivacy(self):
-        pass
+        return self.__groupPrivacy
 
     @property
     def groupStats(self):
-        pass
-
-    @property
-    def invitationQuery(self):
-        if self.__invitationQuery == None:
-            da = self.context.zsqlalchemy
-            self.__invitationQuery = InvitationQuery(da)
-        return self.__invitationQuery
+        return self.__groupStats
 

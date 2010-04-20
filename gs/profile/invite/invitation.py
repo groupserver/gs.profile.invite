@@ -9,27 +9,39 @@ class Invitation(object):
         self.invitationId = invitationId
         self.context = context
         self.__invite = None
+        self.__adminInfo = self.__userInfo = self.__groupInfo = None
         
     @property
     def invite(self):
         if self.__invite == None:
             da = self.context.zsqlalchemy
             query = InvitationQuery(self.context, da)
-            self.__invite = query.get_invitation(invitationId)
+            self.__invite = query.get_invitation(invitationId, current=False)
+            assert self.__invite['invitation_id'] == self.invitationId,\
+                'Invitation (%s) not found' % self.invitationId
         return self.__invite
         
-    def userId(self):
-        return self.invite['user_id']
+    @property
+    def userInfo(self):
+        if self.__userInfo == None:
+            self.__userInfo = createObject('groupserver.UserFromId',
+                                            self.context, 
+                                            self.invite['user_id'])
+        return self.__userInfo
 
-    def invitingUserId(self):
-        return self.invite['inviting_user_id']
+    @property
+    def adminInfo(self):
+        if self.__adminInfo == None:
+            self.__adminInfo = createObject('groupserver.UserFromId',
+                                            self.context, 
+                                            self.invite['inviting_user_id'])
+        return self.__adminInfo
 
-    def groupId(self):
-        return self.invite['group_id']
-    
     @property
     def groupInfo(self):
-        retval = createObject('groupserver.GroupInfo', self.context, 
-            self.invite['group_id'])
-        return retval
+        if self.__groupInfo == None:
+            self.__groupInfo = createObject('groupserver.GroupInfo', 
+                                            self.context, 
+                                            self.invite['group_id'])
+        return self.__groupInfo
 

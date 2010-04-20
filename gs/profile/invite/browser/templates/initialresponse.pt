@@ -1,7 +1,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
   xmlns:tal="http://xml.zope.org/namespaces/tal"
   xmlns:metal="http://xml.zope.org/namespaces/metal"
-  metal:use-macro="context/@@groupserver_layout/page">
+  metal:use-macro="context/@@groupserver_site_home_layout/page">
   <head>
     <title metal:fill-slot="title">
       <tal:block replace="Respond to Your Invitation: ${view/groupInfo/name}: ${view/siteInfo/name}">
@@ -113,7 +113,7 @@
             <span id="real-life-group"
               tal:content="view/groupInfo/property/real_life_group">real
               people doing real things</span>.</span><!--group-purpose-->
-          <span id="group-privacy">It is a 
+          <!--span id="group-privacy">It is a 
             <strong class="privacy"
               tal:content="view/groupPrivacy/summary">public, private or
                 secret</strong>
@@ -121,13 +121,13 @@
             <span class="explanation"
               tal:content="view/groupPrivacy/summary">something to 
                 someone</span>.
-          </span><!--group-privacy-->
-          <span id="group-membership">There are 
+          </span--><!--group-privacy-->
+          <!--span id="group-membership">There are 
             <span class="val"
               tal:conent="view/groupStats/members">a few</span> members
               in
-              <span class="group">the group</span>.</span><!--group-membership-->
-          <span id="group-posting" 
+              <span class="group">the group</span>.</span--><!--group-membership-->
+          <!--span id="group-posting" 
             tal:condition="view/groupStats/postsExist">
             They post
             <span class="val" id="min-posts"
@@ -137,7 +137,7 @@
             normally around 
             <span class="val" id="min-posts"
               tal:conent="view/groupStats/avgInt">some</span> posts.
-          </span><!--group-posting-->
+          </span--><!--group-posting-->
         </p>
         <p id="aup">
           By signing up with <span class="site">this site</span>, you
