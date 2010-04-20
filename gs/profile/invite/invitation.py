@@ -15,8 +15,9 @@ class Invitation(object):
     def invite(self):
         if self.__invite == None:
             da = self.context.zsqlalchemy
-            query = InvitationQuery(self.context, da)
-            self.__invite = query.get_invitation(invitationId, current=False)
+            query = InvitationQuery(da)
+            self.__invite = query.get_invitation(self.invitationId, 
+                                                    current=False)
             assert self.__invite['invitation_id'] == self.invitationId,\
                 'Invitation (%s) not found' % self.invitationId
         return self.__invite
@@ -41,7 +42,7 @@ class Invitation(object):
     def groupInfo(self):
         if self.__groupInfo == None:
             self.__groupInfo = createObject('groupserver.GroupInfo', 
-                                            self.context, 
+                                            self.context,
                                             self.invite['group_id'])
         return self.__groupInfo
 

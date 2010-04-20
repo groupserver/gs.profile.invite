@@ -45,9 +45,7 @@ class InvitationQuery(object):
 
     def get_invitation(self, invitationId, current=True):
         uit = self.userInvitationTable
-        cols = [uit.c.site_id, uit.c.group_id, uit.c.user_id, 
-                uit.c.inviting_user_id, uit.c.invitation_date]
-        s = sa.select(cols)
+        s = uit.select()
         s.append_whereclause(uit.c.invitation_id == invitationId)
         if current:
             s.append_whereclause(uit.c.response_date == None)

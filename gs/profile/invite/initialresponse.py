@@ -2,6 +2,7 @@
 '''The form that allows an admin to invite a new person to join a group.'''
 from zope.component import createObject
 from zope.formlib import form
+from zope.security.proxy import removeSecurityProxy
 from Products.Five.formlib.formbase import PageForm
 from Products.Five.browser.pagetemplatefile import ZopeTwoPageTemplateFile
 from Products.CustomUserFolder.interfaces import IGSUserInfo
@@ -13,6 +14,10 @@ from invitation import Invitation
 from utils import send_add_user_notification
 from audit import Auditor, INVITE_RESPOND
 
+import logging
+log = logging.getLogger('Testing') #@UndefinedVariable
+
+
 class InitialResponseForm(PageForm):
     label = u'Intial Response'
     pageTemplateFileName = 'browser/templates/initialresponse.pt'
@@ -20,9 +25,9 @@ class InitialResponseForm(PageForm):
 
     def __init__(self, context, request):
         PageForm.__init__(self, context, request)
-
-        self.siteInfo = createObject('groupserver.SiteInfo', context)
-        self.__formFields = self.__invitation = None
+        self.siteInfo = createObject('groupserver.SiteInfo', self.context)
+        
+        self.__formFields = self.__invitation = self.__invitationId = None
         self.__groupPrivacy = self.__groupStats = None
         
     @property
@@ -42,7 +47,7 @@ class InitialResponseForm(PageForm):
         if len(errors) == 1:
             self.status = u'<p>There is an error:</p>'
         else:
-            self.status = u'<p>There are errors:</p>'
+                self.status = u'<p>There rare errors:</p>'
             
     # Non-Standard methods below this point
     @property
@@ -55,7 +60,14 @@ class InitialResponseForm(PageForm):
     @property
     def invitation(self):
         if self.__invitation == None:
-            i = Invitation(self.context, self.invitationId)
+            # --=mpj17=-- Sometimes Zope acquisition can be a hideous
+            # pain in the arse. This is one of those times. For whatever
+            # reason, self.context gets all wrapped up in some voodoo 
+            # to do with "Products.Five.metaclass". The "aq_self" is
+            # required to exorcise the Dark Magiks and to allow the code
+            # to operate without spewing errors about the site-instance
+            # being None.
+            i = Invitation(self.context.aq_self, self.invitationId)
             self.__invitation = i
         return self.__invitation
 

@@ -88,7 +88,7 @@
           The main role of an administrator is to manage the members of
           a group.
         </p>
-        <div id="sec-bio" 
+        <!--div id="sec-bio" 
           tal:condition="view/adminInfo/property/biography">
           <p>
             The biography of 
@@ -100,7 +100,7 @@
             tal:content="structure view/adminInfo/property/biography">
             Wow, I actually used a <code>blockquote</code> element!
           </blockquote>
-        </div>
+        </div--><!--sec-bio-->
       </div><!--about-the-admin-->
       <div id="about-the-group">
         <h2>About 
@@ -111,9 +111,9 @@
             <span class="group"
               tal:content="view/groupInfo/name">The group</span> 
             is an online group for
-            <span id="real-life-group"
+            <!--span id="real-life-group"
               tal:content="view/groupInfo/property/real_life_group">real
-              people doing real things</span>.</span><!--group-purpose-->
+              people doing real things</span-->.</span><!--group-purpose-->
           <!--span id="group-privacy">It is a 
             <strong class="privacy"
               tal:content="view/groupPrivacy/summary">public, private or
