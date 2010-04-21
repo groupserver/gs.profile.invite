@@ -7,7 +7,7 @@ from zope.publisher.interfaces.browser import IDefaultBrowserLayer
 from interfaces import IGSInvitationMessageContentProvider
 
 class InvitationMessageContentProvider(object):
-    """GroupServer context-menu for the user profile area.
+    """Invitation Message content, in both HTML and TXT formats.
     """
 
     implements( IGSInvitationMessageContentProvider )
