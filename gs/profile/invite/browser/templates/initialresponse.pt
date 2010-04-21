@@ -140,6 +140,10 @@
             <span class="val" id="min-posts"
               tal:conent="view/groupStats/avgInt">some</span> posts.
           </span--><!--group-posting-->
+          <tal:block define="groupId view/groupInfo/id"
+            replace="structure provider:groupserver.GroupStats">
+            The group privacy.
+          </tal:block>
         </p>
         <tal:block define="groupId view/groupInfo/id"
           replace="structure provider:groupserver.GroupPrivacy">
