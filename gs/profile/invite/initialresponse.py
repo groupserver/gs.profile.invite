@@ -35,14 +35,16 @@ class InitialResponseForm(PageForm):
         if self.__formFields == None:
             self.__formFields = form.Fields(IGSResponseFields, 
                                             render_context=False)
-            response = self.__formFields['response']
-            response.custom_widget = radio_widget
         return self.__formFields
 
-    @form.action(label=u'Respond', failure='handle_respond_action_failure')
-    def handle_invite(self, action, data):
-        self.actual_handle_respond(action, data)
+    @form.action(label=u'Accept', failure='handle_respond_action_failure')
+    def handle_accept(self, action, data):
+        pass
         
+    @form.action(label=u'Decline', failure='handle_respond_action_failure')
+    def handle_decline(self, action, data):
+        pass
+
     def handle_respond_action_failure(self, action, data, errors):
         if len(errors) == 1:
             self.status = u'<p>There is an error:</p>'

@@ -58,11 +58,11 @@ class IGSInvitationMessage(Interface):
         default='################')
 
 class IGSInvitationMessageContentProvider(IGSInvitationMessage):
-    pageTemplateFileName = Text(title=u"Page Template File Name",
+    pageTemplateFileName = ASCIILine(title=u"Page Template File Name",
           description=u'The name of the ZPT file that is used to '\
             u'render the status message.',
           required=False,
-          default=u"browser/templates/invitationmessagecontentprovider.pt")
+          default="browser/templates/invitationmessagecontentprovider.pt")
 
 class IGSResponseFields(Interface):
     invitationId = ASCIILine(title=u'Invitation Identifier',
@@ -70,8 +70,8 @@ class IGSResponseFields(Interface):
             u'group',
         required=True)
         
-    response = Choice(title = u'Response',
-        description =  u'Your responce to the invitation.',
-        vocabulary=SimpleVocabulary.fromValues((u'Accept',u'Decline')),
-        default = u'Decline')
-
+    password1 = TextLine(title=u'Password',
+        description=u'The password that you will use to log in, post '\
+            u'messages or change your profile.',
+        required=False)
+    

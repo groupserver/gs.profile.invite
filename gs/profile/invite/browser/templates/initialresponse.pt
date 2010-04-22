@@ -8,6 +8,24 @@
         Respond to Your Invitation
       </tal:block>
     </title>
+    <style type="text/css" metal:fill-slot="style">
+      #about {
+        padding-top: 2.78em;
+      }
+      #about h2 {
+        padding-top: 0px;
+        margin-top: 0px;
+      }
+      #about li {
+        list-style-position: inside;
+        text-indent: 1.39em;
+      }
+       #about-the-admin {
+        float: left;
+        width: 40%;
+        padding: 0px 2.78em 0px 0px;
+      }
+    </style>
   </head>
   <body>
     <div metal:fill-slot="messages" tal:condition="view/status" 
@@ -39,125 +57,120 @@
         <strong class="group"
           tal:content="view/groupInfo/name">this group</strong>.
       </p><!--reason-->
-      <ul>
-        <li id="accept">
-          To <strong>accept</strong> the invitation
-          click the
-          <samp class="button"
-            tal:define="action python:[a for a in view.actions][0].label"
-            tal:content="action">Big R</samp>
-          button and then <strong>set a password.</strong>
-          That is it!
-          After that you will be able to participate in 
-          <span class="group"
-            tal:content="view/groupInfo/name">this group</span>.
-        </li><!--accept-->
-        <li id="decline">
-          To <strong>decline</strong> the invitation, select 
-          <samp class="option">Decline</samp>
-          and click the 
-            <samp class="button"
-              tal:define="action python:[a for a in view.actions][0].label"
-              tal:content="action">Big R</samp>
-          button.
-          After that we will bother you no more.
-        </li><!--decline-->
-      </ul>
       <form enctype="multipart/form-data"  method="post" action="."
         tal:attributes="action request/URL" id="respond">
-        <tal:block define="widgets view/widgets">
-          <tal:block 
-            replace="structure provider:groupserver.FormWidgets">
-            Widgets and some such&#8230;
-          </tal:block>
-        </tal:block>
-        <div class="buttons" tal:condition="view/availableActions">
-          <tal:block repeat="action view/actions">
-            <div class="formelementbutton">
-              <span tal:replace="structure action/render">Button</span>
-            </div>
-          </tal:block>
-        </div><!--buttons-->
-      </form>
-      <div id="about-the-admin">
-        <div tal:define="user view/adminInfo/user"
-          tal:replace="structure provider:groupserver.UserImage">
-          A photo or some such&#8230;
-        </div>
-        <h2>About 
-          <span class="fn" tal:content="view/adminInfo/name">The Admin</span></h2>
-        <p>
-          <span class="fn" 
-            tal:content="view/adminInfo/name">The administrator</span> 
-          is the administrator of
-          <span class="group" 
-            tal:content="view/groupInfo/name">the group</span>.
-          The main role of an administrator is to manage the members of
-          a group.
-        </p>
-        <div id="sec-bio" 
-          tal:define="bio python:view.adminInfo.get_property('biography')"
-          tal:condition="bio">
+        <fieldset id="accept">
+          <legend>Accept</legend>
           <p>
-            <strong>The biography</strong> of 
-            <span class="fn"
-            tal:content="view/adminInfo/name">the administrator</span> 
-            is below. 
-            (You can write your own biography once you accept the 
-            inviation!)
-          </p>
-          <blockquote 
-            tal:content="structure bio">
-            Wow, I actually used a <code>blockquote</code> element!
-          </blockquote>
-        </div><!--sec-bio-->
-      </div><!--about-the-admin-->
-      <div id="about-the-group"
-        tal:define="rlg python:view.groupInfo.get_property('real_life_group')">
-        <h2>About 
-          <span class="group" 
-            tal:content="view/groupInfo/name">The Group</span></h2>
-        <p id="about">
-          <span id="group-purpose">
+            To <strong>accept</strong> the invitation
+            type your <strong>password</strong> into the entry below
+            and click  the
+            <samp class="button"
+              tal:content="view/actions/form.actions.accept/label">Big R</samp>
+            button.
+            That is it!
+            After that you will be able to participate in 
             <span class="group"
-              tal:content="view/groupInfo/name">The group</span> 
-            is an online group for
-            <span id="real-life-group" tal:content="rlg">real
-              people doing real things</span>.</span><!--group-purpose-->
-          <!--span id="group-membership">There are 
-            <span class="val"
-              tal:conent="view/groupStats/members">a few</span> members
-              in
-              <span class="group">the group</span>.</span--><!--group-membership-->
-          <!--span id="group-posting" 
-            tal:condition="view/groupStats/postsExist">
-            They post
-            <span class="val" id="min-posts"
-              tal:conent="view/groupStats/minPerDay">some</span>&#8211;<span class="val" id="max-posts"
-              tal:conent="view/groupStats/maxPerDay">a few</span> 
-            posts per day, 
-            normally around 
-            <span class="val" id="min-posts"
-              tal:conent="view/groupStats/avgInt">some</span> posts.
-          </span--><!--group-posting-->
+              tal:content="view/groupInfo/name">this group</span>.
+          </p>
+          <tal:block define="widgets python:[view.widgets['password1']]">
+            <tal:block 
+              replace="structure provider:groupserver.FormWidgets">
+              Widgets and some such&#8230;
+            </tal:block>
+          </tal:block>
+          <div class="buttons" tal:condition="view/availableActions">
+            <tal:block define="action view/actions/form.actions.accept">
+              <div class="formelementbutton">
+                <span tal:replace="structure action/render">Button</span>
+              </div>
+            </tal:block>
+          </div><!--buttons-->
+        </fieldset><!--accept-->
+        <fieldset id="decline">
+          <legend>Decline</legend>
+          <p>
+            To <strong>decline</strong> the invitation click the 
+            <samp class="button"
+              tal:content="view/actions/form.actions.decline/label">Big R</samp>
+            button.
+            After that we will bother you no more.
+          </p>
+          <div class="buttons" tal:condition="view/availableActions">
+            <tal:block define="action view/actions/form.actions.decline">
+              <div class="formelementbutton">
+                <span tal:replace="structure action/render">Button</span>
+              </div>
+            </tal:block>
+          </div><!--buttons-->
+        </fieldset><!--decline-->
+        <tal:block replace="structure view/widgets/invitationId/hidden"/>
+      </form>
+      <div id="about">
+        <div id="about-the-admin">
+          <div tal:define="user view/adminInfo/user"
+            tal:replace="structure provider:groupserver.UserImage">
+            A photo or some such&#8230;
+          </div>
+          <h2>About 
+            <span class="fn" tal:content="view/adminInfo/name">The Admin</span></h2>
+          <p>
+            <span class="fn" 
+              tal:content="view/adminInfo/name">The administrator</span> 
+            is the administrator of
+            <span class="group" 
+              tal:content="view/groupInfo/name">the group</span>.
+            The main role of an administrator is to manage the members of
+            a group.
+          </p>
+          <div id="sec-bio" 
+            tal:define="bio python:view.adminInfo.get_property('biography')"
+            tal:condition="bio">
+            <p>
+              <strong>The biography</strong> of 
+              <span class="fn"
+              tal:content="view/adminInfo/name">the administrator</span> 
+              is below. 
+              (You can write your own biography once you accept the 
+              inviation!)
+            </p>
+            <blockquote 
+              tal:content="structure bio">
+              Wow, I actually used a <code>blockquote</code> element!
+            </blockquote>
+          </div><!--sec-bio-->
+        </div><!--about-the-admin-->
+        <div id="about-the-group"
+          tal:define="rlg python:view.groupInfo.get_property('real_life_group')">
+          <h2>About 
+            <span class="group" 
+              tal:content="view/groupInfo/name">The Group</span></h2>
+          <p id="about-the-group-text">
+            <span id="group-purpose">
+              <span class="group"
+                tal:content="view/groupInfo/name">The group</span> 
+              is an online group for
+              <span id="real-life-group" tal:content="rlg">real
+                people doing real things</span>.</span><!--group-purpose-->
+            <tal:block define="groupId view/groupInfo/id"
+              replace="structure provider:groupserver.GroupStats">
+              The group privacy.
+            </tal:block>
+          </p>
           <tal:block define="groupId view/groupInfo/id"
-            replace="structure provider:groupserver.GroupStats">
+            replace="structure provider:groupserver.GroupPrivacy">
             The group privacy.
           </tal:block>
-        </p>
-        <tal:block define="groupId view/groupInfo/id"
-          replace="structure provider:groupserver.GroupPrivacy">
-          The group privacy.
-        </tal:block>
-        <p id="aup">
-          By signing up with <span class="site">this site</span>, you
-          agree to the acceptable use policy.
-        </p>
-        <p id="privacy">Your privacy is important, and will be 
-          maintained according to the privacy policy of
-          <span class="site">this site</span>.
-        </p>
-      </div><!--about-the-group-->
+          <p id="aup">
+            By signing up with <span class="site">this site</span>, you
+            agree to the acceptable use policy.
+          </p>
+          <p id="privacy">Your privacy is important, and will be 
+            maintained according to the privacy policy of
+            <span class="site">this site</span>.
+          </p>
+        </div><!--about-the-group-->
+      </div><!--about-->
     </tal:block>
   </body>
 </html>
