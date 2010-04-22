@@ -50,9 +50,17 @@
 <p id="linkText" tal:omit-tag="view/text">Click on the following link to accept or decline this invitation:
     </p>
     <pre tal:omit-tag="view/text" 
-      tal:define="uri string:${view/siteInfo/url}/r/rsvp/${view/invitationId}">
+      tal:define="uri string:${view/siteInfo/url}/r/rsvp/${view/invitationId};
+        example python:view.invitationId=='example';
+        jsUri string:javascript:window.open('${uri}');;">
     <a href="#" tal:omit-tag="view/text"
-      tal:attributes="href uri" tal:content="uri">link text</a>
+      tal:condition="not:example"
+      tal:attributes="href uri"
+      tal:content="uri">link text</a>
+    <a href="#" tal:omit-tag="view/text"
+      tal:condition="example"
+      tal:attributes="onclick jsUri"
+      tal:content="uri">link text</a>
     </pre>
   </body>
 </html>

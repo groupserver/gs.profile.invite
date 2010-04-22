@@ -1,4 +1,5 @@
 # coding=utf-8
+from urlparse import urlparse
 from zope.component import createObject
 from queries import InvitationQuery
 
@@ -44,5 +45,37 @@ class Invitation(object):
             self.__groupInfo = createObject('groupserver.GroupInfo', 
                                             self.context,
                                             self.invite['group_id'])
+        return self.__groupInfo
+
+class FakeInvitation(object):
+    def __init__(self, context, request):
+        assert context, 'No context'
+        assert request, 'No request'
+        self.invitationId = 'example'
+        self.context = context
+        self.request = request
+        self.__groupInfo = self.__userInfo = None
+        
+    @property
+    def userInfo(self):
+        if self.__userInfo == None:
+            self.__userInfo = createObject('groupserver.LoggedInUser',
+                                            self.context)
+        return self.__userInfo
+
+    @property
+    def adminInfo(self):
+        return self.userInfo
+
+    @property
+    def groupInfo(self):
+        if self.__groupInfo == None:
+            ref = self.request.get('HTTP_REFERER','')
+            assert ref, 'This page only works if you follow the link '\
+                'from the invitation preview.'
+            path = urlparse(ref)[2]
+            groupId = path.split('/')[2]
+            self.__groupInfo = createObject('groupserver.GroupInfo', 
+                                            self.context, groupId)
         return self.__groupInfo
 

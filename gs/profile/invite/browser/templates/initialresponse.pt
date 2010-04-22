@@ -9,6 +9,9 @@
       </tal:block>
     </title>
     <style type="text/css" metal:fill-slot="style">
+      fieldset .textType {
+        width: 35.26em;
+      }
       #about {
         padding-top: 2.78em;
       }
@@ -25,9 +28,18 @@
         width: 40%;
         padding: 0px 2.78em 0px 0px;
       }
+       #about-the-group {
+        padding-left: 40%;
+       }
+       #aup, #privacy {
+        margin-left: 2.78em;
+       }
     </style>
   </head>
   <body>
+    <div metal:fill-slot="utilitylinks">&#160;</div>
+    <div metal:fill-slot="sitenavigation">&#160;</div>
+    <div metal:fill-slot="search">&#160;</div>
     <div metal:fill-slot="messages" tal:condition="view/status" 
       class="message-error"
       tal:define="e view/errors"
@@ -43,9 +55,21 @@
         </tal:block>
       </dl>
     </div>
-    <tal:block metal:fill-slot="body">
-      <h1>Respond to Your Invitation</h1>
-      
+    <tal:block metal:fill-slot="body"
+      define="example python:view.invitationId == 'example';">
+      <h1>Respond to Your 
+        <span tal:condition="example">[Example]</span>
+        Invitation</h1>
+      <p tal:condition="example" class="message-result">
+        This page is similar to what the new member will see when he or 
+        she clicks on the invitation link. 
+        It is actually what you would see if you invited yourself to 
+        your group.
+        If you type in a password and accept the non-existent invitation
+        your password will be changed, and you taken to the homepage
+        for your group; nothing will happen if you decline the
+        non-existent invitation.
+      </p>
       <p id="greeting">
         <strong>Hi, <span class="fn" 
           tal:content="view/userInfo/name">new user</span>!</strong>
@@ -62,16 +86,17 @@
         <fieldset id="accept">
           <legend>Accept</legend>
           <p>
-            To <strong>accept</strong> the invitation
-            type your <strong>password</strong> into the entry below
-            and click  the
+            To <strong>accept</strong> the invitation,
+            type your <strong>new password</strong> into the entry below
+            and click the
             <samp class="button"
               tal:content="view/actions/form.actions.accept/label">Big R</samp>
             button.
-            That is it!
-            After that you will be able to participate in 
+            <em>That's it!</em>
+            After that you will get email messages when someone posts to
             <span class="group"
-              tal:content="view/groupInfo/name">this group</span>.
+              tal:content="view/groupInfo/name">this group</span> and
+            you will be able to post yourself.
           </p>
           <tal:block define="widgets python:[view.widgets['password1']]">
             <tal:block 
@@ -79,6 +104,19 @@
               Widgets and some such&#8230;
             </tal:block>
           </tal:block>
+          <div id="tc" class="disclosureWidget">
+            <p>
+              <a class="disclosureButton" id="tc-button"
+                href="javascript:showHideDisclosure('tc')">By joining
+                <span class="group" 
+                  tal:content="view/groupInfo/name">this group</span>
+                you agree to the 
+                <strong>acceptable use policy.</strong></a>
+            </p>
+            <div class="disclosureShowHide" style="display: none;">
+              <div id="tc-content">Loading&#8230;</div>
+            </div>
+          </div>          
           <div class="buttons" tal:condition="view/availableActions">
             <tal:block define="action view/actions/form.actions.accept">
               <div class="formelementbutton">
@@ -132,7 +170,7 @@
               tal:content="view/adminInfo/name">the administrator</span> 
               is below. 
               (You can write your own biography once you accept the 
-              inviation!)
+              invitation!)
             </p>
             <blockquote 
               tal:content="structure bio">
@@ -154,23 +192,50 @@
                 people doing real things</span>.</span><!--group-purpose-->
             <tal:block define="groupId view/groupInfo/id"
               replace="structure provider:groupserver.GroupStats">
-              The group privacy.
+              The group stats.
             </tal:block>
           </p>
           <tal:block define="groupId view/groupInfo/id"
             replace="structure provider:groupserver.GroupPrivacy">
-            The group privacy.
-          </tal:block>
-          <p id="aup">
-            By signing up with <span class="site">this site</span>, you
-            agree to the acceptable use policy.
-          </p>
-          <p id="privacy">Your privacy is important, and will be 
-            maintained according to the privacy policy of
-            <span class="site">this site</span>.
-          </p>
+             The group privacy.
+           </tal:block>
+          <div id="privacy" class="disclosureWidget">
+            <p>
+              <a class="disclosureButton" id="privacy-button"
+                href="javascript:showHideDisclosure('privacy')">Your 
+                privacy is important, and will be maintained according 
+                to the <strong>privacy policy</strong> of 
+                <span class="site" tal:content="siteName">this site</span>.</a>
+            </p>
+            <div class="disclosureShowHide" style="display: none;">
+              <div id="privacy-content">Loading&#8230;</div>
+            </div>
+          </div>
         </div><!--about-the-group-->
       </div><!--about-->
+    </tal:block>
+    <tal:block metal:fill-slot="javascript">
+      <script type="text/javascript"
+        src="/++resource++check_required-20071214.js">&#160;</script>
+      <script type="text/javascript"
+        src="/++resource++popup_help-20071218.js">&#160;</script>
+      <script type="text/javascript">
+        jQuery.noConflict()
+        jQuery(document).ready( function () {
+            jQuery("#privacy-button").click( function () {
+                var uri = "/policies/privacy/ #privacy";
+                jQuery("#privacy-content").load(uri);
+            });
+            jQuery("#tc-button").click( function () {
+                var uri = "/policies/aup/ #aup";
+                jQuery("#tc-content").load(uri);
+            });
+            GSPopupFormHelp.init('#respond');
+            var gsRequiredWidgets = new Array('#form\\.password1');
+            GSCheckRequired.init(
+              gsRequiredWidgets, '#form\\.actions\\.accept');
+        });        
+      </script>
     </tal:block>
   </body>
 </html>

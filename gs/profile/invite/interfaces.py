@@ -55,7 +55,7 @@ class IGSInvitationMessage(Interface):
         description=u'The identifier for the invitation to join the '\
             u'group',
         required=False,
-        default='################')
+        default='example')
 
 class IGSInvitationMessageContentProvider(IGSInvitationMessage):
     pageTemplateFileName = ASCIILine(title=u"Page Template File Name",
@@ -71,7 +71,9 @@ class IGSResponseFields(Interface):
         required=True)
         
     password1 = TextLine(title=u'Password',
-        description=u'The password that you will use to log in, post '\
-            u'messages or change your profile.',
+        description=u'Your new password. You will use it to log in to '
+          u'this website. This will allow you to view your private '\
+          u'and secret groups, post from the '\
+          u'web, and change your profile.',
         required=False)
     

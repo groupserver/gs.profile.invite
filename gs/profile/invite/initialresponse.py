@@ -10,7 +10,7 @@ from Products.GSGroup.changebasicprivacy import radio_widget
 from gs.profile.notify.interfaces import IGSNotifyUser
 from gs.profile.notify.adressee import Addressee, SupportAddressee
 from interfaces import IGSResponseFields
-from invitation import Invitation
+from invitation import Invitation, FakeInvitation
 from utils import send_add_user_notification
 from audit import Auditor, INVITE_RESPOND
 
@@ -69,7 +69,10 @@ class InitialResponseForm(PageForm):
             # required to exorcise the Dark Magiks and to allow the code
             # to operate without spewing errors about the site-instance
             # being None.
-            i = Invitation(self.context.aq_self, self.invitationId)
+            if self.invitationId == 'example':
+                i = FakeInvitation(self.context.aq_self, self.request)
+            else:
+                i = Invitation(self.context.aq_self, self.invitationId)
             self.__invitation = i
         return self.__invitation
 

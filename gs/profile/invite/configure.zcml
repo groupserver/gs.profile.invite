@@ -38,6 +38,11 @@
     class=".invitationmessage.InvitationMessage"
     permission="zope2.ManageUsers"/>
 
+  <adapter for="Products.GSRedirect.interfaces.IGSRedirectTraversal"
+    factory=".invitationredirect.GSInvitationResponseRedirect"
+    provides="Products.GSRedirect.interfaces.IGSRedirect"
+    name="rsvp" />
+
    <browser:page
     for="Products.CustomUserFolder.interfaces.ICustomUser"
     name="intial_response.html"

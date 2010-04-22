@@ -1,11 +1,9 @@
 # coding=utf-8
+from zope.component import createObject
 from Products.CustomUserFolder.interfaces import IGSUserInfo
 from Products.GSRedirect.view import GSRedirectBase
 from gs.profile.invite.queries import InvitationQuery
 from Products.GSProfile.utils import login
-
-import logging
-log = logging.getLogger('GSGroupMember') #@UndefinedVariable
 
 class GSInvitationResponseRedirect(GSRedirectBase):
     def __call__(self):
@@ -16,14 +14,17 @@ class GSInvitationResponseRedirect(GSRedirectBase):
             
             if user:
                 login(self.context, user)
-                
                 userInfo = IGSUserInfo(user)
-                m = 'GSInvitationResponseRedirect: Going to the invitation '\
-                  'response page for the ID %s for the user %s (%s).'  % \
-                  (invitationId, userInfo.name, userInfo.id)
-                log.info(m)
-
-                uri = '%s/invitations_respond.html' % userInfo.url
+            if (invitationId == 'example'):
+                userInfo = createObject('groupserver.LoggedInUser',
+                                        self.context)
+            if (user or (invitationId == 'example')):
+                # TODO: Audit
+                # TODO: Figure out if it is the inital of subsequent 
+                #  invite.
+                #uri = '%s/invitations_respond.html' % userInfo.url
+                uri = '%s/intial_response.html?form.invitationId=%s' %\
+                  (userInfo.url, invitationId)
             else: # Cannot find user
                 uri = '/invite-user-not-found?id=%s' % invitationId
         else: # Verification ID not specified
@@ -36,7 +37,7 @@ class GSInvitationResponseRedirect(GSRedirectBase):
         invitationQuery = InvitationQuery(da)
         r = invitationQuery.get_invitation(invitationId)
         user = None
-        if r['inviation_id']:
+        if r['invitation_id']:
             site_root = self.context.site_root()
             acl_users = site_root.acl_users
             user = acl_users.getUser(r['user_id'])
