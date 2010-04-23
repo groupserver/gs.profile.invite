@@ -57,19 +57,31 @@
     </div>
     <tal:block metal:fill-slot="body"
       define="example python:view.invitationId == 'example';">
-      <h1>Respond to Your 
-        <span tal:condition="example">[Example]</span>
-        Invitation</h1>
-      <p tal:condition="example" class="message-result">
-        This page is similar to what the new member will see when he or 
-        she clicks on the invitation link. 
-        It is actually what you would see if you invited yourself to 
-        your group.
-        If you type in a password and accept the non-existent invitation
-        your password will be changed, and you taken to the homepage
-        for your group; nothing will happen if you decline the
-        non-existent invitation.
-      </p>
+      <h1>Respond to Your Invitation
+        <strong tal:condition="example">[Preview]</strong></h1>
+      <div tal:condition="example" class="message-result">
+        <p>
+          This <strong>preview</strong> is similar to what the new
+          member will see when he or she clicks on the invitation link.
+          It is actually what you would see if you invited yourself to 
+          <samp class="group"
+            tal:content="view/groupInfo/name">this group</samp>.
+          If you type in a <strong>password</strong> and 
+          <strong>accept</strong> this preview invitation your password 
+          will be changed, and you will see what the 
+          <strong>group homepage</strong> looks like when someone accepts
+          the invitation; nothing will happen 
+          if you <strong>decline</strong> this preview invitation.
+        </p>
+        <p>
+          Some of your profile information is shown in the
+          <strong>About 
+            <span class="fn" tal:content="view/adminInfo/name">The 
+              Admin</span></strong>
+          section, below.
+          This includes your profile photo and biography (if set).
+        </p>
+      </div><!--admin-preview-instructions-->
       <p id="greeting">
         <strong>Hi, <span class="fn" 
           tal:content="view/userInfo/name">new user</span>!</strong>

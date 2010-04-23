@@ -14,10 +14,6 @@ from invitation import Invitation, FakeInvitation
 from utils import send_add_user_notification
 from audit import Auditor, INVITE_RESPOND
 
-import logging
-log = logging.getLogger('Testing') #@UndefinedVariable
-
-
 class InitialResponseForm(PageForm):
     label = u'Intial Response'
     pageTemplateFileName = 'browser/templates/initialresponse.pt'
