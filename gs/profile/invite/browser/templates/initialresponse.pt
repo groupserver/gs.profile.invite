@@ -68,10 +68,11 @@
             tal:content="view/groupInfo/name">this group</samp>.
           If you type in a <strong>password</strong> and 
           <strong>accept</strong> this preview invitation your password 
-          will be changed, and you will see what the 
+          will be unchanged, but you will see what the 
           <strong>group homepage</strong> looks like when someone accepts
-          the invitation; nothing will happen 
-          if you <strong>decline</strong> this preview invitation.
+          the invitation; if you <strong>decline</strong> this preview
+          invitation you will see what the <em>Invitation Declined</em>
+          page looks like.
         </p>
         <p>
           Some of your profile information is shown in the
@@ -155,6 +156,7 @@
           </div><!--buttons-->
         </fieldset><!--decline-->
         <tal:block replace="structure view/widgets/invitationId/hidden"/>
+        <tal:block replace="structure view/widgets/groupId/hidden"/>
       </form>
       <div id="about">
         <div id="about-the-admin">

@@ -1,4 +1,5 @@
 # coding=utf-8
+from urlparse import urlparse
 from zope.component import createObject
 from Products.CustomUserFolder.interfaces import IGSUserInfo
 from Products.GSRedirect.view import GSRedirectBase
@@ -7,7 +8,7 @@ from Products.GSProfile.utils import login
 
 class GSInvitationResponseRedirect(GSRedirectBase):
     def __call__(self):
-
+        # TODO: Audit
         if len(self.traverse_subpath) == 1:
             invitationId = self.traverse_subpath[0]
             user = self.get_userByGroupInvitationId(invitationId)
@@ -15,16 +16,20 @@ class GSInvitationResponseRedirect(GSRedirectBase):
             if user:
                 login(self.context, user)
                 userInfo = IGSUserInfo(user)
+                # TODO: Figure out if it is the inital of subsequent 
+                #  invite.
+                uri = '%s/intial_response.html?form.invitationId=%s' %\
+                  (userInfo.url, invitationId)
             if (invitationId == 'example'):
                 userInfo = createObject('groupserver.LoggedInUser',
                                         self.context)
-            if (user or (invitationId == 'example')):
-                # TODO: Audit
-                # TODO: Figure out if it is the inital of subsequent 
-                #  invite.
-                #uri = '%s/invitations_respond.html' % userInfo.url
-                uri = '%s/intial_response.html?form.invitationId=%s' %\
-                  (userInfo.url, invitationId)
+                ref = self.request.get('HTTP_REFERER','')
+                assert ref, 'This page only works if you follow the link '\
+                    'from the invitation preview.'
+                path = urlparse(ref)[2]
+                groupId = path.split('/')[2]
+                uri = '%s/intial_response.html?form.invitationId=example&form.groupId=%s' %\
+                  (userInfo.url, groupId)
             else: # Cannot find user
                 uri = '/invite-user-not-found?id=%s' % invitationId
         else: # Verification ID not specified

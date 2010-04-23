@@ -6,7 +6,7 @@ from zope.security.proxy import removeSecurityProxy
 from Products.Five.formlib.formbase import PageForm
 from Products.Five.browser.pagetemplatefile import ZopeTwoPageTemplateFile
 from Products.CustomUserFolder.interfaces import IGSUserInfo
-from Products.GSGroup.changebasicprivacy import radio_widget
+from Products.GSProfile.set_password import set_password
 from gs.profile.notify.interfaces import IGSNotifyUser
 from gs.profile.notify.adressee import Addressee, SupportAddressee
 from interfaces import IGSResponseFields
@@ -35,7 +35,15 @@ class InitialResponseForm(PageForm):
 
     @form.action(label=u'Accept', failure='handle_respond_action_failure')
     def handle_accept(self, action, data):
-        pass
+        if self.invitationId != 'example':
+            # Set password
+            set_password(self.userInfo.user, data['password1'])
+            # Accept invitation
+            # Join group
+            # Notify the right people
+        # Go to the group homepage
+        uri = '%s?welcome=1' % self.groupInfo.url
+        self.request.RESPONSE.redirect(uri)
         
     @form.action(label=u'Decline', failure='handle_respond_action_failure')
     def handle_decline(self, action, data):
@@ -66,7 +74,10 @@ class InitialResponseForm(PageForm):
             # to operate without spewing errors about the site-instance
             # being None.
             if self.invitationId == 'example':
-                i = FakeInvitation(self.context.aq_self, self.request)
+                groupId = self.request.form.get('form.groupId', '')
+                assert groupId, 'Group ID for the invitation-response '\
+                  'preview has not been set.'
+                i = FakeInvitation(self.context.aq_self, groupId)
             else:
                 i = Invitation(self.context.aq_self, self.invitationId)
             self.__invitation = i

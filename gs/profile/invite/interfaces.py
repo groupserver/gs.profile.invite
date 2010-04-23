@@ -69,6 +69,11 @@ class IGSResponseFields(Interface):
         description=u'The identifier for the invitation to join the '\
             u'group',
         required=True)
+
+    groupId = ASCIILine(title=u'Group Identifier',
+        description=u'The identifier for the group to join (for the) '\
+            u'preview.',
+        required=False)
         
     password1 = TextLine(title=u'Password',
         description=u'Your new password. You will use it to log in to '

@@ -48,12 +48,12 @@ class Invitation(object):
         return self.__groupInfo
 
 class FakeInvitation(object):
-    def __init__(self, context, request):
+    def __init__(self, context, groupId):
         assert context, 'No context'
-        assert request, 'No request'
+        assert groupId, 'No groupId'
         self.invitationId = 'example'
         self.context = context
-        self.request = request
+        self.groupId = groupId
         self.__groupInfo = self.__userInfo = None
         
     @property
@@ -70,12 +70,7 @@ class FakeInvitation(object):
     @property
     def groupInfo(self):
         if self.__groupInfo == None:
-            ref = self.request.get('HTTP_REFERER','')
-            assert ref, 'This page only works if you follow the link '\
-                'from the invitation preview.'
-            path = urlparse(ref)[2]
-            groupId = path.split('/')[2]
             self.__groupInfo = createObject('groupserver.GroupInfo', 
-                                            self.context, groupId)
+                                            self.context, self.groupId)
         return self.__groupInfo
 
