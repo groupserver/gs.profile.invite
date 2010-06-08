@@ -7,6 +7,8 @@ from Products.Five.formlib.formbase import PageForm
 from Products.Five.browser.pagetemplatefile import ZopeTwoPageTemplateFile
 from Products.CustomUserFolder.interfaces import IGSUserInfo
 from Products.GSProfile.set_password import set_password
+from Products.GSGroupMember.groupmembership import join_group, \
+    user_participation_coach_of_group
 from gs.profile.notify.interfaces import IGSNotifyUser
 from gs.profile.notify.adressee import Addressee, SupportAddressee
 from interfaces import IGSResponseFields
@@ -36,11 +38,10 @@ class InitialResponseForm(PageForm):
     @form.action(label=u'Accept', failure='handle_respond_action_failure')
     def handle_accept(self, action, data):
         if self.invitationId != 'example':
-            # Set password
             set_password(self.userInfo.user, data['password1'])
-            # Accept invitation
-            # Join group
-            # Notify the right people
+            self.invitation.accept()
+            join_group(self.userInfo, self.groupInfo)
+            self.notify_people()
         # Go to the group homepage
         uri = '%s?welcome=1' % self.groupInfo.url
         self.request.RESPONSE.redirect(uri)
@@ -54,7 +55,12 @@ class InitialResponseForm(PageForm):
             self.status = u'<p>There is an error:</p>'
         else:
                 self.status = u'<p>There rare errors:</p>'
-            
+
+    def notify_people(self):
+        if not(user_participation_coach_of_group(adminInfo, groupInfo)):
+            # Tell the admin
+            pass
+    
     # Non-Standard methods below this point
     @property
     def invitationId(self):

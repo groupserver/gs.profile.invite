@@ -9,16 +9,22 @@ class Invitation(object):
         assert invitationId, 'No Invitation ID'
         self.invitationId = invitationId
         self.context = context
-        self.__invite = None
+        self.__invite = self.__query = None
         self.__adminInfo = self.__userInfo = self.__groupInfo = None
-        
+    
+    @property
+    def query(self):
+        if self.__query == None:
+            da = self.context.zsqlalchemy
+            self.__query = InvitationQuery(da)
+            assert self.__query
+        return self.__query
+    
     @property
     def invite(self):
         if self.__invite == None:
-            da = self.context.zsqlalchemy
-            query = InvitationQuery(da)
-            self.__invite = query.get_invitation(self.invitationId, 
-                                                    current=False)
+            self.__invite = self.query.get_invitation(self.invitationId, 
+                                                        current=False)
             assert self.__invite['invitation_id'] == self.invitationId,\
                 'Invitation (%s) not found' % self.invitationId
         return self.__invite
@@ -47,6 +53,18 @@ class Invitation(object):
                                             self.invite['group_id'])
         return self.__groupInfo
 
+    def accept(self):
+        siteId = self.groupInfo.siteInfo.id
+        groupId = self.groupInfo.id
+        userId = self.userInfo.id
+        self.query.accept_invitation(self.siteId, groupId, userId)
+        
+    def decline(self):
+        siteId = self.groupInfo.siteInfo.id
+        groupId = self.groupInfo.id
+        userId = self.userInfo.id
+        self.query.decline_invitation(self.siteId, groupId, userId)
+
 class FakeInvitation(object):
     def __init__(self, context, groupId):
         assert context, 'No context'
@@ -73,4 +91,10 @@ class FakeInvitation(object):
             self.__groupInfo = createObject('groupserver.GroupInfo', 
                                             self.context, self.groupId)
         return self.__groupInfo
+
+    def accept(self):
+        raise NotImplemented
+        
+    def decline(self):
+        raise NotImplemented
 
