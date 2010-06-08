@@ -57,7 +57,7 @@ class InitialResponseForm(PageForm):
                 self.status = u'<p>There rare errors:</p>'
 
     def notify_people(self):
-        if not(user_participation_coach_of_group(adminInfo, groupInfo)):
+        if not(user_participation_coach_of_group(self.adminInfo, self.groupInfo)):
             # Tell the admin
             pass
     

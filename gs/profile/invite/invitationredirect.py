@@ -20,7 +20,7 @@ class GSInvitationResponseRedirect(GSRedirectBase):
                 #  invite.
                 uri = '%s/intial_response.html?form.invitationId=%s' %\
                   (userInfo.url, invitationId)
-            if (invitationId == 'example'):
+            elif (invitationId == 'example'):
                 userInfo = createObject('groupserver.LoggedInUser',
                                         self.context)
                 ref = self.request.get('HTTP_REFERER','')

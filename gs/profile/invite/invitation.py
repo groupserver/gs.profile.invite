@@ -57,13 +57,13 @@ class Invitation(object):
         siteId = self.groupInfo.siteInfo.id
         groupId = self.groupInfo.id
         userId = self.userInfo.id
-        self.query.accept_invitation(self.siteId, groupId, userId)
+        self.query.accept_invitation(siteId, groupId, userId)
         
     def decline(self):
         siteId = self.groupInfo.siteInfo.id
         groupId = self.groupInfo.id
         userId = self.userInfo.id
-        self.query.decline_invitation(self.siteId, groupId, userId)
+        self.query.decline_invitation(siteId, groupId, userId)
 
 class FakeInvitation(object):
     def __init__(self, context, groupId):
