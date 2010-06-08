@@ -75,7 +75,8 @@
           page looks like.
         </p>
         <p>
-          Some of your profile information is shown in the
+          As the person extending the invitation, 
+          some of your profile information is shown in the
           <strong>About 
             <span class="fn" tal:content="view/adminInfo/name">The 
               Admin</span></strong>
