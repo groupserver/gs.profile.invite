@@ -1,1 +1,2 @@
-import invitationmessagecontentprovider
+# This space intentionally left blank
+

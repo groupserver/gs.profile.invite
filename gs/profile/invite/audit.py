@@ -18,8 +18,6 @@ import logging
 log = logging.getLogger(SUBSYSTEM) #@UndefinedVariable
 
 UNKNOWN         = '0'
-INVITE_NEW_USER = '1'
-INVITE_OLD_USER = '2'
 INVITE_RESPOND  = '3'
 
 class AuditEventFactory(object):
@@ -31,15 +29,8 @@ class AuditEventFactory(object):
     def __call__(self, context, event_id,  code, date,
         userInfo, instanceUserInfo,  siteInfo,  groupInfo,
         instanceDatum='', supplementaryDatum='', subsystem=''):
-
-        if (code == INVITE_NEW_USER):
-            event = InviteNewUserEvent(context, event_id, date, 
-              userInfo, instanceUserInfo, siteInfo, groupInfo,
-              instanceDatum, supplementaryDatum)
-        elif (code == INVITE_OLD_USER):
-            event = InviteOldUserEvent(context, event_id, date, 
-              userInfo, instanceUserInfo, siteInfo, groupInfo,
-              instanceDatum, supplementaryDatum)
+        if False:
+          pass
         else:
             event = BasicAuditEvent(context, event_id, UNKNOWN, date, 
               userInfo, instanceUserInfo, siteInfo, groupInfo, 
@@ -49,84 +40,6 @@ class AuditEventFactory(object):
     
     def getInterfaces(self):
         return implementedBy(BasicAuditEvent)
-
-class InviteNewUserEvent(BasicAuditEvent):
-    """Administrator inviting a New User Event. 
-    
-    The "instanceDatum" is the address used to create the new user.
-    """
-    implements(IAuditEvent)
-
-    def __init__(self, context, id, d, userInfo, instanceUserInfo, 
-        siteInfo, groupInfo, instanceDatum,  supplementaryDatum):
-        
-        BasicAuditEvent.__init__(self, context, id, 
-          INVITE_NEW_USER, d, userInfo, instanceUserInfo, 
-          siteInfo, groupInfo,  instanceDatum, supplementaryDatum, 
-          SUBSYSTEM)
-    
-    def __str__(self):
-        retval = u'Administrator %s (%s) inviting a new user %s (%s) '\
-          u'with address <%s> to join %s (%s) on %s (%s)' %\
-          (self.userInfo.name, self.userInfo.id,
-          self.instanceUserInfo.name, self.instanceUserInfo.id,  
-          self.instanceDatum,
-          self.groupInfo.name, self.groupInfo.id,
-          self.siteInfo.name, self.siteInfo.id)
-        return retval.encode('ascii', 'ignore')
-
-    @property
-    def xhtml(self):
-        cssClass = u'audit-event profile-invite-event-%s' % self.code
-        email = u'<code class="email">%s</code>' % self.instanceDatum
-        retval = u'<span class="%s">Invited the new user %s (with the '\
-            u'email address %s) to join %s.</span>' %\
-            (cssClass, userInfo_to_anchor(self.instanceUserInfo),
-            groupInfo_to_anchor(self.groupInfo))
-        if ((self.instanceUserInfo.id != self.userInfo.id)
-            and not(self.userInfo.anonymous)):
-            retval = u'%s &#8212; %s' %\
-              (retval, userInfo_to_anchor(self.userInfo))
-        return retval
-
-class InviteOldUserEvent(BasicAuditEvent):
-    """Administrator Inviting an old User Event. 
-    
-    The "instanceDatum" is the address used to match the old user.
-    """
-    implements(IAuditEvent)
-
-    def __init__(self, context, id, d, userInfo, instanceUserInfo, 
-        siteInfo, groupInfo, instanceDatum,  supplementaryDatum):
-        
-        BasicAuditEvent.__init__(self, context, id, 
-          INVITE_OLD_USER, d, userInfo, instanceUserInfo, 
-          siteInfo, groupInfo, instanceDatum, supplementaryDatum, 
-          SUBSYSTEM)
-    
-    def __str__(self):
-        retval = u'Administrator %s (%s) inviting an existing user '\
-          u'%s (%s) with address <%s> to join %s (%s) on %s (%s)' %\
-          (self.userInfo.name, self.userInfo.id,
-          self.instanceUserInfo.name, self.instanceUserInfo.id,  
-          self.instanceDatum,
-          self.groupInfo.name, self.groupInfo.id,
-          self.siteInfo.name, self.siteInfo.id)
-        return retval.encode('ascii', 'ignore')
-
-    @property
-    def xhtml(self):
-        cssClass = u'audit-event profile-invite-event-%s' % self.code
-        email = u'<code class="email">%s</code>' % self.instanceDatum
-        retval = u'<span class="%s">Invited the existing user %s (with '\
-            u'the email address %s) to join %s.</span>' %\
-            (cssClass, userInfo_to_anchor(self.instanceUserInfo),
-            groupInfo_to_anchor(self.groupInfo))
-        if ((self.instanceUserInfo.id != self.userInfo.id)
-            and not(self.userInfo.anonymous)):
-            retval = u'%s &#8212; %s' %\
-              (retval, userInfo_to_anchor(self.userInfo))
-        return retval
 
 class Auditor(object):
     def __init__(self, siteInfo, groupInfo, adminInfo, userInfo):
