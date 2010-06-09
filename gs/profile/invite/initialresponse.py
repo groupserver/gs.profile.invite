@@ -42,14 +42,23 @@ class InitialResponseForm(PageForm):
             self.invitation.accept()
             join_group(self.userInfo, self.groupInfo)
             self.notify_people()
-        # Go to the group homepage
         uri = '%s?welcome=1' % self.groupInfo.url
         self.request.RESPONSE.redirect(uri)
         
     @form.action(label=u'Decline', failure='handle_respond_action_failure')
     def handle_decline(self, action, data):
-        pass
-
+        if self.invitationId != 'example':
+            # --=mpj17=-- We cannot delete the user-instance at this 
+            #   stage. This method will return, so it requires the 
+            #   context (the user) to still be there. If we delete the
+            #   user instance we get a Not Found error. The 
+            #   initial_decline.html page notes that the user-instance
+            #   will be deleted later on.
+            #self.context.acl_users.manage_delObjects([self.userInfo.id])
+            self.invitation.decline()
+        uri = '/initial_decline.html'
+        self.request.RESPONSE.redirect(uri)
+        
     def handle_respond_action_failure(self, action, data, errors):
         if len(errors) == 1:
             self.status = u'<p>There is an error:</p>'
