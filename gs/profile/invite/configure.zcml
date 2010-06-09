@@ -54,5 +54,12 @@
     class=".setpassword.SetPasswordAdminInviteForm"
     permission="zope2.ManageProperties" />
 
+  <browser:page
+    for="Products.GSContent.interfaces.IGSSiteFolder"
+    template="browser/templates/initial_decline.pt"
+    class="Products.GSContent.view.GSContentView"
+    name="initial_decline.html"
+    permission="zope2.Public"/>
+
 </configure>
 

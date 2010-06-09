@@ -1,0 +1,24 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  metal:use-macro="context/@@groupserver_site_home_layout/page">
+  <head>
+    <title metal:fill-slot="title">Invitation Declined:
+      <tal:block replace="view/siteInfo/name">A Site</tal:block></title>
+  </head>
+  <body>
+    <div metal:fill-slot="utilitylinks">&#160;</div>
+    <div metal:fill-slot="sitenavigation">&#160;</div>
+    <div metal:fill-slot="search">&#160;</div>
+    <tal:block metal:fill-slot="body">
+      <h1>Invitation Declined</h1>
+      <p>
+        You have <strong>declined</strong> the invitation.
+        We have noted your decision; your personal information will
+        be <strong>deleted</strong> from 
+        <tal:block replace="view/siteInfo/name">this Site</tal:block>.
+      </p>
+    </tal:block>
+  </body>
+</html>
+
