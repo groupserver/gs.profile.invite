@@ -44,21 +44,22 @@ class InvitationQuery(object):
         assert siteId
         assert userId
         uit = self.userInvitationTable
-        cols = [uit.c.invitation_id, uit.c.user_id, 
-            uit.c.inviting_user_id, uit.c.site_id, uit.c.group_id,
-            sa.func.max(uit.c.invitation_date).label('date'),
-            uit.c.response_date, uit.c.accepted] #@UndefinedVariable
-        s = sa.select(cols)
+        s = uit.select()
         s.append_whereclause(uit.c.site_id  == siteId)
         s.append_whereclause(uit.c.user_id  == userId)
         s.append_whereclause(uit.c.response_date == None)
-        s.group_by(uit.c.site_id, uit.c.group_id, uit.c.user_id, 
-            uit.c.inviting_user_id)
+        s.order_by(sa.desc(uit.c.invitation_date))
+
         r = s.execute()
 
+        seen = []
         retval = []
         if r.rowcount:
-            retval = [self.marshal_invite(x) for x in r]
+            for x in r:
+                key = '%(site_id)s/%(group_id)s' % x
+                if key not in seen:
+                    seen.append(key)
+                    retval.append(self.marshal_invite(x))
         assert type(retval) == list
         return retval
 
