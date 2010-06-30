@@ -78,13 +78,6 @@ class GSInviationsRespond(BrowserView):
             if accepted:
                 acceptedGroups = [createObject('groupserver.GroupInfo',
                   self.groupsInfo.groupsObj, g) for g in accepted]
-                am = ', '.join(['%s (%s)' % (g.name, g.id) 
-                                for g in acceptedGroups])
-                lm = u'%s (%s) accepting invitations to join the groups '\
-                  u'%s on %s (%s)' % (self.userInfo.name, self.userInfo.id,
-                  am, self.siteInfo.name, self.siteInfo.id)
-                log.info(lm)
-
                 self.accept_invitations(acceptedGroups)
                 
                 acceptedLinks = ['<a href="%s">%s</a>' % (g.url, g.name)
@@ -147,35 +140,21 @@ class GSInviationsRespond(BrowserView):
         assert type(result['form']) == dict
         return result
 
-    def accept_invitations(self, groupIds):
-        '''Accept the invitations to the groups
-        
-        DESCRIPTION
-          Accept the invitations to a list of groups, joining the groups.
-            
-        ARGUMENTS
-          "groupIds": A list of groups
-            
-        RETURNS
-          None
-            
-        SIDE EFFECTS
-          The current user ("self.context") is joined to the groups. The
-          invitations are marked as accepted, and the current date is
-          put down as the response-date.
-        '''
-        assert type(groupIds) == list
+    def accept_invitations(self, groupInfos):
+        assert type(groupInfos) == list
+        gids = [g.id for g in groupInfos]
         acceptedInvites = [i for i in self.currentInvitations 
-                            if i.groupInfo.id in groupIds ]
+                            if i.groupInfo.id in gids]
         for acceptedInvite in acceptedInvites:
-            aceptedInvite.accept()
+            acceptedInvite.accept()
             join_group(self.context, acceptedInvite.groupInfo)
             self.notifiy_admin_accept(acceptedInvite.groupInfo)
 
-    def decline_invitations(self, groupsIds):
+    def decline_invitations(self, groupsInfos):
         assert type(groupIds) == list
+        gids = [g.id for g in groupInfos]
         declinedInvites = [i for i in self.currentInvitations 
-                            if i.groupInfo.id in groupIds ]
+                            if i.groupInfo.id in gids ]
         for declinedInvite in declinedInvites:
             declinedInvite.decline()
             join_group(self.context, acceptedInvite.groupInfo)
@@ -195,7 +174,7 @@ class GSInviationsRespond(BrowserView):
 
     def notifiy_admin(self, groupInfo, notificationId):
         invites = [i for i in self.currentInvitations
-                   if i['group_id'] == groupInfo.id]
+                   if i.groupInfo.id == groupInfo.id]
 
         n_dict = {
             'adminFn':   '',
@@ -209,7 +188,7 @@ class GSInviationsRespond(BrowserView):
         for _invite in invites:
             adminInfo = createObject('groupserver.UserFromId', 
                                      self.context, 
-                                     _invite['inviting_user_id'])
+                                     _invite.userInfo.id)
             if adminInfo.id not in seenAdmins:
                 seenAdmins.append(adminInfo.id)
                 n_dict['adminFn'] = adminInfo.name
