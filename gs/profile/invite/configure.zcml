@@ -34,5 +34,12 @@
     name="initial_decline.html"
     permission="zope2.Public"/>
 
+  <browser:page 
+    for="Products.CustomUserFolder.interfaces.ICustomUser"
+    name="invitations_respond.html"
+    class=".invitationsrespond.GSInviationsRespond"
+    template="browser/templates/invitationsrespond.pt" 
+    permission="zope2.ManageProperties" />
+
 </configure>
 
