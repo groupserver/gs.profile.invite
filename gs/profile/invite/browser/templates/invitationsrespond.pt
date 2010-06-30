@@ -45,24 +45,24 @@
         <div class="group-invitation" 
           tal:repeat="invitation view/currentInvitations">
           <h3 class="group" 
-            tal:attributes="id string:group-${invitation/group/id}"
-            tal:content="invitation/group/name">
+            tal:attributes="id string:group-${invitation/groupInfo/id}"
+            tal:content="invitation/groupInfo/name">
             The Group
           </h3>
           <p>
             <a class="fn" href="#"
-              tal:content="invitation/inviting_user/name"
-              tal:attributes="href invitation/inviting_user/url">A user</a>
+              tal:content="invitation/adminInfo/name"
+              tal:attributes="href invitation/adminInfo/url">A user</a>
             sent you an invitation to join
             <a class="group" href="#"
-              tal:content="invitation/group/name"
-              tal:attributes="href invitation/group/url">a group</a>
+              tal:content="invitation/groupInfo/name"
+              tal:attributes="href invitation/groupInfo/url">a group</a>
             on
             <span class="date"
-              tal:content="python:md(ctx, invitation['invitation_date'])">a
+              tal:content="python:md(ctx, invitation.invite['invitation_date'])">a
               day</span>.
           </p>
-          <fieldset tal:define="gid invitation/group/id">
+          <fieldset tal:define="gid invitation/groupInfo/id">
             <input type="radio" checked="" 
               value="accept" class="radioType"
               name="foo" id="foo-accept" 
@@ -74,7 +74,7 @@
               tal:attributes="id string:${gid}-accept-label;
                 for string:${gid}-accept">Accept the invitation to join
                 <span class="group"
-                  tal:content="invitation/group/name">this group</span></label>
+                  tal:content="invitation/groupInfo/name">this group</span></label>
             <br/>
             <input type="radio" class="radioType"
               name="foo" id="foo-decline"
@@ -86,7 +86,7 @@
               tal:attributes="id string:${gid}-decline-label;
                 for string:${gid}-decline">Decline the invitation to join
                 <span class="group"
-                  tal:content="invitation/group/name">this group</span></label>
+                  tal:content="invitation/groupInfo/name">this group</span></label>
           </fieldset>
         </div><!--group-invitation-->
         <input type="hidden" class="hidden" name="submitted" value=""/>

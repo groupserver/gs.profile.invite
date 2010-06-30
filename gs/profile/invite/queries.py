@@ -44,16 +44,17 @@ class InvitationQuery(object):
         assert siteId
         assert userId
         uit = self.userInvitationTable
-        cols = [uit.c.site_id, uit.c.group_id, uit.c.user_id, 
-                uit.c.inviting_user_id, 
-                sa.func.max(uit.c.invitation_date).label('date')] #@UndefinedVariable
+        cols = [uit.c.invitation_id, uit.c.user_id, 
+            uit.c.inviting_user_id, uit.c.site_id, uit.c.group_id,
+            uit.c.invitation_date,
+            uit.c.response_date, uit.c.accepted] #@UndefinedVariable
         s = sa.select(cols)
         s.append_whereclause(uit.c.site_id  == siteId)
         s.append_whereclause(uit.c.user_id  == userId)
         s.append_whereclause(uit.c.response_date == None)
-        s.order_by(sa.desc('date'))
-        s.group_by(uit.c.site_id, uit.c.group_id, uit.c.user_id, 
-            uit.c.inviting_user_id)
+        #s.order_by(sa.desc('date'))
+        #s.group_by(uit.c.site_id, uit.c.group_id, uit.c.user_id, 
+        #    uit.c.inviting_user_id)
         r = s.execute()
 
         retval = []

@@ -5,6 +5,7 @@ from Products.CustomUserFolder.userinfo import GSUserInfo
 from Products.GSGroupMember.utils import inform_ptn_coach_of_join
 from Products.GSGroupMember.groupmembership import join_group
 from queries import InvitationQuery
+from invitation import Invitation
 
 # TODO: Replace with an audit trail
 import logging
@@ -14,10 +15,17 @@ class GSInviationsRespond(BrowserView):
     def __init__(self, context, request):
         BrowserView.__init__(self, context, request)
         self.siteInfo = createObject('groupserver.SiteInfo', context)
-        self.groupsInfo = createObject('groupserver.GroupsInfo', context)
         self.userInfo = GSUserInfo(context)
-        self.__currentInvitations = self.__invitationQuery = None
-        
+        self.__groupsInfo = self.__currentInvitations = None
+        self.__invitationQuery = None
+    
+    @property
+    def groupsInfo(self):
+        if self.__groupsInfo == None:
+            self.__groupsInfo = createObject('groupserver.GroupsInfo', 
+                self.context.aq_self)
+        return self.__groupsInfo
+    
     @property
     def invitationQuery(self):
         if self.__invitationQuery == None:
@@ -29,29 +37,12 @@ class GSInviationsRespond(BrowserView):
     @property
     def currentInvitations(self):
         if self.__currentInvitations == None:
-            self.__currentInvitations = self.get_currentInvitations()
+            gci = self.invitationQuery.get_current_invitiations_for_site
+            self.__currentInvitations = \
+                [Invitation(self.context.aq_self, i['invitation_id'])
+                    for i in gci(self.siteInfo.id, self.userInfo.id)]
         assert type(self.__currentInvitations) == list
         return self.__currentInvitations
-        
-    def get_currentInvitations(self):
-        m = u'Generating a list of current group-invitations for %s (%s) '\
-          u'on %s (%s).' %\
-            (self.userInfo.name, self.userInfo.id,
-             self.siteInfo.name, self.siteInfo.id)
-        log.info(m)
-        
-        invitations = self.invitationQuery.get_current_invitiations_for_site(
-            self.siteInfo.id, self.userInfo.id)
-        for inv in invitations:
-            usrInf = createObject('groupserver.UserFromId', 
-              self.context, inv['inviting_user_id'])
-            inv['inviting_user'] = usrInf
-            grpInf = createObject('groupserver.GroupInfo',
-              self.groupsInfo.groupsObj, inv['group_id'])
-            inv['group'] = grpInf
-            
-        assert type(invitations) == list
-        return invitations
 
     def process_form(self):
         '''Process the forms in the page.
@@ -156,7 +147,7 @@ class GSInviationsRespond(BrowserView):
         assert type(result['form']) == dict
         return result
 
-    def accept_invitations(self, groups):
+    def accept_invitations(self, groupIds):
         '''Accept the invitations to the groups
         
         DESCRIPTION
@@ -173,34 +164,22 @@ class GSInviationsRespond(BrowserView):
           invitations are marked as accepted, and the current date is
           put down as the response-date.
         '''
-        assert type(groups) == list
-        
-        inviteIds = [i['group_id'] for i in self.currentInvitations]
-        accept_invite = self.invitationQuery.accept_invitation
-        for groupInfo in groups:
-            assert groupInfo.id in inviteIds, \
-              'Not invited to join %s' % groupInfo.id
-            join_group(self.context, groupInfo)
-            self.notifiy_admin_accept(groupInfo)
-            accept_invite(self.siteInfo.id, groupInfo.id, self.userInfo.id)
+        assert type(groupIds) == list
+        acceptedInvites = [i for i in self.currentInvitations 
+                            if i.groupInfo.id in groupIds ]
+        for acceptedInvite in acceptedInvites:
+            aceptedInvite.accept()
+            join_group(self.context, acceptedInvite.groupInfo)
+            self.notifiy_admin_accept(acceptedInvite.groupInfo)
 
-    def decline_invitations(self, groups):
-        '''
-        DESCRIPTION
-        
-        ARGUMENTS
-        
-        RETURNS
-        
-        SIDE EFFECTS
-        '''
-        inviteIds = [i['group_id'] for i in self.currentInvitations]
-        di = self.invitationQuery.decline_invitation
-        for groupInfo in groups:
-            assert groupInfo.id in inviteIds, \
-              'Not invited to join %s' % groupInfo.id
-            self.notifiy_admin_decline(groupInfo)
-            di(self.siteInfo.id, groupInfo.id, self.userInfo.id)
+    def decline_invitations(self, groupsIds):
+        assert type(groupIds) == list
+        declinedInvites = [i for i in self.currentInvitations 
+                            if i.groupInfo.id in groupIds ]
+        for declinedInvite in declinedInvites:
+            declinedInvite.decline()
+            join_group(self.context, acceptedInvite.groupInfo)
+            self.notifiy_admin_decline(declinedInvite.groupInfo)
 
     def notifiy_admin_accept(self, groupInfo):
         self.notifiy_admin(groupInfo, 'invite_join_group_accepted')
