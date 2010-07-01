@@ -8,6 +8,18 @@
       <span tal:replace="view/userInfo/name">A User</span>:
       <span tal:replace="view/siteInfo/name">A Site</span>
     </title>
+    <style type="text/css" metal:fill-slot="style">
+      .group-invitation p {
+        margin-left: 1.39em; 
+      }
+      .group-invitation ul {
+        margin-left: 3.47em;
+      }
+      .group-invitation fieldset {
+        padding-left: 0px;
+        margin-left: 1.39em;
+      }
+    </style>
   </head>
   <body>
     <tal:block metal:fill-slot="contextnavigation">
@@ -30,26 +42,26 @@
         enctype="multipart/form-data" method="post" action="." 
         tal:attributes="action request/URL">
         <p tal:define="plural python:len(view.currentInvitations)>1">
-          You have been invited to join the following 
-          groups<span tal:condition="plural">s</span>.
+          You have been invited to join some 
+          groups<span tal:condition="plural">s</span>!
           To accept or decline to the
           invitation<span tal:condition="plural">s</span>, set your
           response <span tal:condition="plural">for each group</span>
           below, and click the <samp class="button">Respond</samp> button.
-          You will become a member of 
-          <span tal:condition="not:plural">the group if you accept
-            the invitation.</span>
-          <span tal:condition="plural">any group you accept the invitation
-            to join.</span>
+          You will <strong>become a member</strong> of 
+          <span tal:condition="not:plural">the group if you 
+            <strong>accept the invitation.</strong></span>
+          <span tal:condition="plural">any group you 
+            <strong>accept the invitation</strong> to join.</span>
         </p>
         <div class="group-invitation" 
           tal:repeat="invitation view/currentInvitations">
-          <h3 class="group" 
+          <h2 class="group" 
             tal:attributes="id string:group-${invitation/groupInfo/id}"
             tal:content="invitation/groupInfo/name">
             The Group
-          </h3>
-          <p>
+          </h2>
+          <p tal:define="rlg python:invitation.groupInfo.get_property('real_life_group')">
             <a class="fn" href="#"
               tal:content="invitation/adminInfo/name"
               tal:attributes="href invitation/adminInfo/url">A user</a>
@@ -61,7 +73,21 @@
             <span class="date"
               tal:content="python:md(ctx, invitation.invite['invitation_date'])">a
               day</span>.
+            <span class="group-purpose">
+              <span class="group"
+                tal:content="invitation/groupInfo/name">The group</span> 
+              is an online group for
+              <span tal:content="rlg">real
+                people doing real things</span>.</span><!--group-purpose-->
+            <tal:block define="groupId invitation/groupInfo/id"
+              replace="structure provider:groupserver.GroupStats">
+              The group stats.
+            </tal:block>
           </p>
+          <tal:block define="groupId invitation/groupInfo/id"
+            replace="structure provider:groupserver.GroupPrivacy">
+             The group privacy.
+          </tal:block>
           <fieldset tal:define="gid invitation/groupInfo/id">
             <input type="radio" checked="" 
               value="accept" class="radioType"
