@@ -16,10 +16,17 @@ class GSInvitationResponseRedirect(GSRedirectBase):
             if user:
                 login(self.context, user)
                 userInfo = IGSUserInfo(user)
-                # TODO: Figure out if it is the inital of subsequent 
-                #  invite.
-                uri = '%s/intial_response.html?form.invitationId=%s' %\
-                  (userInfo.url, invitationId)
+                
+                # If the user is already a member of a group 
+                # (any group on any site) then we should go to the
+                # normal Response page, rather than the initial response
+                # page.
+                nGroups = len(user.getGroups())
+                if nGroups == 0:
+                    uri = '%s/intial_response.html?form.invitationId=%s' %\
+                      (userInfo.url, invitationId)
+                else:
+                    uri = '%s/invitations_respond.html' % userInfo.url
             elif (invitationId == 'example'):
                 userInfo = createObject('groupserver.LoggedInUser',
                                         self.context)
