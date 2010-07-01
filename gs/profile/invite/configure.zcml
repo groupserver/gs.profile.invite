@@ -41,5 +41,13 @@
     template="browser/templates/invitationsrespond.pt" 
     permission="zope2.ManageProperties" />
 
+  <interface 
+    interface=".interfaces.IGSInvitationListContentProvider"
+    type="zope.contentprovider.interfaces.ITALNamespaceData"/>
+  <adapter
+    factory=".invitationlist.InvitationList"
+    provides="zope.contentprovider.interfaces.IContentProvider"
+    name="groupserver.GroupInvitationList"/>
+
 </configure>
 

@@ -1,0 +1,25 @@
+<div xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:tal="http://xml.zope.org/namespaces/tal" id="invitations"
+  tal:condition="options/view/invitations"
+  tal:define="view options/view;
+    more python:len(view.invitations) &gt; 1">
+  <h2>Invitations</h2>
+  <ul>
+    <tal:block repeat="invitation view/invitations">
+      <li class="invitation">
+        <a class="fn admin"
+          tal:attributes="href invitation/adminInfo/url"
+          tal:content="invitation/adminInfo/name">An administrator</a>
+        has invited you to join
+        <a class="group"
+          tal:attributes="href invitation/groupInfo/url"
+          tal:content="invitation/groupInfo/name">a group</a>.
+      </li>
+    </tal:block>
+  </ul>
+  <p>
+    <a href="invitations_respond.html"><strong>Respond</strong></a> to
+    your invitation<span tal:condition="more">s</span>!
+  </p>
+</div>
+

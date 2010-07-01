@@ -2,6 +2,7 @@
 from zope.schema import *
 from zope.interface.interface import Interface
 from zope.schema.vocabulary import SimpleVocabulary
+from zope.contentprovider.interfaces import IContentProvider
 
 class IGSSetPasswordAdminInvite(Interface):
     password1 = ASCIILine(title=u'Password',
@@ -33,4 +34,11 @@ class IGSResponseFields(Interface):
           u'and secret groups, post from the '\
           u'web, and change your profile.',
         required=False)
-    
+
+class IGSInvitationListContentProvider( IContentProvider ):
+    pageTemplateFileName = Text(title=u"Page Template File Name",
+        description=u'The name of the ZPT file that is used to '\
+        u'render the invitation list.',
+        required=False,
+        default=u"browser/templates/invitationslist.pt")
+
