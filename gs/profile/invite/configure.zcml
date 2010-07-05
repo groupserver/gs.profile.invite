@@ -49,5 +49,13 @@
     provides="zope.contentprovider.interfaces.IContentProvider"
     name="groupserver.GroupInvitationList"/>
 
+  <!-- Error Pages -->
+  <browser:page
+    for="Products.GSContent.interfaces.IGSSiteFolder"
+    template="browser/templates/invitation-responded.pt"
+    class=".inviteissue.IssueView"
+    name="invitation-responded.html"
+    permission="zope2.Public"/>
+
 </configure>
 

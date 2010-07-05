@@ -1,0 +1,54 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  metal:use-macro="context/@@groupserver_site_home_layout/page">
+  <head>
+    <title metal:fill-slot="title"
+      tal:define="ad view/invitation/invite/accepted;
+        Accepted python:ad and 'Accepted' or 'Declined';">Invitation
+      <tal:block content="Accepted">Accepted</tal:block>:
+      <tal:block replace="view/siteInfo/name">A Site</tal:block></title>
+  </head>
+  <body>
+    <div metal:fill-slot="utilitylinks">&#160;</div>
+    <div metal:fill-slot="sitenavigation">&#160;</div>
+    <div metal:fill-slot="search">&#160;</div>
+    <tal:block metal:fill-slot="body"
+      tal:define="ad view/invitation/invite/accepted;
+        accepted python:ad and 'accepted' or 'declined';
+        Accepted python:ad and 'Accepted' or 'Declined';">
+      <h1>Invitation
+        <tal:block content="Accepted">Accepted</tal:block>
+      </h1>
+      <p>
+        Your invitation to join
+        <span class="group"
+          tal:content="view/invitation/groupInfo/name">a group</span>
+        has already been 
+        <span class="response" tal:content="accepted">accepted</span>.
+        <span id="go-to-group" tal:condition="ad">
+          Go to
+          <a href="#" class="group"
+            tal:attributes="href view/invitation/groupInfo/url">the
+            homepage for 
+            <span class="group"
+              tal:content="view/invitation/groupInfo/name">a group</span></a>.
+          There you should <strong>bookmark</strong> the page (add it to
+          your <em>favourites</em>) so you can quickly and easily visit
+          the group again.
+        </span><!--got-to-group-->
+        <span id="respond-to-invite" tal:condition="not:ad">
+          Ask 
+          <span class="fn" 
+            tal:content="view/invitation/adminInfo/name">the 
+            administrator</span>
+          for another invitation if you want to participate in
+          <span class="group"
+            tal:content="view/invitation/groupInfo/name">a 
+              group</span>.
+        </span><!--respond-to-invite-->
+      </p>
+    </tal:block>
+  </body>
+</html>
+

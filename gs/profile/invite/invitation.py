@@ -25,8 +25,8 @@ class Invitation(object):
         if self.__invite == None:
             self.__invite = self.query.get_invitation(self.invitationId, 
                                                         current=False)
-            assert self.__invite['invitation_id'] == self.invitationId,\
-                'Invitation (%s) not found' % self.invitationId
+            if self.__invite['invitation_id'] != self.invitationId:
+              raise KeyError(self.invitationId)
         return self.__invite
         
     @property
