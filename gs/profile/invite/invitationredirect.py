@@ -49,7 +49,8 @@ class GSInvitationResponseRedirect(GSRedirectBase):
                         uri = '%s/invitations_respond.html' % \
                                 invitation.userInfo.url
                 else: # Invitation does not exist
-                    uri = '/invite-not-found.html'
+                    uri = '/invite-not-found.html?form.invitationId=%s' %\
+                        invitationId
         else: # Verification ID not specified
             uri = '/invite-no-id.html'
         assert uri
