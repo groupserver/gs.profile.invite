@@ -38,6 +38,7 @@ class InitialResponseForm(PageForm):
     @form.action(label=u'Accept', failure='handle_respond_action_failure')
     def handle_accept(self, action, data):
         if self.invitationId != 'example':
+            self.verify_email_address()
             set_password(self.userInfo.user, data['password1'])
             self.invitation.accept()
             join_group(self.userInfo, self.groupInfo)
@@ -67,7 +68,7 @@ class InitialResponseForm(PageForm):
 
     def notify_people(self):
         if not(user_participation_coach_of_group(self.adminInfo, self.groupInfo)):
-            # Tell the admin
+            # TODO: Tell the admin
             pass
     
     # Non-Standard methods below this point
@@ -97,6 +98,14 @@ class InitialResponseForm(PageForm):
                 i = Invitation(self.context.aq_self, self.invitationId)
             self.__invitation = i
         return self.__invitation
+
+    def verify_email_address(self):
+        # There better be only one email address.
+        email  = self.userInfo.user.get_emailAddresses()[0]
+        # Assuming this will work ;)
+        vid = '%s_accept' % self.invitationId
+        self.userInfo.user.add_emailAddressVerification(vid, email)
+        self.userInfo.user.verify_emailAddress(vid)
 
     @property
     def adminInfo(self):
