@@ -62,5 +62,11 @@
     class=".inviteissue.IssueView"
     name="invite-not-found.html"
     permission="zope2.Public"/>
+  <browser:page
+    for="Products.GSContent.interfaces.IGSSiteFolder"
+    template="browser/templates/invite-no-id.pt"
+    class=".inviteissue.IssueView"
+    name="invite-no-id.html"
+    permission="zope2.Public"/>
 </configure>
 
