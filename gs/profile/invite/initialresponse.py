@@ -57,6 +57,7 @@ class InitialResponseForm(PageForm):
             #   will be deleted later on.
             #self.context.acl_users.manage_delObjects([self.userInfo.id])
             self.invitation.decline()
+            # TODO: Tell someone
         uri = '/initial_decline.html'
         self.request.RESPONSE.redirect(uri)
         
@@ -64,7 +65,7 @@ class InitialResponseForm(PageForm):
         if len(errors) == 1:
             self.status = u'<p>There is an error:</p>'
         else:
-                self.status = u'<p>There rare errors:</p>'
+            self.status = u'<p>There are errors:</p>'
 
     def notify_people(self):
         if not(user_participation_coach_of_group(self.adminInfo, self.groupInfo)):
