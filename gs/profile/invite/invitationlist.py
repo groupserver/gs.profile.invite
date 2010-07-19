@@ -54,6 +54,5 @@ class InvitationList(object):
             gci = self.invitationQuery.get_current_invitiations_for_site
             self.__invitations = [Invitation(self.context, i['invitation_id']) 
                 for i in gci(self.siteInfo.id, self.userInfo.id)]
-            print self.__invitations
         return self.__invitations
 
