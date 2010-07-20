@@ -16,7 +16,8 @@ class InvitationQuery(object):
             'group_id':         x['group_id'],
             'invitation_date':  x['invitation_date'],
             'response_date':    x['response_date'],
-            'accepted':         x['accepted']}
+            'accepted':         x['accepted'],
+            'initial_invite':   x['initial_invite']}
         return retval
         
     def get_blank_invite(self):
