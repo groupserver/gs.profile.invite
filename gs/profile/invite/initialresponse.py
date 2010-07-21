@@ -3,7 +3,10 @@
 from zope.component import createObject
 from zope.formlib import form
 from zope.security.proxy import removeSecurityProxy
-from Products.Five.formlib.formbase import PageForm
+try:
+    from five.formlib.formbase import PageForm
+except ImportError:
+    from Products.Five.formlib.formbase import PageForm
 from Products.Five.browser.pagetemplatefile import ZopeTwoPageTemplateFile
 from Products.CustomUserFolder.interfaces import IGSUserInfo
 from Products.GSProfile.set_password import set_password
@@ -115,6 +118,7 @@ class InitialResponseForm(PageForm):
             self.__userInfo = IGSUserInfo(self.context.aq_self)
         assert self.__userInfo
         return self.__userInfo
+        
     @property
     def siteInfo(self):
         if self.__siteInfo == None:

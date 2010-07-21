@@ -2,18 +2,15 @@
 from Products.Five import BrowserView
 from zope.component import createObject
 from Products.CustomUserFolder.interfaces import IGSUserInfo
-from Products.GSGroupMember.utils import inform_ptn_coach_of_join
-from Products.GSGroupMember.groupmembership import join_group
+from gs.group.member.join.interfaces import IGSJoiningUser
 from queries import InvitationQuery
 from invitation import Invitation
 
 class GSInviationsRespond(BrowserView):
     def __init__(self, context, request):
         BrowserView.__init__(self, context, request)
-        self.siteInfo = createObject('groupserver.SiteInfo', context)
-        self.userInfo = IGSUserInfo(context)
         self.__groupsInfo = self.__currentInvitations = None
-        self.__invitationQuery = None
+        self.__invitationQuery = self.__siteInfo = self.__userInfo = None
     
     @property
     def groupsInfo(self):
@@ -21,6 +18,21 @@ class GSInviationsRespond(BrowserView):
             self.__groupsInfo = createObject('groupserver.GroupsInfo', 
                 self.context.aq_self)
         return self.__groupsInfo
+
+    @property
+    def userInfo(self):
+        if self.__userInfo == None:
+            self.__userInfo = IGSUserInfo(self.context.aq_self)
+        assert self.__userInfo
+        return self.__userInfo
+        
+    @property
+    def siteInfo(self):
+        if self.__siteInfo == None:
+            self.__siteInfo = createObject('groupserver.SiteInfo', 
+                                self.context.aq_self)
+        assert self.__siteInfo
+        return self.__siteInfo
     
     @property
     def invitationQuery(self):
@@ -65,7 +77,6 @@ class GSInviationsRespond(BrowserView):
             groupIds = [k.split('-respond')[0] for k in form.keys() 
               if  '-respond' in k]
             responses = [form['%s-respond' % k] for k in groupIds]          
-
             result['error'] = False            
             acceptedMessage = declinedMessage = u''
 
@@ -76,8 +87,7 @@ class GSInviationsRespond(BrowserView):
                   self.groupsInfo.groupsObj, g) for g in accepted]
                 self.accept_invitations(acceptedGroups)
                 acceptedMessage = self.accept_message(acceptedGroups)
-                # TODO: tell someone
-                
+            
             declined = [k.split('-decline')[0] for k in responses 
                         if '-decline' in k]
             for d in declined:
@@ -91,12 +101,10 @@ class GSInviationsRespond(BrowserView):
             result['message'] = u'%s\n%s' % \
                 (acceptedMessage, declinedMessage)
             self.__currentInvitations = None
-    
             assert result.has_key('error')
             assert type(result['error']) == bool
             assert result.has_key('message')
             assert type(result['message']) == unicode
-        
         assert result.has_key('form')
         assert type(result['form']) == dict
         return result
@@ -138,8 +146,8 @@ class GSInviationsRespond(BrowserView):
                             if i.groupInfo.id in gids]
         for acceptedInvite in acceptedInvites:
             acceptedInvite.accept()
-            join_group(self.context, acceptedInvite.groupInfo)
-            self.notifiy_admin_accept(acceptedInvite.groupInfo)
+            joiningUser = IGSJoiningUser(self.userInfo)
+            joiningUser.join(acceptedInvite.groupInfo)
 
     def decline_invitations(self, groupInfos):
         assert type(groupInfos) == list
@@ -148,41 +156,5 @@ class GSInviationsRespond(BrowserView):
                             if i.groupInfo.id in gids]
         for declinedInvite in declinedInvites:
             declinedInvite.decline()
-            self.notifiy_admin_decline(declinedInvite.groupInfo)
-
-    def notifiy_admin_accept(self, groupInfo):
-        self.notifiy_admin(groupInfo, 'invite_join_group_accepted')
-
-        ptnCoachId = groupInfo.get_property('ptn_coach_id', '')
-        if ptnCoachId:
-            ptnCoachInfo = createObject('groupserver.UserFromId', 
-                                        self.context, ptnCoachId)
-            inform_ptn_coach_of_join(ptnCoachInfo, self.userInfo, groupInfo)
-        
-    def notifiy_admin_decline(self, groupInfo):
-        self.notifiy_admin(groupInfo, 'invite_join_group_declined')
-
-    def notifiy_admin(self, groupInfo, notificationId):
-        invites = [i for i in self.currentInvitations
-                   if i.groupInfo.id == groupInfo.id]
-
-        n_dict = {
-            'adminFn':   '',
-            'userFn':    self.userInfo.name,
-            'groupName': groupInfo.name,
-            'groupURL':  groupInfo.url,
-            'siteName':  self.siteInfo.name
-        }
-
-        seenAdmins = []
-        for _invite in invites:
-            adminInfo = createObject('groupserver.UserFromId', 
-                                     self.context, 
-                                     _invite.adminInfo.id)
-            if adminInfo.id not in seenAdmins:
-                seenAdmins.append(adminInfo.id)
-                n_dict['adminFn'] = adminInfo.name
-                adminInfo.user.send_notification(notificationId, 
-                                                  'default', 
-                                                  n_dict=n_dict)
+            # TODO: Tell someone
 
