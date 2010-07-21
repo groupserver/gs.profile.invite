@@ -7,8 +7,7 @@ from Products.Five.formlib.formbase import PageForm
 from Products.Five.browser.pagetemplatefile import ZopeTwoPageTemplateFile
 from Products.CustomUserFolder.interfaces import IGSUserInfo
 from Products.GSProfile.set_password import set_password
-from Products.GSGroupMember.groupmembership import join_group, \
-    user_participation_coach_of_group
+from gs.group.member.join.interfaces import IGSJoiningUser
 from gs.profile.notify.interfaces import IGSNotifyUser
 from gs.profile.notify.adressee import Addressee, SupportAddressee
 from interfaces import IGSResponseFields
@@ -23,10 +22,9 @@ class InitialResponseForm(PageForm):
 
     def __init__(self, context, request):
         PageForm.__init__(self, context, request)
-        self.siteInfo = createObject('groupserver.SiteInfo', self.context)
-        
+        self.__siteInfo = None
         self.__formFields = self.__invitation = self.__invitationId = None
-        self.__groupPrivacy = self.__groupStats = None
+        self.__groupPrivacy = self.__groupStats = self.__userInfo = None
         
     @property
     def form_fields(self):
@@ -41,8 +39,8 @@ class InitialResponseForm(PageForm):
             self.verify_email_address()
             set_password(self.userInfo.user, data['password1'])
             self.invitation.accept()
-            join_group(self.userInfo, self.groupInfo)
-            self.notify_people()
+            joiningUser = IGSJoiningUser(self.userInfo)
+            joiningUser.join(self.groupInfo)
         uri = '%s?welcome=1' % self.groupInfo.url
         self.request.RESPONSE.redirect(uri)
         
@@ -68,9 +66,8 @@ class InitialResponseForm(PageForm):
             self.status = u'<p>There are errors:</p>'
 
     def notify_people(self):
-        if not(user_participation_coach_of_group(self.adminInfo, self.groupInfo)):
-            # TODO: Tell the admin
-            pass
+        # TODO: Tell the admin
+        pass
     
     # Non-Standard methods below this point
     @property
@@ -114,11 +111,23 @@ class InitialResponseForm(PageForm):
 
     @property
     def userInfo(self):
-        return self.invitation.userInfo
+        if self.__userInfo == None:
+            self.__userInfo = IGSUserInfo(self.context.aq_self)
+        assert self.__userInfo
+        return self.__userInfo
+    @property
+    def siteInfo(self):
+        if self.__siteInfo == None:
+            self.__siteInfo = createObject('groupserver.SiteInfo', 
+                                self.context.aq_self)
+        assert self.__siteInfo
+        return self.__siteInfo
 
     @property
     def groupInfo(self):
-        return self.invitation.groupInfo
+        retval = self.invitation.groupInfo
+        assert retval, 'No group'
+        return retval
 
     @property
     def groupPrivacy(self):

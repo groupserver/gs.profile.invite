@@ -76,6 +76,7 @@ class GSInviationsRespond(BrowserView):
                   self.groupsInfo.groupsObj, g) for g in accepted]
                 self.accept_invitations(acceptedGroups)
                 acceptedMessage = self.accept_message(acceptedGroups)
+                # TODO: tell someone
                 
             declined = [k.split('-decline')[0] for k in responses 
                         if '-decline' in k]

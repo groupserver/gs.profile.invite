@@ -26,7 +26,8 @@ class Invitation(object):
             self.__invite = self.query.get_invitation(self.invitationId, 
                                                         current=False)
             if self.__invite['invitation_id'] != self.invitationId:
-              raise KeyError(self.invitationId)
+                raise KeyError(self.invitationId)
+        assert self.__invite
         return self.__invite
         
     @property
@@ -35,6 +36,7 @@ class Invitation(object):
             self.__userInfo = createObject('groupserver.UserFromId',
                                             self.context, 
                                             self.invite['user_id'])
+        assert self.__userInfo
         return self.__userInfo
 
     @property
@@ -43,14 +45,17 @@ class Invitation(object):
             self.__adminInfo = createObject('groupserver.UserFromId',
                                             self.context, 
                                             self.invite['inviting_user_id'])
+        assert self.__adminInfo
         return self.__adminInfo
 
     @property
     def groupInfo(self):
         if self.__groupInfo == None:
+            assert self.invite['group_id']
             self.__groupInfo = createObject('groupserver.GroupInfo', 
                                             self.context,
                                             self.invite['group_id'])
+        assert self.__groupInfo
         return self.__groupInfo
 
     def accept(self):
