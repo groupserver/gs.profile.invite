@@ -3,8 +3,11 @@ from Products.Five import BrowserView
 from zope.component import createObject
 from Products.CustomUserFolder.interfaces import IGSUserInfo
 from gs.group.member.join.interfaces import IGSJoiningUser
+from gs.profile.notify.interfaces import IGSNotifyUser
 from queries import InvitationQuery
 from invitation import Invitation
+from audit import Auditor, INVITE_RESPOND, INVITE_RESPOND_ACCEPT, \
+    INVITE_RESPOND_DELCINE
 
 class GSInviationsRespond(BrowserView):
     def __init__(self, context, request):
@@ -97,6 +100,7 @@ class GSInviationsRespond(BrowserView):
                   self.groupsInfo.groupsObj, g) for g in declined]
                 self.decline_invitations(declinedGroups)
                 declinedMessage = self.decline_message(declinedGroups)
+                # TODO: Tell someone
 
             result['message'] = u'%s\n%s' % \
                 (acceptedMessage, declinedMessage)
@@ -144,17 +148,39 @@ class GSInviationsRespond(BrowserView):
         gids = [g.id for g in groupInfos]
         acceptedInvites = [i for i in self.currentInvitations 
                             if i.groupInfo.id in gids]
+
+        auditor = Auditor(self.siteInfo, self.userInfo)
+        
         for acceptedInvite in acceptedInvites:
             acceptedInvite.accept()
+            auditor.info(INVITE_RESPOND, acceptedInvite.groupInfo, 
+                acceptedInvite.adminInfo, INVITE_RESPOND_ACCEPT)
             joiningUser = IGSJoiningUser(self.userInfo)
+            # --=mpj17=-- Joining will notify the admin, by side effect.
             joiningUser.join(acceptedInvite.groupInfo)
+            # TODO: When anyone can invite anyone else to join more than
+            #   the administrators will have to be informed.
+            #   <https://projects.iopen.net/groupserver/ticket/436>
 
     def decline_invitations(self, groupInfos):
         assert type(groupInfos) == list
         gids = [g.id for g in groupInfos]
         declinedInvites = [i for i in self.currentInvitations 
                             if i.groupInfo.id in gids]
+
+        auditor = Auditor(self.siteInfo, self.userInfo)
+
         for declinedInvite in declinedInvites:
             declinedInvite.decline()
-            # TODO: Tell someone
+            auditor.info(INVITE_RESPOND, declinedInvite.groupInfo, 
+                declinedInvite.adminInfo, INVITE_RESPOND_DELCINE)
+            
+            notifiedUser = IGSNotifyUser(declinedInvite.adminInfo)
+            n_dict = {  'userFn':       self.userInfo.name,
+                        'adminFn':      declinedInvite.adminInfo.name,
+                        'siteName':     self.siteInfo.name,
+                        'groupName':    declinedInvite.groupInfo.name,
+                        'groupURL':     declinedInvite.groupInfo.url,}
+            notifiedUser.send_notification('invite_join_group_declined',\
+                'default', n_dict)
 
