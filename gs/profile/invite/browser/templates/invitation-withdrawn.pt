@@ -1,0 +1,37 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  metal:use-macro="context/@@groupserver_site_home_layout/page">
+  <head>
+    <title metal:fill-slot="title">Invitation Withdrawn:
+      <tal:block replace="view/siteInfo/name">A Site</tal:block></title>
+  </head>
+  <body>
+    <div metal:fill-slot="utilitylinks">&#160;</div>
+    <div metal:fill-slot="sitenavigation">&#160;</div>
+    <div metal:fill-slot="search">&#160;</div>
+    <tal:block metal:fill-slot="body">
+      <h1>Invitation Withdrawn</h1>
+      <p>
+        Sorry, but your invitation to join
+        <span class="group"
+          tal:content="view/invitation/groupInfo/name">a group</span>
+        has been withdrawn.
+      </p>
+      <p
+        tal:define="siteId view/siteInfo/id;
+          gse python:modules['Products.XWFCore.XWFUtils'].get_support_email;
+          supportEmail python:gse(context,siteId);">If you need some
+        assistance
+        <a href="#" 
+          tal:define="m string:Hi! I used the invitation ${view/siteInfo/url}/r/rsvp/${view/invitationId} and...;
+        msg python:view.quote(m)"
+          tal:attributes="href string:mailto:${supportEmail}?Subject=Group%20Membership%20Invitation%20Withdrawn&amp;body=${msg}">email
+            support</a> 
+        with the specifics of your problem, and we will see what we
+        can do to help.
+      </p>
+    </tal:block>
+  </body>
+</html>
+
