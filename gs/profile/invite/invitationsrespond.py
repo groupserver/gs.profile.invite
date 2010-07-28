@@ -3,8 +3,8 @@ from Products.Five import BrowserView
 from zope.component import createObject
 from Products.CustomUserFolder.interfaces import IGSUserInfo
 from gs.group.member.join.interfaces import IGSJoiningUser
+from gs.group.member.invite.queries import InvitationQuery
 from gs.profile.notify.interfaces import IGSNotifyUser
-from queries import InvitationQuery
 from invitation import Invitation
 from audit import Auditor, INVITE_RESPOND, INVITE_RESPOND_ACCEPT, \
     INVITE_RESPOND_DELCINE

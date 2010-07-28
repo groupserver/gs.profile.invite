@@ -21,11 +21,6 @@
     name="intial_response.html"
     class=".initialresponse.InitialResponseForm"
     permission="zope2.ManageProperties" />
-   <browser:page
-    for="Products.CustomUserFolder.interfaces.ICustomUser"
-    name="join_password.html"
-    class=".setpassword.SetPasswordAdminInviteForm"
-    permission="zope2.ManageProperties" />
 
   <browser:page
     for="Products.GSContent.interfaces.IGSSiteFolder"

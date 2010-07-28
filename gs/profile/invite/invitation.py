@@ -1,7 +1,7 @@
 # coding=utf-8
 from urlparse import urlparse
 from zope.component import createObject
-from queries import InvitationQuery
+from gs.group.member.invite.queries import InvitationQuery
 
 class Invitation(object):
     def __init__(self, context, invitationId):
