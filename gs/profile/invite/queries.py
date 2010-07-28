@@ -9,15 +9,17 @@ class InvitationQuery(object):
 
     def marshal_invite(self, x):
         retval = {
-            'invitation_id':    x['invitation_id'],
-            'user_id':          x['user_id'],
-            'inviting_user_id': x['inviting_user_id'],
-            'site_id':          x['site_id'],
-            'group_id':         x['group_id'],
-            'invitation_date':  x['invitation_date'],
-            'response_date':    x['response_date'],
-            'accepted':         x['accepted'],
-            'initial_invite':   x['initial_invite']}
+            'invitation_id':        x['invitation_id'],
+            'user_id':              x['user_id'],
+            'inviting_user_id':     x['inviting_user_id'],
+            'site_id':              x['site_id'],
+            'group_id':             x['group_id'],
+            'invitation_date':      x['invitation_date'],
+            'response_date':        x['response_date'],
+            'accepted':             x['accepted'],
+            'initial_invite':       x['initial_invite'],
+            'withdrawn_date':       x['withdrawn_date'],
+            'withdrawing_user_id':  x['withdrawing_user_id']}
         return retval
         
     def get_blank_invite(self):
