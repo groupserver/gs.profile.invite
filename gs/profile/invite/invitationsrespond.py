@@ -100,7 +100,6 @@ class GSInviationsRespond(BrowserView):
                   self.groupsInfo.groupsObj, g) for g in declined]
                 self.decline_invitations(declinedGroups)
                 declinedMessage = self.decline_message(declinedGroups)
-                # TODO: Tell someone
 
             result['message'] = u'%s\n%s' % \
                 (acceptedMessage, declinedMessage)
@@ -161,6 +160,7 @@ class GSInviationsRespond(BrowserView):
             # TODO: When anyone can invite anyone else to join more than
             #   the administrators will have to be informed.
             #   <https://projects.iopen.net/groupserver/ticket/436>
+            #   The `decline_invitations` method does this currently.
 
     def decline_invitations(self, groupInfos):
         assert type(groupInfos) == list
