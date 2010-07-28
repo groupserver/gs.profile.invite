@@ -1,16 +1,12 @@
 # coding=utf-8
 from pytz import UTC
 from datetime import datetime
-from xml.sax.saxutils import escape as xml_escape
-from base64 import b64decode
-from zope.component import createObject
 from zope.component.interfaces import IFactory
 from zope.interface import implements, implementedBy
-from Products.CustomUserFolder.interfaces import IGSUserInfo
 from Products.CustomUserFolder.userinfo import userInfo_to_anchor
 from Products.GSGroup.groupInfo import groupInfo_to_anchor
 from Products.GSAuditTrail import IAuditEvent, BasicAuditEvent, \
-  AuditQuery, event_id_from_data
+    AuditQuery, event_id_from_data
 from Products.XWFCore.XWFUtils import munge_date
 
 SUBSYSTEM = 'gs.profile.invite'
@@ -47,8 +43,7 @@ class AuditEventFactory(object):
 
 class RespondEvent(BasicAuditEvent):
     ''' An audit-trail event representing a person responding to an 
-    invitation.
-    '''
+    invitation.'''
     implements(IAuditEvent)
 
     def __init__(self, context, id, d, adminInfo, instanceUserInfo, 
@@ -74,9 +69,12 @@ class RespondEvent(BasicAuditEvent):
     def xhtml(self):
         cssClass = u'audit-event groupserver-profile-invite-%s' %\
           self.code
-        retval = u'<span class="%s">%s the invitation to join %s</span>'%\
-          (cssClass, self.instanceDatum.title(), self.groupInfo.name)
-        
+        retval = u'<span class="%s">%s %s the invitation from %s to '\
+                    u'join %s</span>' % \
+                    (cssClass, userInfo_to_anchor(self.instanceUserInfo), 
+                        self.instanceDatum.title(), 
+                        userInfo_to_anchor(self.userInfo),
+                        groupInfo_to_anchor(self.groupInfo))
         retval = u'%s (%s)' % \
           (retval, munge_date(self.context, self.date))
         return retval
