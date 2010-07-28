@@ -9,6 +9,7 @@ except ImportError:
     from Products.Five.formlib.formbase import PageForm
 from Products.Five.browser.pagetemplatefile import ZopeTwoPageTemplateFile
 from Products.CustomUserFolder.interfaces import IGSUserInfo
+from Products.CustomUserFolder.CustomUser import removedCustomUser
 from Products.GSProfile.set_password import set_password
 from gs.group.member.join.interfaces import IGSJoiningUser
 from gs.profile.notify.interfaces import IGSNotifyUser
@@ -16,7 +17,8 @@ from gs.profile.notify.adressee import Addressee, SupportAddressee
 from interfaces import IGSResponseFields
 from invitation import Invitation, FakeInvitation
 from utils import send_add_user_notification
-from audit import Auditor, INVITE_RESPOND
+from audit import Auditor, INVITE_RESPOND, INVITE_RESPOND_ACCEPT, \
+    INVITE_RESPOND_DELCINE
 
 class InitialResponseForm(PageForm):
     label = u'Intial Response'
@@ -39,6 +41,9 @@ class InitialResponseForm(PageForm):
     @form.action(label=u'Accept', failure='handle_respond_action_failure')
     def handle_accept(self, action, data):
         if self.invitationId != 'example':
+            auditor = Auditor(self.siteInfo, self.userInfo)
+            auditor.info(INVITE_RESPOND, self.invitation.groupInfo, 
+                self.invitation.adminInfo, INVITE_RESPOND_ACCEPT)
             self.verify_email_address()
             set_password(self.userInfo.user, data['password1'])
             self.invitation.accept()
@@ -57,9 +62,28 @@ class InitialResponseForm(PageForm):
             #   initial_decline.html page notes that the user-instance
             #   will be deleted later on.
             #self.context.acl_users.manage_delObjects([self.userInfo.id])
+            auditor = Auditor(self.siteInfo, self.userInfo)
+            auditor.info(INVITE_RESPOND, self.invitation.groupInfo, 
+                self.invitation.adminInfo, INVITE_RESPOND_DELCINE)
             self.invitation.decline()
-            # TODO: Tell someone
+            notifiedUser = IGSNotifyUser(self.invitation.adminInfo)
+            n_dict = {  'userFn':       self.userInfo.name,
+                        'adminFn':      self.invitation.adminInfo.name,
+                        'siteName':     self.siteInfo.name,
+                        'groupName':    self.invitation.groupInfo.name,
+                        'groupURL':     self.invitation.groupInfo.url,}
+            notifiedUser.send_notification('invite_join_group_declined',\
+                'default', n_dict)
         uri = '/initial_decline.html'
+        # --=mpj17=-- When Zope redirects this instance is reloaded and
+        #   *then* the redirection occurs. Trying to reload a user that 
+        #   no longer exists causes a few issues. So, for now, we do 
+        #   nothing.
+        #
+        #   TODO: A clean-up script will have to find all users who
+        #      have declined the initial response and delete them.
+        #
+        # del(self.context)
         self.request.RESPONSE.redirect(uri)
         
     def handle_respond_action_failure(self, action, data, errors):
@@ -68,10 +92,6 @@ class InitialResponseForm(PageForm):
         else:
             self.status = u'<p>There are errors:</p>'
 
-    def notify_people(self):
-        # TODO: Tell the admin
-        pass
-    
     # Non-Standard methods below this point
     @property
     def invitationId(self):
