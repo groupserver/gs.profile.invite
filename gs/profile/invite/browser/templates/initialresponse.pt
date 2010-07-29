@@ -249,7 +249,8 @@
             var gsRequiredWidgets = new Array('#form\\.password1');
             GSCheckRequired.init(
               gsRequiredWidgets, '#form\\.actions\\.accept');
-        });        
+            jQuery("#form\\.password1").focus();
+        });
       </script>
     </tal:block>
   </body>
