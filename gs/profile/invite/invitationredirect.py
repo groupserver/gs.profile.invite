@@ -37,6 +37,12 @@ class GSInvitationResponseRedirect(GSRedirectBase):
                     uri = '/invitation-responded.html?form.invitationId=%s' %\
                             invitationId
                 elif inviteExists and not(hadResponse) and not(invitationWithdrawn):
+                    assert not invitation.userInfo.anonymous,\
+                        'An invitation to an anonymous user. Let us '\
+                        'hope you are on a development platform where '\
+                        'such things happen, otherwise something has '\
+                        'gone seriously wrong and you should contact '\
+                        'support.'
                     # --=mpj17=-- Only ever log in when responding
                     login(self.context.aq_self, invitation.userInfo.user)
                     if invitation.invite['initial_invite']:
