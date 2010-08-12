@@ -19,6 +19,7 @@ from invitation import Invitation, FakeInvitation
 from utils import send_add_user_notification
 from audit import Auditor, INVITE_RESPOND, INVITE_RESPOND_ACCEPT, \
     INVITE_RESPOND_DELCINE
+from Products.XWFCore.XWFUtils import get_the_actual_instance_from_zope
 
 class InitialResponseForm(PageForm):
     label = u'Intial Response'
@@ -30,6 +31,10 @@ class InitialResponseForm(PageForm):
         self.__siteInfo = None
         self.__formFields = self.__invitation = self.__invitationId = None
         self.__groupPrivacy = self.__groupStats = self.__userInfo = None
+    
+    @property
+    def ctx(self):
+        return get_the_actual_instance_from_zope(self.context)
         
     @property
     def form_fields(self):
@@ -103,20 +108,13 @@ class InitialResponseForm(PageForm):
     @property
     def invitation(self):
         if self.__invitation == None:
-            # --=mpj17=-- Sometimes Zope acquisition can be a hideous
-            # pain in the arse. This is one of those times. For whatever
-            # reason, self.context gets all wrapped up in some voodoo 
-            # to do with "Products.Five.metaclass". The "aq_self" is
-            # required to exorcise the Dark Magiks and to allow the code
-            # to operate without spewing errors about the site-instance
-            # being None.
             if self.invitationId == 'example':
                 groupId = self.request.form.get('form.groupId', '')
                 assert groupId, 'Group ID for the invitation-response '\
                   'preview has not been set.'
-                i = FakeInvitation(self.context.aq_self, groupId)
+                i = FakeInvitation(self.ctx, groupId)
             else:
-                i = Invitation(self.context.aq_self, self.invitationId)
+                i = Invitation(self.ctx, self.invitationId)
             self.__invitation = i
         return self.__invitation
 
@@ -135,7 +133,7 @@ class InitialResponseForm(PageForm):
     @property
     def userInfo(self):
         if self.__userInfo == None:
-            self.__userInfo = IGSUserInfo(self.context.aq_self)
+            self.__userInfo = IGSUserInfo(self.ctx)
         assert self.__userInfo
         return self.__userInfo
         
@@ -143,7 +141,7 @@ class InitialResponseForm(PageForm):
     def siteInfo(self):
         if self.__siteInfo == None:
             self.__siteInfo = createObject('groupserver.SiteInfo', 
-                                self.context.aq_self)
+                                self.ctx)
         assert self.__siteInfo
         return self.__siteInfo
 
