@@ -2,6 +2,7 @@
 from Products.Five import BrowserView
 from zope.component import createObject
 from Products.CustomUserFolder.interfaces import IGSUserInfo
+from Products.XWFCore.XWFUtils import get_the_actual_instance_from_zope
 from gs.group.member.join.interfaces import IGSJoiningUser
 from gs.group.member.invite.queries import InvitationQuery
 from gs.profile.notify.interfaces import IGSNotifyUser
@@ -10,22 +11,33 @@ from audit import Auditor, INVITE_RESPOND, INVITE_RESPOND_ACCEPT, \
     INVITE_RESPOND_DELCINE
 
 class GSInviationsRespond(BrowserView):
+    '''The standard invitation response page.
+    
+    There are two pages used to respond to an invitation. The Initial
+    Response page is used to set a password and accept the invitation,
+    or decline the invitation. This page is used by existing members to
+    accept and decline invitations.
+    '''
     def __init__(self, context, request):
         BrowserView.__init__(self, context, request)
         self.__groupsInfo = self.__currentInvitations = None
         self.__invitationQuery = self.__siteInfo = self.__userInfo = None
-    
+
+    @property
+    def ctx(self):
+        return get_the_actual_instance_from_zope(self.context)
+            
     @property
     def groupsInfo(self):
         if self.__groupsInfo == None:
             self.__groupsInfo = createObject('groupserver.GroupsInfo', 
-                self.context.aq_self)
+                self.ctx)
         return self.__groupsInfo
 
     @property
     def userInfo(self):
         if self.__userInfo == None:
-            self.__userInfo = IGSUserInfo(self.context.aq_self)
+            self.__userInfo = IGSUserInfo(self.ctx)
         assert self.__userInfo
         return self.__userInfo
         
@@ -33,14 +45,14 @@ class GSInviationsRespond(BrowserView):
     def siteInfo(self):
         if self.__siteInfo == None:
             self.__siteInfo = createObject('groupserver.SiteInfo', 
-                                self.context.aq_self)
+                                self.ctx)
         assert self.__siteInfo
         return self.__siteInfo
     
     @property
     def invitationQuery(self):
         if self.__invitationQuery == None:
-            da = self.context.zsqlalchemy
+            da = self.ctx.zsqlalchemy
             assert da, 'No data-adaptor found'
             self.__invitationQuery = InvitationQuery(da)
         return self.__invitationQuery
@@ -50,7 +62,7 @@ class GSInviationsRespond(BrowserView):
         if self.__currentInvitations == None:
             gci = self.invitationQuery.get_current_invitiations_for_site
             self.__currentInvitations = \
-                [Invitation(self.context.aq_self, i['invitation_id'])
+                [Invitation(self.ctx, i['invitation_id'])
                     for i in gci(self.siteInfo.id, self.userInfo.id)]
         assert type(self.__currentInvitations) == list
         return self.__currentInvitations
