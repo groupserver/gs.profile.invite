@@ -3,9 +3,15 @@ from urlparse import urlparse
 from zope.component import createObject
 from Products.GSRedirect.view import GSRedirectBase
 from Products.GSProfile.utils import login
+from Products.XWFCore.XWFUtils import get_the_actual_instance_from_zope
 from invitation import Invitation
 
 class GSInvitationResponseRedirect(GSRedirectBase):
+
+    @property
+    def ctx(self):
+        return get_the_actual_instance_from_zope(self.context)
+        
     def __call__(self):
         
         if len(self.traverse_subpath) == 1:
@@ -13,7 +19,7 @@ class GSInvitationResponseRedirect(GSRedirectBase):
             
             if (invitationId == 'example'):
                 userInfo = createObject('groupserver.LoggedInUser',
-                                        self.context.aq_self)
+                                        self.ctx)
                 ref = self.request.get('HTTP_REFERER','')
                 assert ref, 'This page only works if you follow the link '\
                     'from the invitation preview.'
@@ -22,7 +28,7 @@ class GSInvitationResponseRedirect(GSRedirectBase):
                 uri = '%s/intial_response.html?form.invitationId=example&form.groupId=%s' %\
                   (userInfo.url, groupId)
             else: # Not an example
-                invitation = Invitation(self.context.aq_self, invitationId)
+                invitation = Invitation(self.ctx, invitationId)
                 try:
                     hadResponse = \
                         invitation.invite['response_date'] !=  None
@@ -44,7 +50,7 @@ class GSInvitationResponseRedirect(GSRedirectBase):
                         'gone seriously wrong and you should contact '\
                         'support.'
                     # --=mpj17=-- Only ever log in when responding
-                    login(self.context.aq_self, invitation.userInfo.user)
+                    login(self.ctx, invitation.userInfo.user)
                     if invitation.invite['initial_invite']:
                         # Go to the initial response page, so
                         #   the new user can set a password (and verify
