@@ -9,8 +9,9 @@ class Invitation(object):
         assert invitationId, 'No Invitation ID'
         self.invitationId = invitationId
         self.context = context
-        self.__invite = self.__query = self.__siteObj = self.siteInfo = None
-        self.__adminInfo = self.__userInfo = self.__groupInfo = None
+        self.__query = None
+        self.__adminInfo = self.__siteObj = self.__siteInfo = None
+        self.__groupInfo = self.__userInfo = self.__invite = None
     
     @property
     def query(self):
