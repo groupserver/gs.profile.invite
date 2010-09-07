@@ -9,7 +9,7 @@ class Invitation(object):
         assert invitationId, 'No Invitation ID'
         self.invitationId = invitationId
         self.context = context
-        self.__invite = self.__query = None
+        self.__invite = self.__query = self.__siteObj = self.siteInfo = None
         self.__adminInfo = self.__userInfo = self.__groupInfo = None
     
     @property
@@ -29,12 +29,27 @@ class Invitation(object):
                 raise KeyError(self.invitationId)
         assert self.__invite
         return self.__invite
-        
+    
+    @property
+    def siteObj(self):
+        if self.__siteObj == None:
+            self.__siteObj = getattr(self.context.Content, \
+                                self.invite['site_id'])
+        assert self.__siteObj, 'No site object found %s' % \
+            self.invite['site_id']
+        return self.__siteObj
+    
+    @property
+    def siteInfo(self):
+        if self.__siteInfo == None:
+            self.__siteInfo = createObject('groupserver.SiteInfo', 
+                                            self.siteObj)
+        return self.__siteInfo
     @property
     def userInfo(self):
         if self.__userInfo == None:
             self.__userInfo = createObject('groupserver.UserFromId',
-                                            self.context, 
+                                            self.siteObj, 
                                             self.invite['user_id'])
         assert self.__userInfo
         return self.__userInfo
@@ -43,7 +58,7 @@ class Invitation(object):
     def adminInfo(self):
         if self.__adminInfo == None:
             self.__adminInfo = createObject('groupserver.UserFromId',
-                                            self.context, 
+                                            self.siteObj, 
                                             self.invite['inviting_user_id'])
         assert self.__adminInfo
         return self.__adminInfo
@@ -53,7 +68,7 @@ class Invitation(object):
         if self.__groupInfo == None:
             assert self.invite['group_id']
             self.__groupInfo = createObject('groupserver.GroupInfo', 
-                                            self.context,
+                                            self.siteObj,
                                             self.invite['group_id'])
         assert self.__groupInfo
         return self.__groupInfo

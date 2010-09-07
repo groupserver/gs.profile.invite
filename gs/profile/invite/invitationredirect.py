@@ -40,8 +40,8 @@ class GSInvitationResponseRedirect(GSRedirectBase):
                     inviteExists = True
 
                 if inviteExists and hadResponse:
-                    uri = '/invitation-responded.html?form.invitationId=%s' %\
-                            invitationId
+                    uri = '%s/invitation-responded.html?form.invitationId=%s' %\
+                            (invitation.siteInfo.url, invitationId)
                 elif inviteExists and not(hadResponse) and not(invitationWithdrawn):
                     assert not invitation.userInfo.anonymous,\
                         'An invitation to an anonymous user. Let us '\
@@ -65,11 +65,11 @@ class GSInvitationResponseRedirect(GSRedirectBase):
                                 invitation.userInfo.url
                 elif inviteExists and invitationWithdrawn:
                     # The invitation has been withdrawn
-                    uri = '/invitation-withdrawn.html?form.invitationId=%s' %\
-                            invitationId
+                    uri = '%s/invitation-withdrawn.html?form.invitationId=%s' %\
+                            (invitation.siteInfo.url, invitationId)
                 else: # Invitation does not exist
-                    uri = '/invite-not-found.html?form.invitationId=%s' %\
-                            invitationId
+                    uri = '%s/invite-not-found.html?form.invitationId=%s' %\
+                            (invitation.siteInfo.url, invitationId)
         else: # Verification ID not specified
             uri = '/invite-no-id.html'
         assert uri
