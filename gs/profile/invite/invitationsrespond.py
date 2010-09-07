@@ -3,6 +3,7 @@ from Products.Five import BrowserView
 from zope.component import createObject
 from Products.CustomUserFolder.interfaces import IGSUserInfo
 from Products.XWFCore.XWFUtils import get_the_actual_instance_from_zope
+from gs.group.member.base.utils import user_member_of_group
 from gs.group.member.join.interfaces import IGSJoiningUser
 from gs.group.member.invite.queries import InvitationQuery
 from gs.profile.notify.interfaces import IGSNotifyUser
@@ -158,7 +159,7 @@ class GSInviationsRespond(BrowserView):
         assert type(groupInfos) == list
         gids = [g.id for g in groupInfos]
         acceptedInvites = [i for i in self.currentInvitations 
-                            if i.groupInfo.id in gids]
+                            if (i.groupInfo.id in gids)] # Skip groups already member
 
         auditor = Auditor(self.siteInfo, self.userInfo)
         
@@ -168,7 +169,8 @@ class GSInviationsRespond(BrowserView):
                 acceptedInvite.adminInfo, INVITE_RESPOND_ACCEPT)
             joiningUser = IGSJoiningUser(self.userInfo)
             # --=mpj17=-- Joining will notify the admin, by side effect.
-            joiningUser.join(acceptedInvite.groupInfo)
+            if not(user_member_of_group(self.userInfo, i.groupInfo)):
+                joiningUser.join(acceptedInvite.groupInfo)
             # TODO: When anyone can invite anyone else to join more than
             #   the administrators will have to be informed.
             #   <https://projects.iopen.net/groupserver/ticket/436>
