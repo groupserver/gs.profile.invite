@@ -40,7 +40,7 @@ class GSInvitationResponseRedirect(GSRedirectBase):
                     inviteExists = True
 
                 if inviteExists and hadResponse:
-                    uri = '%s/invitation-responded.html?form.invitationId=%s' %\
+                    uri = '%s/invitation-responded.html?form.invitationId=%s'%\
                             (invitation.siteInfo.url, invitationId)
                 elif inviteExists and not(hadResponse) and not(invitationWithdrawn):
                     assert not invitation.userInfo.anonymous,\
@@ -55,20 +55,22 @@ class GSInvitationResponseRedirect(GSRedirectBase):
                         # Go to the initial response page, so
                         #   the new user can set a password (and verify
                         #   his or her email address).
-                        uri = '%s/intial_response.html?form.invitationId=%s'%\
-                              (invitation.userInfo.url, invitationId)
+                        uri = '%s/%s/intial_response.html?form.invitationId=%s'%\
+                                (invitation.siteInfo.url, 
+                                invitation.userInfo.url, invitationId)
                     else:
                         # If the user is already a member of a group 
                         #   (any group on any site) then we should go to
                         #   the normal Response page.
-                        uri = '%s/invitations_respond.html' % \
-                                invitation.userInfo.url
+                        uri = '%s/%s/invitations_respond.html' % \
+                                (invitation.siteInfo.url, 
+                                invitation.userInfo.url)
                 elif inviteExists and invitationWithdrawn:
                     # The invitation has been withdrawn
-                    uri = '%s/invitation-withdrawn.html?form.invitationId=%s' %\
+                    uri = '%s/invitation-withdrawn.html?form.invitationId=%s'%\
                             (invitation.siteInfo.url, invitationId)
                 else: # Invitation does not exist
-                    uri = '%s/invite-not-found.html?form.invitationId=%s' %\
+                    uri = '%s/invite-not-found.html?form.invitationId=%s'%\
                             (invitation.siteInfo.url, invitationId)
         else: # Verification ID not specified
             uri = '/invite-no-id.html'
