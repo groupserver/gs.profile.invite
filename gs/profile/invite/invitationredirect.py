@@ -51,7 +51,10 @@ class GSInvitationResponseRedirect(GSRedirectBase):
                         'support.'
                     # --=mpj17=-- Only ever log in when responding
                     login(self.ctx, invitation.userInfo.user)
-                    if invitation.invite['initial_invite']:
+                    # I used to use the "initial_invite" column, but now
+                    #   it is unused.
+                    initial = bool(invitation.userInfo.user.get_verifiedEmailAddresses())
+                    if not(initial):
                         # Go to the initial response page, so
                         #   the new user can set a password (and verify
                         #   his or her email address).
