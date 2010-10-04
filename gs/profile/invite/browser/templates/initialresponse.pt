@@ -100,9 +100,9 @@
         <fieldset id="accept">
           <legend>Accept</legend>
           <p>
-            To <strong>accept</strong> the invitation,
-            type your <strong>new password</strong> into the entry below
-            and click the
+            To <strong>accept</strong> the invitation, 
+            <strong>choose</strong> a password, enter it
+            below, then click
             <samp class="button"
               tal:content="view/actions/form.actions.accept/label">Big R</samp>
             button.
