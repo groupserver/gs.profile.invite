@@ -44,6 +44,11 @@
     provides="zope.contentprovider.interfaces.IContentProvider"
     name="groupserver.GroupInvitationList"/>
 
+  <utility 
+    factory=".audit.AuditEventFactory"
+    name="gs.profile.invite"
+    permission="zope.Public" />
+
   <!-- Error Pages -->
   <browser:page
     for="Products.GSContent.interfaces.IGSSiteFolder"
