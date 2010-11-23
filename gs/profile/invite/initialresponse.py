@@ -3,17 +3,14 @@
 from zope.component import createObject
 from zope.formlib import form
 from zope.security.proxy import removeSecurityProxy
-try:
-    from five.formlib.formbase import PageForm
-except ImportError:
-    from Products.Five.formlib.formbase import PageForm
 from Products.Five.browser.pagetemplatefile import ZopeTwoPageTemplateFile
 from Products.CustomUserFolder.interfaces import IGSUserInfo
 from Products.CustomUserFolder.CustomUser import removedCustomUser
-from Products.GSProfile.set_password import set_password
+from gs.content.form.form import SiteForm
 from gs.group.member.join.interfaces import IGSJoiningUser
 from gs.profile.notify.interfaces import IGSNotifyUser
 from gs.profile.notify.adressee import Addressee, SupportAddressee
+from gs.profile.password.interfaces import IGSPasswordUser
 from interfaces import IGSResponseFields
 from invitation import Invitation, FakeInvitation
 from utils import send_add_user_notification
@@ -21,14 +18,13 @@ from audit import Auditor, INVITE_RESPOND, INVITE_RESPOND_ACCEPT, \
     INVITE_RESPOND_DELCINE
 from Products.XWFCore.XWFUtils import get_the_actual_instance_from_zope
 
-class InitialResponseForm(PageForm):
+class InitialResponseForm(SiteForm):
     label = u'Intial Response'
     pageTemplateFileName = 'browser/templates/initialresponse.pt'
     template = ZopeTwoPageTemplateFile(pageTemplateFileName)
 
     def __init__(self, context, request):
-        PageForm.__init__(self, context, request)
-        self.__siteInfo = None
+        SiteForm.__init__(self, context, request)
         self.__formFields = self.__invitation = self.__invitationId = None
         self.__groupPrivacy = self.__groupStats = self.__userInfo = None
     
@@ -49,11 +45,17 @@ class InitialResponseForm(PageForm):
             auditor = Auditor(self.siteInfo, self.userInfo)
             auditor.info(INVITE_RESPOND, self.invitation.groupInfo, 
                 self.invitation.adminInfo, INVITE_RESPOND_ACCEPT)
+
             self.verify_email_address()
-            set_password(self.userInfo.user, data['password1'])
+
+            pu = IGSPasswordUser(self.userInfo)
+            pu.set_password(data['password1'])
+
             self.invitation.accept()
+
             joiningUser = IGSJoiningUser(self.userInfo)
             joiningUser.join(self.groupInfo)
+
         uri = '%s?welcome=1' % self.groupInfo.url
         self.request.RESPONSE.redirect(uri)
         
@@ -137,14 +139,6 @@ class InitialResponseForm(PageForm):
         assert self.__userInfo
         return self.__userInfo
         
-    @property
-    def siteInfo(self):
-        if self.__siteInfo == None:
-            self.__siteInfo = createObject('groupserver.SiteInfo', 
-                                self.ctx)
-        assert self.__siteInfo
-        return self.__siteInfo
-
     @property
     def groupInfo(self):
         retval = self.invitation.groupInfo
