@@ -8,33 +8,6 @@
         Respond to Your Invitation
       </tal:block>
     </title>
-    <style type="text/css" metal:fill-slot="style">
-      fieldset .textType {
-        width: 35.26em;
-      }
-      #about {
-        padding-top: 2.78em;
-      }
-      #about h2 {
-        padding-top: 0px;
-        margin-top: 0px;
-      }
-      #about li {
-        list-style-position: inside;
-        text-indent: 1.39em;
-      }
-       #about-the-admin {
-        float: left;
-        width: 40%;
-        padding: 0px 2.78em 0px 0px;
-      }
-       #about-the-group {
-        padding-left: 40%;
-       }
-       #aup, #privacy {
-        margin-left: 2.78em;
-       }
-    </style>
   </head>
   <body>
     <div metal:fill-slot="utilitylinks">&#160;</div>
@@ -55,8 +28,8 @@
         </tal:block>
       </dl>
     </div>
-    <tal:block metal:fill-slot="body"
-      define="example python:view.invitationId == 'example';">
+    <div id="gs-profile-invite-initial-response" metal:fill-slot="body"
+      tal:define="example python:view.invitationId == 'example';">
       <h1>Respond to Your Invitation
         <strong tal:condition="example">[Preview]</strong></h1>
       <div tal:condition="example" class="message-result">
@@ -159,41 +132,8 @@
         <tal:block replace="structure view/widgets/invitationId/hidden"/>
         <tal:block replace="structure view/widgets/groupId/hidden"/>
       </form>
-      <div id="about">
-        <div id="about-the-admin">
-          <div tal:define="user view/adminInfo/user"
-            tal:replace="structure provider:groupserver.UserImage">
-            A photo or some such&#8230;
-          </div>
-          <h2>About 
-            <span class="fn" tal:content="view/adminInfo/name">The Admin</span></h2>
-          <p>
-            <span class="fn" 
-              tal:content="view/adminInfo/name">The administrator</span> 
-            is the administrator of
-            <span class="group" 
-              tal:content="view/groupInfo/name">the group</span>.
-            The main role of an administrator is to manage the members of
-            a group.
-          </p>
-          <div id="sec-bio" 
-            tal:define="bio python:view.adminInfo.get_property('biography')"
-            tal:condition="bio">
-            <p>
-              <strong>The biography</strong> of 
-              <span class="fn"
-              tal:content="view/adminInfo/name">the administrator</span> 
-              is below. 
-              (You can write your own biography once you accept the 
-              invitation!)
-            </p>
-            <blockquote 
-              tal:content="structure bio">
-              Wow, I actually used a <code>blockquote</code> element!
-            </blockquote>
-          </div><!--sec-bio-->
-        </div><!--about-the-admin-->
-        <div id="about-the-group"
+      <div id="about" class="cols">
+        <div id="about-the-group" class="rightColumn"
           tal:define="rlg python:view.groupInfo.get_property('real_life_group')">
           <h2>About 
             <span class="group" 
@@ -227,8 +167,41 @@
             </div>
           </div>
         </div><!--about-the-group-->
-      </div><!--about-->
-    </tal:block>
+        <div id="about-the-admin" class="leftColumn">
+          <div tal:define="user view/adminInfo/user"
+            tal:replace="structure provider:groupserver.UserImage">
+            A photo or some such&#8230;
+          </div>
+          <h2>About 
+            <span class="fn" tal:content="view/adminInfo/name">The Admin</span></h2>
+          <p>
+            <span class="fn" 
+              tal:content="view/adminInfo/name">The administrator</span> 
+            is the administrator of
+            <span class="group" 
+              tal:content="view/groupInfo/name">the group</span>.
+            The main role of an administrator is to manage the members of
+            a group.
+          </p>
+          <div id="sec-bio" 
+            tal:define="bio python:view.adminInfo.get_property('biography')"
+            tal:condition="bio">
+            <p>
+              <strong>The biography</strong> of 
+              <span class="fn"
+              tal:content="view/adminInfo/name">the administrator</span> 
+              is below. 
+              (You can write your own biography once you accept the 
+              invitation!)
+            </p>
+            <blockquote 
+              tal:content="structure bio">
+              Wow, I actually used a <code>blockquote</code> element!
+            </blockquote>
+          </div><!--sec-bio-->
+        </div><!--about-the-admin-->
+I;      </div><!--about-->
+    </div><!--gs-profile-invite-initial-response-->
     <tal:block metal:fill-slot="javascript">
       <script type="text/javascript"
         src="/++resource++check_required-20071214.js">&#160;</script>

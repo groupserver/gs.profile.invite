@@ -8,18 +8,6 @@
       <span tal:replace="view/userInfo/name">A User</span>:
       <span tal:replace="view/siteInfo/name">A Site</span>
     </title>
-    <style type="text/css" metal:fill-slot="style">
-      .group-invitation p {
-        margin-left: 1.39em; 
-      }
-      .group-invitation ul {
-        margin-left: 3.47em;
-      }
-      .group-invitation fieldset {
-        padding-left: 0px;
-        margin-left: 1.39em;
-      }
-    </style>
   </head>
   <body>
     <tal:block metal:fill-slot="contextnavigation">
@@ -34,9 +22,9 @@
       tal:condition="python:result and result.has_key('message')"
       tal:attributes="class python:(isError and 'message-error') or 'message-result'"
       tal:content="structure result/message"/>
-    <tal:block metal:fill-slot="body"
-      define="md python:modules['Products.XWFCore.XWFUtils'].munge_date;
-        ctx view/context">
+    <div metal:fill-slot="body" id="gs-profile-invite-respond"
+      tal:define="ctx view/context;
+        md python:modules['Products.XWFCore.XWFUtils'].munge_date;">
       <h1>Respond to Invitations to Join Groups</h1>
       <form id="response" tal:condition="view/currentInvitations"
         enctype="multipart/form-data" method="post" action="." 
@@ -124,7 +112,7 @@
         The groups you are a member of are listed on 
         <a href="#" tal:attributes="href view/userInfo/url">your profile.</a>
       </p>
-    </tal:block>
+    </div><!--gs-profile-invite-respond-->
   </body>
 </html>
 
