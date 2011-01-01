@@ -5,15 +5,13 @@ from zope.formlib import form
 from zope.security.proxy import removeSecurityProxy
 from Products.Five.browser.pagetemplatefile import ZopeTwoPageTemplateFile
 from Products.CustomUserFolder.interfaces import IGSUserInfo
-from Products.CustomUserFolder.CustomUser import removedCustomUser
 from gs.content.form.form import SiteForm
 from gs.group.member.join.interfaces import IGSJoiningUser
 from gs.profile.notify.interfaces import IGSNotifyUser
-from gs.profile.notify.adressee import Addressee, SupportAddressee
 from gs.profile.password.interfaces import IGSPasswordUser
+from gs.profile.email.verify.emailverificationuser import EmailVerificationUser
 from interfaces import IGSResponseFields
 from invitation import Invitation, FakeInvitation
-from utils import send_add_user_notification
 from audit import Auditor, INVITE_RESPOND, INVITE_RESPOND_ACCEPT, \
     INVITE_RESPOND_DELCINE
 from Products.XWFCore.XWFUtils import get_the_actual_instance_from_zope
@@ -125,8 +123,10 @@ class InitialResponseForm(SiteForm):
         email  = self.userInfo.user.get_emailAddresses()[0]
         # Assuming this will work ;)
         vid = '%s_accept' % self.invitationId
-        self.userInfo.user.add_emailAddressVerification(vid, email)
-        self.userInfo.user.verify_emailAddress(vid)
+        eu = EmailVerificationUser(self.groupInfo.groupObj, 
+                                   self.userInfo, email)
+        eu.add_verification_id(vid)
+        eu.verify_email(vid)
 
     @property
     def adminInfo(self):
