@@ -18,7 +18,7 @@
 
    <browser:page
     for="Products.CustomUserFolder.interfaces.ICustomUser"
-    name="intial_response.html"
+    name="initial_response.html"
     class=".initialresponse.InitialResponseForm"
     permission="zope2.ManageProperties" />
 

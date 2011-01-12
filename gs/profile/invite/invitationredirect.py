@@ -25,7 +25,7 @@ class GSInvitationResponseRedirect(GSRedirectBase):
                     'from the invitation preview.'
                 path = urlparse(ref)[2]
                 groupId = path.split('/')[2]
-                uri = '%s/intial_response.html?form.invitationId=example&form.groupId=%s' %\
+                uri = '%s/initial_response.html?form.invitationId=example&form.groupId=%s' %\
                   (userInfo.url, groupId)
             else: # Not an example
                 invitation = Invitation(self.ctx, invitationId)
@@ -58,14 +58,14 @@ class GSInvitationResponseRedirect(GSRedirectBase):
                         # Go to the initial response page, so
                         #   the new user can set a password (and verify
                         #   his or her email address).
-                        uri = '%s/%s/intial_response.html?form.invitationId=%s'%\
+                        uri = '%s%s/initial_response.html?form.invitationId=%s'%\
                                 (invitation.siteInfo.url, 
                                 invitation.userInfo.url, invitationId)
                     else:
                         # If the user is already a member of a group 
                         #   (any group on any site) then we should go to
                         #   the normal Response page.
-                        uri = '%s/%s/invitations_respond.html' % \
+                        uri = '%s%s/invitations_respond.html' % \
                                 (invitation.siteInfo.url, 
                                 invitation.userInfo.url)
                 elif inviteExists and invitationWithdrawn:
