@@ -4,6 +4,7 @@ from zope.component import createObject
 from Products.GSRedirect.view import GSRedirectBase
 from Products.GSProfile.utils import login
 from Products.XWFCore.XWFUtils import get_the_actual_instance_from_zope
+from gs.profile.email.base.emailuser import EmailUser
 from invitation import Invitation
 
 class GSInvitationResponseRedirect(GSRedirectBase):
@@ -53,7 +54,8 @@ class GSInvitationResponseRedirect(GSRedirectBase):
                     login(self.ctx, invitation.userInfo.user)
                     # I used to use the "initial_invite" column, but now
                     #   it is unused.
-                    initial = bool(invitation.userInfo.user.get_verifiedEmailAddresses())
+                    emailUser = EmailUser(self.ctx, invitation.userInfo)
+                    initial = bool(emailUser.get_verified_addresses())
                     if not(initial):
                         # Go to the initial response page, so
                         #   the new user can set a password (and verify

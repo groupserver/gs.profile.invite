@@ -9,7 +9,9 @@ from gs.content.form.form import SiteForm
 from gs.group.member.join.interfaces import IGSJoiningUser
 from gs.profile.notify.interfaces import IGSNotifyUser
 from gs.profile.password.interfaces import IGSPasswordUser
-from gs.profile.email.verify.emailverificationuser import EmailVerificationUser
+from gs.profile.email.base.emailuser import EmailUser
+from gs.profile.email.verify.emailverificationuser import \
+  EmailVerificationUser
 from interfaces import IGSResponseFields
 from invitation import Invitation, FakeInvitation
 from audit import Auditor, INVITE_RESPOND, INVITE_RESPOND_ACCEPT, \
@@ -17,7 +19,7 @@ from audit import Auditor, INVITE_RESPOND, INVITE_RESPOND_ACCEPT, \
 from Products.XWFCore.XWFUtils import get_the_actual_instance_from_zope
 
 class InitialResponseForm(SiteForm):
-    label = u'Intial Response'
+    label = u'Initial Response'
     pageTemplateFileName = 'browser/templates/initialresponse.pt'
     template = ZopeTwoPageTemplateFile(pageTemplateFileName)
 
@@ -120,7 +122,8 @@ class InitialResponseForm(SiteForm):
 
     def verify_email_address(self):
         # There better be only one email address.
-        email  = self.userInfo.user.get_emailAddresses()[0]
+        emailUser = EmailUser(self.ctx, self.userInfo)
+        email = emailUser.get_addresses()[0]
         # Assuming this will work ;)
         vid = '%s_accept' % self.invitationId
         eu = EmailVerificationUser(self.groupInfo.groupObj, 
