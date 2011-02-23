@@ -75,35 +75,39 @@
               The group stats.
             </tal:block>
           </p>
-          <tal:block define="groupId invitation/groupInfo/id"
+          <tal:block define="groupId invitation/groupInfo/id;
+            context invitation/groupInfo/groupObj"
             replace="structure provider:groupserver.GroupPrivacy">
              The group privacy.
           </tal:block>
           <fieldset tal:define="gid invitation/groupInfo/id">
-            <input type="radio" checked="" 
-              value="accept" class="radioType"
-              name="foo" id="foo-accept" 
-              tal:attributes="name string:${gid}-respond;
-                id string:${gid}-accept;
-                value string:${gid}-accept"/> 
-            <label class="radioLabel" id="foo-accept-label"
-              for="foo-accept" 
-              tal:attributes="id string:${gid}-accept-label;
-                for string:${gid}-accept">Accept the invitation to join
-                <span class="group"
-                  tal:content="invitation/groupInfo/name">this group</span></label>
-            <br/>
-            <input type="radio" class="radioType"
-              name="foo" id="foo-decline"
-              tal:attributes="name string:${gid}-respond;
-                id string:${gid}-decline;
-                value string:${gid}-decline"/> 
-            <label class="radioLabel" id="foo-decline-label"
-              for="foo-decline" 
-              tal:attributes="id string:${gid}-decline-label;
-                for string:${gid}-decline">Decline the invitation to join
-                <span class="group"
-                  tal:content="invitation/groupInfo/name">this group</span></label>
+            <div class="radioItem">
+              <input type="radio" checked="" 
+                value="accept" class="radioType"
+                name="foo" id="foo-accept" 
+                tal:attributes="name string:${gid}-respond;
+                  id string:${gid}-accept;
+                  value string:${gid}-accept"/> 
+              <label class="radioLabel" id="foo-accept-label"
+                for="foo-accept" 
+                tal:attributes="id string:${gid}-accept-label;
+                  for string:${gid}-accept">Accept the invitation to join
+                  <span class="group"
+                    tal:content="invitation/groupInfo/name">this group</span></label>
+            </div>
+            <div class="radioItem">
+              <input type="radio" class="radioType"
+                name="foo" id="foo-decline"
+                tal:attributes="name string:${gid}-respond;
+                  id string:${gid}-decline;
+                  value string:${gid}-decline"/> 
+              <label class="radioLabel" id="foo-decline-label"
+                for="foo-decline" 
+                tal:attributes="id string:${gid}-decline-label;
+                  for string:${gid}-decline">Decline the invitation to join
+                  <span class="group"
+                    tal:content="invitation/groupInfo/name">this group</span></label>
+            </div>
           </fieldset>
         </div><!--group-invitation-->
         <input type="hidden" class="hidden" name="submitted" value=""/>
