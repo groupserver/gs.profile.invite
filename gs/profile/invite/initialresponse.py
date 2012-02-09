@@ -1,5 +1,6 @@
 # coding=utf-8
 '''The form that allows an admin to invite a new person to join a group.'''
+from zope.cachedescriptors.property import Lazy
 from zope.component import createObject
 from zope.formlib import form
 from zope.security.proxy import removeSecurityProxy
@@ -25,19 +26,16 @@ class InitialResponseForm(SiteForm):
 
     def __init__(self, context, request):
         SiteForm.__init__(self, context, request)
-        self.__formFields = self.__invitation = self.__invitationId = None
-        self.__groupPrivacy = self.__groupStats = self.__userInfo = None
+        self.__groupPrivacy = self.__groupStats = None
     
-    @property
+    @Lazy
     def ctx(self):
         return get_the_actual_instance_from_zope(self.context)
         
-    @property
+    @Lazy
     def form_fields(self):
-        if self.__formFields == None:
-            self.__formFields = form.Fields(IGSResponseFields, 
-                                            render_context=False)
-        return self.__formFields
+        retval = form.Fields(IGSResponseFields, render_context=False)
+        return retval
 
     @form.action(label=u'Accept', failure='handle_respond_action_failure')
     def handle_accept(self, action, data):
@@ -100,29 +98,27 @@ class InitialResponseForm(SiteForm):
             self.status = u'<p>There are errors:</p>'
 
     # Non-Standard methods below this point
-    @property
+    @Lazy
     def invitationId(self):
-        if self.__invitationId == None:
-            self.__invitiationId = self.request.get('form.invitationId', '')
-            assert self.__invitiationId, 'Invitation ID not passed to page'
-        return self.__invitiationId
+        retval = self.request.get('form.invitationId', '')
+        assert retval, 'Invitation ID not passed to page'
+        return retval
 
-    @property
+    @Lazy
     def invitation(self):
-        if self.__invitation == None:
-            if self.invitationId == 'example':
-                groupId = self.request.form.get('form.groupId', '')
-                assert groupId, 'Group ID for the invitation-response '\
+        if self.invitationId == 'example':
+            groupId = self.request.form.get('form.groupId', '')
+            assert groupId, 'Group ID for the invitation-response '\
                   'preview has not been set.'
-                i = FakeInvitation(self.ctx, groupId)
-            else:
-                i = Invitation(self.ctx, self.invitationId)
-            self.__invitation = i
-        return self.__invitation
+            retval = FakeInvitation(self.context, groupId)
+        else:
+            retval = Invitation(self.context, self.invitationId)
+        assert retval
+        return retval
 
     def verify_email_address(self):
         # There better be only one email address.
-        emailUser = EmailUser(self.ctx, self.userInfo)
+        emailUser = EmailUser(self.context, self.userInfo)
         email = emailUser.get_addresses()[0]
         # Assuming this will work ;)
         vid = '%s_accept' % self.invitationId
@@ -131,16 +127,15 @@ class InitialResponseForm(SiteForm):
         eu.add_verification_id(vid)
         eu.verify_email(vid)
 
-    @property
+    @Lazy
     def adminInfo(self):
         return self.invitation.adminInfo
 
-    @property
+    @Lazy
     def userInfo(self):
-        if self.__userInfo == None:
-            self.__userInfo = IGSUserInfo(self.ctx)
-        assert self.__userInfo
-        return self.__userInfo
+        retval = IGSUserInfo(self.context)
+        assert retval
+        return retval
         
     @property
     def groupInfo(self):
