@@ -188,7 +188,7 @@
             </blockquote>
           </div><!--sec-bio-->
         </div><!--about-the-admin-->
-I;      </div><!--about-->
+      </div><!--about-->
     </div><!--gs-profile-invite-initial-response-->
     <tal:block metal:fill-slot="javascript">
       <script type="text/javascript"
