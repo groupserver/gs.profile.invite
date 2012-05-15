@@ -5,7 +5,7 @@ from Products.CustomUserFolder.interfaces import IGSUserInfo
 from Products.XWFCore.XWFUtils import get_the_actual_instance_from_zope
 from gs.group.member.base.utils import user_member_of_group
 from gs.group.member.join.interfaces import IGSJoiningUser
-from gs.group.member.invite.queries import InvitationQuery
+from gs.group.member.invite.base.queries import InvitationQuery
 from gs.profile.notify.interfaces import IGSNotifyUser
 from invitation import Invitation
 from audit import Auditor, INVITE_RESPOND, INVITE_RESPOND_ACCEPT, \

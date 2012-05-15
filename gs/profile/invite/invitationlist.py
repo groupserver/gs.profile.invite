@@ -5,7 +5,7 @@ from zope.contentprovider.interfaces import UpdateNotCalled
 from zope.interface import Interface, implements
 from zope.publisher.interfaces.browser import IDefaultBrowserLayer
 from Products.CustomUserFolder.interfaces import IGSUserInfo
-from gs.group.member.invite.queries import InvitationQuery
+from gs.group.member.invite.base.queries import InvitationQuery
 from invitation import Invitation
 from interfaces import IGSInvitationListContentProvider
 
