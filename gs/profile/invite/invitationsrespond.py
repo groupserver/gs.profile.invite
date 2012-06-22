@@ -53,9 +53,7 @@ class GSInviationsRespond(BrowserView):
     @property
     def invitationQuery(self):
         if self.__invitationQuery == None:
-            da = self.ctx.zsqlalchemy
-            assert da, 'No data-adaptor found'
-            self.__invitationQuery = InvitationQuery(da)
+            self.__invitationQuery = InvitationQuery()
         return self.__invitationQuery
         
     @property

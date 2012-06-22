@@ -43,9 +43,7 @@ class InvitationList(object):
     @property
     def invitationQuery(self):
         if self.__invitationQuery == None:
-            da = self.context.zsqlalchemy
-            assert da, 'No data-adaptor found'
-            self.__invitationQuery = InvitationQuery(da)
+            self.__invitationQuery = InvitationQuery()
         return self.__invitationQuery
 
     @property

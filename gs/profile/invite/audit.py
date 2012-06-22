@@ -84,8 +84,7 @@ class Auditor(object):
         self.siteInfo = siteInfo
         self.userInfo  = userInfo
         
-        da = userInfo.user.zsqlalchemy
-        self.queries = AuditQuery(da)
+        self.queries = AuditQuery()
       
         self.factory = AuditEventFactory()
         
