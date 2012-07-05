@@ -54,7 +54,7 @@ class InitialResponseForm(SiteForm):
             joiningUser = IGSJoiningUser(self.userInfo)
             joiningUser.join(self.groupInfo)
 
-        uri = '%s?welcome=1' % self.groupInfo.url
+        uri = '%s?welcome=1' % self.groupInfo.relativeURL
         self.request.RESPONSE.redirect(uri)
         
     @form.action(label=u'Decline', failure='handle_respond_action_failure')
