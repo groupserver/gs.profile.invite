@@ -21,9 +21,11 @@
       metal:fill-slot="messages">&#160;</tal:block-->
     <div metal:fill-slot="messages"
       tal:define="result view/process_form;
-        isError python:result.get('error', False);"
+        isError python:result.get('error', False);
+        mc string:ui-state-highlight ui-corner-all;
+        ec string:ui-widget ui-state-error ui-corner-all;"
       tal:condition="python:result and result.has_key('message')"
-      tal:attributes="class python:(isError and 'message-error') or 'message-result'"
+      tal:attributes="class python:(isError and ec) or mc"
       tal:content="structure result/message"/>
     <div metal:fill-slot="body" id="gs-profile-invite-respond"
       tal:define="ctx view/context;
