@@ -124,7 +124,7 @@ class GSInviationsRespond(BrowserView):
         return result
         
     def accept_message(self, acceptedGroups):
-        acceptedLinks = ['<a href="%s">%s</a>' % (g.url, g.name)
+        acceptedLinks = ['<a href="%s">%s</a>' % (g.relativeURL, g.name)
             for g in acceptedGroups]
         if len(acceptedLinks) > 1:
             c = u', '.join([g for g in acceptedLinks][:-1])
