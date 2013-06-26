@@ -5,7 +5,7 @@ from zope.formlib import form
 from Products.Five.browser.pagetemplatefile import ZopeTwoPageTemplateFile
 from Products.CustomUserFolder.interfaces import IGSUserInfo
 from gs.group.member.join.interfaces import IGSJoiningUser
-from gs.pprofile.base import ProfileForm
+from gs.profile.base import ProfileForm
 from gs.profile.notify.interfaces import IGSNotifyUser
 from gs.profile.password.interfaces import IGSPasswordUser
 from gs.profile.email.base.emailuser import EmailUser

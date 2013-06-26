@@ -2,7 +2,7 @@
 from urllib import quote
 from zope.cachedescriptors.property import Lazy
 from zope.component import createObject
-from gs.profile.page import ProfilePage
+from gs.profile.base import ProfilePage
 from invitation import Invitation
 
 
