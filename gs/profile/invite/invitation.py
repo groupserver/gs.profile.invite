@@ -1,120 +1,106 @@
-# coding=utf-8
-from urlparse import urlparse
+# -*- coding: utf-8 -*-
+from zope.cachedescriptors.property import Lazy
 from zope.component import createObject
 from gs.group.member.invite.base.queries import InvitationQuery
 
+
 class Invitation(object):
     def __init__(self, context, invitationId):
-        assert context, 'No context'
-        assert invitationId, 'No Invitation ID'
-        self.invitationId = invitationId
+        if not context:
+                raise ValueError('context is {0}'.format(type(context)))
         self.context = context
-        self.__query = None
-        self.__adminInfo = self.__siteObj = self.__siteInfo = None
-        self.__groupInfo = self.__userInfo = self.__invite = None
-    
-    @property
+
+        if not invitationId:
+            raise ValueError('invitationId is {0}'.format(type(invitationId)))
+        self.invitationId = invitationId
+
+    @Lazy
     def query(self):
-        if self.__query == None:
-            self.__query = InvitationQuery()
-            assert self.__query
-        return self.__query
-    
-    @property
+        retval = InvitationQuery()
+        assert retval
+        return retval
+
+    @Lazy
     def invite(self):
-        if self.__invite == None:
-            self.__invite = self.query.get_invitation(self.invitationId, 
-                                                        current=False)
-            if self.__invite['invitation_id'] != self.invitationId:
-                raise KeyError(self.invitationId)
-        assert self.__invite
-        return self.__invite
-    
-    @property
+        retval = self.query.get_invitation(self.invitationId, current=False)
+        if retval['invitation_id'] != self.invitationId:
+            raise KeyError(self.invitationId)
+        assert retval, 'invite is {0}'.format(type(retval))
+        return retval
+
+    @Lazy
     def siteObj(self):
-        if self.__siteObj == None:
-            self.__siteObj = getattr(self.context.Content, \
-                                self.invite['site_id'])
-        assert self.__siteObj, 'No site object found %s' % \
-            self.invite['site_id']
-        return self.__siteObj
-    
-    @property
+        retval = getattr(self.context.Content, self.invite['site_id'])
+        assert retval, 'No site object found %s' % self.invite['site_id']
+        return retval
+
+    @Lazy
     def siteInfo(self):
-        if self.__siteInfo == None:
-            self.__siteInfo = createObject('groupserver.SiteInfo', 
-                                            self.siteObj)
-        return self.__siteInfo
-    @property
+        retval = createObject('groupserver.SiteInfo', self.siteObj)
+        return retval
+
+    @Lazy
     def userInfo(self):
-        if self.__userInfo == None:
-            self.__userInfo = createObject('groupserver.UserFromId',
-                                            self.siteObj, 
-                                            self.invite['user_id'])
-        assert self.__userInfo
-        return self.__userInfo
+        retval = createObject('groupserver.UserFromId', self.siteObj,
+                                self.invite['user_id'])
+        assert retval
+        return retval
 
-    @property
+    @Lazy
     def adminInfo(self):
-        if self.__adminInfo == None:
-            self.__adminInfo = createObject('groupserver.UserFromId',
-                                            self.siteObj, 
-                                            self.invite['inviting_user_id'])
-        assert self.__adminInfo
-        return self.__adminInfo
+        retval = createObject('groupserver.UserFromId', self.siteObj,
+                                self.invite['inviting_user_id'])
+        assert retval
+        return retval
 
-    @property
+    @Lazy
     def groupInfo(self):
-        if self.__groupInfo == None:
-            assert self.invite['group_id']
-            self.__groupInfo = createObject('groupserver.GroupInfo', 
-                                            self.siteObj,
-                                            self.invite['group_id'])
-        assert self.__groupInfo
-        return self.__groupInfo
+        assert self.invite['group_id']
+        retval = createObject('groupserver.GroupInfo', self.siteObj,
+                                self.invite['group_id'])
+        assert retval
+        return retval
 
     def accept(self):
         siteId = self.groupInfo.siteInfo.id
         groupId = self.groupInfo.id
         userId = self.userInfo.id
         self.query.accept_invitation(siteId, groupId, userId)
-        
+
     def decline(self):
         siteId = self.groupInfo.siteInfo.id
         groupId = self.groupInfo.id
         userId = self.userInfo.id
         self.query.decline_invitation(siteId, groupId, userId)
 
+
 class FakeInvitation(object):
     def __init__(self, context, groupId):
-        assert context, 'No context'
-        assert groupId, 'No groupId'
-        self.invitationId = 'example'
+        if not context:
+                raise ValueError('context is {0}'.format(type(context)))
         self.context = context
-        self.groupId = groupId
-        self.__groupInfo = self.__userInfo = None
-        
-    @property
-    def userInfo(self):
-        if self.__userInfo == None:
-            self.__userInfo = createObject('groupserver.LoggedInUser',
-                                            self.context)
-        return self.__userInfo
 
-    @property
+        if not groupId:
+            raise ValueError('groupId is {0}'.format(type(groupId)))
+        self.groupId = groupId
+
+    @Lazy
+    def userInfo(self):
+        retval = createObject('groupserver.LoggedInUser', self.context)
+        return retval
+
+    @Lazy
     def adminInfo(self):
         return self.userInfo
 
-    @property
+    @Lazy
     def groupInfo(self):
-        if self.__groupInfo == None:
-            self.__groupInfo = createObject('groupserver.GroupInfo', 
-                                            self.context, self.groupId)
-        return self.__groupInfo
+        retval = createObject('groupserver.GroupInfo', self.context,
+                                self.groupId)
+        return retval
 
     def accept(self):
         raise NotImplemented
-        
+
     def decline(self):
         raise NotImplemented
-

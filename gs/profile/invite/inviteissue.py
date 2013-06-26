@@ -1,8 +1,9 @@
-# coding=utf-8
+# -*- coding: utf-8 -*-
 from urllib import quote
 from zope.component import createObject
 from Products.GSContent.view import GSContentView
 from invitation import Invitation
+
 
 class IssueView(GSContentView):
     def __init__(self, context, request):
@@ -13,10 +14,9 @@ class IssueView(GSContentView):
             self.invitation = Invitation(context, self.invitationId)
         self.loggedInUser = createObject('groupserver.LoggedInUser',
                                             self.context)
-    
+
     def quote(self, msg):
         assert msg
         retval = quote(msg)
         assert retval
         return retval
-

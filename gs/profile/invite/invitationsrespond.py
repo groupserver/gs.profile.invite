@@ -1,76 +1,55 @@
-# coding=utf-8
-from Products.Five import BrowserView
+# -*- coding: utf-8 -*-
+from zope.cachedescriptors.property import Lazy
 from zope.component import createObject
-from Products.CustomUserFolder.interfaces import IGSUserInfo
 from Products.XWFCore.XWFUtils import get_the_actual_instance_from_zope
 from gs.group.member.base.utils import user_member_of_group
 from gs.group.member.join.interfaces import IGSJoiningUser
 from gs.group.member.invite.base.queries import InvitationQuery
+from gs.profile.base import ProfilePage
 from gs.profile.notify.interfaces import IGSNotifyUser
 from invitation import Invitation
 from audit import Auditor, INVITE_RESPOND, INVITE_RESPOND_ACCEPT, \
     INVITE_RESPOND_DELCINE
 
-class GSInviationsRespond(BrowserView):
+
+class GSInviationsRespond(ProfilePage):
     '''The standard invitation response page.
-    
+
     There are two pages used to respond to an invitation. The Initial
     Response page is used to set a password and accept the invitation,
     or decline the invitation. This page is used by existing members to
     accept and decline invitations.
     '''
-    def __init__(self, context, request):
-        BrowserView.__init__(self, context, request)
-        self.__groupsInfo = self.__currentInvitations = None
-        self.__invitationQuery = self.__siteInfo = self.__userInfo = None
+    def __init__(self, profile, request):
+        super(GSInviationsRespond, self).__init__(profile, request)
 
-    @property
+    @Lazy
     def ctx(self):
         return get_the_actual_instance_from_zope(self.context)
-            
-    @property
-    def groupsInfo(self):
-        if self.__groupsInfo == None:
-            self.__groupsInfo = createObject('groupserver.GroupsInfo', 
-                self.ctx)
-        return self.__groupsInfo
 
-    @property
-    def userInfo(self):
-        if self.__userInfo == None:
-            self.__userInfo = IGSUserInfo(self.ctx)
-        assert self.__userInfo
-        return self.__userInfo
-        
-    @property
-    def siteInfo(self):
-        if self.__siteInfo == None:
-            self.__siteInfo = createObject('groupserver.SiteInfo', 
-                                self.ctx)
-        assert self.__siteInfo
-        return self.__siteInfo
-    
-    @property
+    @Lazy
+    def groupsInfo(self):
+        retval = createObject('groupserver.GroupsInfo', self.ctx)
+        return retval
+
+    @Lazy
     def invitationQuery(self):
-        if self.__invitationQuery == None:
-            self.__invitationQuery = InvitationQuery()
-        return self.__invitationQuery
-        
-    @property
+        retval = InvitationQuery()
+        return retval
+
+    @Lazy
     def currentInvitations(self):
-        if self.__currentInvitations == None:
-            gci = self.invitationQuery.get_current_invitiations_for_site
-            self.__currentInvitations = \
-                [Invitation(self.ctx, i['invitation_id'])
+        gci = self.invitationQuery.get_current_invitiations_for_site
+        retval = [Invitation(self.ctx, i['invitation_id'])
                     for i in gci(self.siteInfo.id, self.userInfo.id)]
-        assert type(self.__currentInvitations) == list
-        return self.__currentInvitations
+        assert type(retval) == list
+        return retval
 
     def process_form(self):
         '''Process the forms in the page.
-        
+
         This method uses the "submitted" pattern that is used for the
-        XForms impementation on GroupServer. 
+        XForms impementation on GroupServer.
           * The method is called whenever the page is loaded by
             tal:define="result view/process_form".
           * The submitted form is checked for the hidden "submitted" field.
@@ -78,7 +57,7 @@ class GSInviationsRespond(BrowserView):
             not when the page is loaded for the first time.
             - If the field is present, then the form is processed.
             - If the field is absent, then the method re  turns.
-        
+
         RETURNS
             A "result" dictionary, that at-least contains the form that
             was submitted
@@ -87,11 +66,11 @@ class GSInviationsRespond(BrowserView):
         result = {}
         result['form'] = form
 
-        if form.has_key('submitted'):
-            groupIds = [k.split('-respond')[0] for k in form.keys() 
-              if  '-respond' in k]
-            responses = [form['%s-respond' % k] for k in groupIds]          
-            result['error'] = False            
+        if 'submitted' in form:
+            groupIds = [k.split('-respond')[0] for k in form.keys()
+              if '-respond' in k]
+            responses = [form['%s-respond' % k] for k in groupIds]
+            result['error'] = False
             acceptedMessage = declinedMessage = u''
 
             accepted = [k.split('-accept')[0] for k in responses
@@ -101,8 +80,8 @@ class GSInviationsRespond(BrowserView):
                   self.groupsInfo.groupsObj, g) for g in accepted]
                 self.accept_invitations(acceptedGroups)
                 acceptedMessage = self.accept_message(acceptedGroups)
-            
-            declined = [k.split('-decline')[0] for k in responses 
+
+            declined = [k.split('-decline')[0] for k in responses
                         if '-decline' in k]
             for d in declined:
                 assert d not in accepted
@@ -115,14 +94,14 @@ class GSInviationsRespond(BrowserView):
             result['message'] = u'%s\n%s' % \
                 (acceptedMessage, declinedMessage)
             self.__currentInvitations = None
-            assert result.has_key('error')
+            assert 'error' in result, 'No "errror" in the result'
             assert type(result['error']) == bool
-            assert result.has_key('message')
+            assert 'message' in result, 'No "message" in the result'
             assert type(result['message']) == unicode
-        assert result.has_key('form')
+        assert 'form' in result
         assert type(result['form']) == dict
         return result
-        
+
     def accept_message(self, acceptedGroups):
         acceptedLinks = ['<a href="%s">%s</a>' % (g.relativeURL, g.name)
             for g in acceptedGroups]
@@ -138,7 +117,7 @@ class GSInviationsRespond(BrowserView):
         retval = u'<p>You <strong>accepted</strong> the %s to join '\
             u'%s. You are now a member of %s.</p>' % (i, a, t)
         return retval
-        
+
     def decline_message(self, declinedGroups):
         declinedLinks = ['<a href="%s">%s</a>' % (g.url, g.name)
             for g in declinedGroups]
@@ -152,18 +131,18 @@ class GSInviationsRespond(BrowserView):
         retval = u'<p>You <strong>declined</strong> the %s to '\
             u'join %s.</p>' % (i, a)
         return retval
-        
+
     def accept_invitations(self, groupInfos):
         assert type(groupInfos) == list
         gids = [g.id for g in groupInfos]
-        acceptedInvites = [i for i in self.currentInvitations 
-                            if (i.groupInfo.id in gids)] # Skip groups already member
+        acceptedInvites = [i for i in self.currentInvitations
+                    if (i.groupInfo.id in gids)]  # Skip groups already member
 
         auditor = Auditor(self.siteInfo, self.userInfo)
-        
+
         for acceptedInvite in acceptedInvites:
             acceptedInvite.accept()
-            auditor.info(INVITE_RESPOND, acceptedInvite.groupInfo, 
+            auditor.info(INVITE_RESPOND, acceptedInvite.groupInfo,
                 acceptedInvite.adminInfo, INVITE_RESPOND_ACCEPT)
             joiningUser = IGSJoiningUser(self.userInfo)
             # --=mpj17=-- Joining will notify the admin, by side effect.
@@ -177,22 +156,21 @@ class GSInviationsRespond(BrowserView):
     def decline_invitations(self, groupInfos):
         assert type(groupInfos) == list
         gids = [g.id for g in groupInfos]
-        declinedInvites = [i for i in self.currentInvitations 
+        declinedInvites = [i for i in self.currentInvitations
                             if i.groupInfo.id in gids]
 
         auditor = Auditor(self.siteInfo, self.userInfo)
 
         for declinedInvite in declinedInvites:
             declinedInvite.decline()
-            auditor.info(INVITE_RESPOND, declinedInvite.groupInfo, 
+            auditor.info(INVITE_RESPOND, declinedInvite.groupInfo,
                 declinedInvite.adminInfo, INVITE_RESPOND_DELCINE)
-            
-            notifiedUser = IGSNotifyUser(declinedInvite.adminInfo)
-            n_dict = {  'userFn':       self.userInfo.name,
-                        'adminFn':      declinedInvite.adminInfo.name,
-                        'siteName':     self.siteInfo.name,
-                        'groupName':    declinedInvite.groupInfo.name,
-                        'groupURL':     declinedInvite.groupInfo.url,}
-            notifiedUser.send_notification('invite_join_group_declined',\
-                'default', n_dict)
 
+            notifiedUser = IGSNotifyUser(declinedInvite.adminInfo)
+            n_dict = {'userFn': self.userInfo.name,
+                        'adminFn': declinedInvite.adminInfo.name,
+                        'siteName': self.siteInfo.name,
+                        'groupName': declinedInvite.groupInfo.name,
+                        'groupURL': declinedInvite.groupInfo.url, }
+            notifiedUser.send_notification('invite_join_group_declined',
+                'default', n_dict)

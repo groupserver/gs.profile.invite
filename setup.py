@@ -1,4 +1,4 @@
-# coding=utf-8
+# -*- coding: utf-8 -*-
 import os
 from setuptools import setup, find_packages
 from version import get_version
@@ -7,7 +7,7 @@ version = get_version()
 
 setup(name='gs.profile.invite',
     version=version,
-    description="The user-profile pages on GroupServer that are "\
+    description="The user-profile pages on GroupServer that are "
       "required to accept invitations.",
     long_description=open("README.txt").read() + "\n" +
                     open(os.path.join("docs", "HISTORY.txt")).read(),
@@ -52,4 +52,3 @@ setup(name='gs.profile.invite',
     # -*- Entry points: -*-
     """,
 )
-
