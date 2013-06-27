@@ -5,22 +5,26 @@
   i18n_domain="groupserver">
   
   <browser:page
-    for="Products.CustomUserFolder.interfaces.ICustomUser"
     name="invitation_accepted.html"
+    for="Products.CustomUserFolder.interfaces.ICustomUser"
     class=".error.InvitationAccepted"
     template="browser/templates/invitation_accepted.pt"
     permission="zope2.ManageProperties" />
 
-  <adapter for="Products.GSRedirect.interfaces.IGSRedirectTraversal"
+  <adapter 
+    for="Products.GSRedirect.interfaces.IGSRedirectTraversal"
     factory=".invitationredirect.GSInvitationResponseRedirect"
     provides="Products.GSRedirect.interfaces.IGSRedirect"
     name="rsvp" />
 
    <browser:page
-    for="Products.CustomUserFolder.interfaces.ICustomUser"
     name="initial_response.html"
+    for="Products.CustomUserFolder.interfaces.ICustomUser"
     class=".initialresponse.InitialResponseForm"
     permission="zope2.ManageProperties" />
+   <browser:resource
+     name="gs-profile-invite-respond-20130626.js"
+     file="browser/javascript/respond.js" />
 
   <browser:page
     for="Products.GSContent.interfaces.IGSSiteFolder"
