@@ -80,12 +80,23 @@
               tal:content="view/groupInfo/name">this group</span> and
             you will be able to post yourself.
           </p>
+
           <tal:block define="widgets python:[view.widgets['password1']]">
             <tal:block 
               replace="structure provider:groupserver.FormWidgets">
               Widgets and some such&#8230;
             </tal:block>
           </tal:block>
+          <div id="gs-profile-invite-respond-password-set-toggle"
+               class="form-widget not-required gs-profile-password-toggle">
+            <input id="gs-profile-invite-respond-password-set-toggle-widget" 
+                   class="checkboxType" type="checkbox" 
+                   value="1" checked="checked" />
+            <label for="gs-profile-invite-respond-password-set-toggle-widget"
+                   title="Deselect if you are in a public place, like a cafe or library."
+                   class="checkboxLabel">Show password</label>
+          </div><!--gs-profile-invite-respond-password-set-toggle-->
+
           <div id="privacy" class="disclosureWidget">
             <p>
               <a class="disclosureButton" id="privacy-button"
