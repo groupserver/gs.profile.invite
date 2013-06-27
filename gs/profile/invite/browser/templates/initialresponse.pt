@@ -1,7 +1,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
   xmlns:tal="http://xml.zope.org/namespaces/tal"
   xmlns:metal="http://xml.zope.org/namespaces/metal"
-  metal:use-macro="context/@@groupserver_site_home_layout/page">
+  metal:use-macro="context/@@groupserver_layout/page">
   <head>
     <title metal:fill-slot="title">
       <tal:block replace="string:Respond to Your Invitation: ${view/groupInfo/name}: ${view/siteInfo/name}">
@@ -11,22 +11,22 @@
   </head>
   <body>
     <div metal:fill-slot="utilitylinks">&#160;</div>
-    <div metal:fill-slot="sitenavigation">&#160;</div>
-    <div metal:fill-slot="search">&#160;</div>
     <tal:block content="structure provider:groupserver.FormStatusMessage"
       define="errors view/errors; status view/status; widgets view/widgets"
       metal:fill-slot="messages">&#160;</tal:block>
     <div id="gs-profile-invite-initial-response" metal:fill-slot="body"
       tal:define="example python:view.invitationId == 'example';">
-      <h1>Respond to Your Invitation
-        <strong tal:condition="example">[Preview]</strong></h1>
-      <div tal:condition="example" class="message-result">
+      <h1>Respond to Your Invitation</h1>
+      <div tal:condition="example"  id="gs-profile-invite-respond"
+           class="well" role="region"
+           aria-labelledby="gs-profile-invite-respond-h">
+        <h2 id="gs-profile-invite-respond-h">Preview Information</h2>
         <p>
           This <strong>preview</strong> is similar to what the new
           member will see when he or she clicks on the invitation link.
           It is actually what you would see if you invited yourself to 
-          <samp class="group"
-            tal:content="view/groupInfo/name">this group</samp>.
+          <cite class="group" 
+                tal:content="view/groupInfo/name">this group</cite>.
           If you type in a <strong>password</strong> and 
           <strong>accept</strong> this preview invitation your password 
           will be unchanged, but you will see what the 
@@ -55,15 +55,22 @@
         has invited you to join
         <strong class="group"
           tal:content="view/groupInfo/name">this group</strong>.
+        (There is more information about 
+        <span class="fn"
+          tal:content="view/adminInfo/name">An administrator</span> 
+        and 
+        <span class="group"
+          tal:content="view/groupInfo/name">this group</span>
+        below.)
       </p><!--reason-->
-      <form enctype="multipart/form-data"  method="post" action="."
-        tal:attributes="action request/URL" id="respond">
-        <fieldset id="accept">
-          <legend>Accept</legend>
+      <form enctype="multipart/form-data" method="post" action="."
+            class="gs-content-js-required" id="gs-profile-invite-respond"
+            tal:attributes="action request/URL">
+        <div id="accept" role="region" aria-labelledby="accept-h">
+          <h3 id="accept-h">Accept</h3>
           <p>
             To <strong>accept</strong> the invitation, 
-            <strong>choose</strong> a password, enter it
-            below, then click
+            choose a password, enter it below, then click
             <samp class="button"
               tal:content="view/actions/form.actions.accept/label">Big R</samp>
             button.
@@ -79,6 +86,18 @@
               Widgets and some such&#8230;
             </tal:block>
           </tal:block>
+          <div id="privacy" class="disclosureWidget">
+            <p>
+              <a class="disclosureButton" id="privacy-button"
+                href="javascript:showHideDisclosure('privacy')">Your 
+                privacy is important, and will be maintained according 
+                to the <strong>privacy policy</strong> of 
+                <span class="site" tal:content="siteName">this site</span>.</a>
+            </p>
+            <div class="disclosureShowHide" style="display: none;">
+              <div id="privacy-content">Loading&#8230;</div>
+            </div>
+          </div><!--privacy-->
           <div id="tc" class="disclosureWidget">
             <p>
               <a class="disclosureButton" id="tc-button"
@@ -91,7 +110,7 @@
             <div class="disclosureShowHide" style="display: none;">
               <div id="tc-content">Loading&#8230;</div>
             </div>
-          </div>          
+          </div><!--tc-->
           <div class="buttons" tal:condition="view/availableActions">
             <tal:block define="action view/actions/form.actions.accept">
               <div class="formelementbutton">
@@ -99,9 +118,9 @@
               </div>
             </tal:block>
           </div><!--buttons-->
-        </fieldset><!--accept-->
-        <fieldset id="decline">
-          <legend>Decline</legend>
+        </div><!--accept-->
+        <div id="decline" role="region" aria-labelledby="decline-h">
+          <h3 id="decline-h">Decline</h3>
           <p>
             To <strong>decline</strong> the invitation click the 
             <samp class="button"
@@ -116,52 +135,21 @@
               </div>
             </tal:block>
           </div><!--buttons-->
-        </fieldset><!--decline-->
+        </div><!--decline-->
         <tal:block replace="structure view/widgets/invitationId/hidden"/>
         <tal:block replace="structure view/widgets/groupId/hidden"/>
       </form>
-      <div id="about" class="cols">
-        <div id="about-the-group" class="rightColumn"
-          tal:define="rlg python:view.groupInfo.get_property('real_life_group')">
-          <h2>About 
-            <span class="group" 
-              tal:content="view/groupInfo/name">The Group</span></h2>
-          <p id="about-the-group-text">
-            <span id="group-purpose">
-              <span class="group"
-                tal:content="view/groupInfo/name">The group</span> 
-              is an online group for
-              <span id="real-life-group" tal:content="rlg">real
-                people doing real things</span>.</span><!--group-purpose-->
-            <tal:block define="groupId view/groupInfo/id"
-              replace="structure provider:groupserver.GroupStats">
-              The group stats.
-            </tal:block>
-          </p>
-          <tal:block define="groupId view/groupInfo/id"
-            replace="structure provider:groupserver.GroupPrivacy">
-             The group privacy.
-           </tal:block>
-          <div id="privacy" class="disclosureWidget">
-            <p>
-              <a class="disclosureButton" id="privacy-button"
-                href="javascript:showHideDisclosure('privacy')">Your 
-                privacy is important, and will be maintained according 
-                to the <strong>privacy policy</strong> of 
-                <span class="site" tal:content="siteName">this site</span>.</a>
-            </p>
-            <div class="disclosureShowHide" style="display: none;">
-              <div id="privacy-content">Loading&#8230;</div>
-            </div>
-          </div>
-        </div><!--about-the-group-->
-        <div id="about-the-admin" class="leftColumn">
-          <div tal:define="user view/adminInfo/user"
-            tal:replace="structure provider:groupserver.UserImage">
+      <div id="gs-profile-invite-respond-about" class="gs-content-layout-cols">
+        <h2>About the invitation</h2>
+        <div id="gs-profile-invite-respond-about-admin"
+             aria-labelledby="gs-profile-invite-respond-about-admin-h"
+             class="main" role="region">
+          <div tal:define="user view/adminInfo/user; size string:30;"
+            tal:replace="structure provider:groupserver.SquareUserImage">
             A photo or some such&#8230;
           </div>
-          <h2>About 
-            <span class="fn" tal:content="view/adminInfo/name">The Admin</span></h2>
+          <h3 id="gs-profile-invite-respond-about-admin-h"
+              class="fn" tal:content="view/adminInfo/name">The Admin</h3>
           <p>
             <span class="fn" 
               tal:content="view/adminInfo/name">The administrator</span> 
@@ -188,31 +176,39 @@
             </blockquote>
           </div><!--sec-bio-->
         </div><!--about-the-admin-->
+        <div id="gs-profile-invite-respond-about-group"
+          tal:define="rlg python:view.groupInfo.get_property('real_life_group')"
+          class="secondary" role="region"
+          aria-labelledby="gs-profile-invite-respond-about-group-h">
+          <h3 id="gs-profile-invite-respond-about-group-h" class="group" 
+              tal:content="view/groupInfo/name">The Group</h3>
+          <p id="about-the-group-text">
+            <span id="group-purpose">
+              <span class="group"
+                tal:content="view/groupInfo/name">The group</span> 
+              is an online group for
+              <span id="real-life-group" tal:content="rlg">real
+                people doing real things</span>.</span><!--group-purpose-->
+            <tal:block define="groupId view/groupInfo/id"
+              replace="structure provider:groupserver.GroupStats">
+              The group stats.
+            </tal:block>
+          </p>
+          <tal:block define="groupId view/groupInfo/id"
+            replace="structure provider:groupserver.GroupPrivacy">
+             The group privacy.
+           </tal:block>
+        </div><!--about-the-group-->
+        <div class="noFloat">foo</div>
       </div><!--about-->
     </div><!--gs-profile-invite-initial-response-->
     <tal:block metal:fill-slot="javascript">
       <script type="text/javascript"
-        src="/++resource++check_required-20071214.js">&#160;</script>
-      <script type="text/javascript"
-        src="/++resource++popup_help-20071218.js">&#160;</script>
-      <script type="text/javascript">
-        jQuery.noConflict()
-        jQuery(document).ready( function () {
-            jQuery("#privacy-button").click( function () {
-                var uri = "/policies/privacy/ #privacy";
-                jQuery("#privacy-content").load(uri);
-            });
-            jQuery("#tc-button").click( function () {
-                var uri = "/policies/aup/ #aup";
-                jQuery("#tc-content").load(uri);
-            });
-            GSPopupFormHelp.init('#respond');
-            var gsRequiredWidgets = new Array('#form\\.password1');
-            GSCheckRequired.init(
-              gsRequiredWidgets, '#form\\.actions\\.accept');
-            jQuery("#form\\.password1").focus();
-        });
-      </script>
+              src="/++resource++gs-profile-invite-respond-20130626.js" 
+              defer="true"> </script>
+      <script type="text/javascript" 
+              src="/++resource++gs-content-js-required-min-20130517.js" 
+              defer="true"> </script>     
     </tal:block>
   </body>
 </html>
