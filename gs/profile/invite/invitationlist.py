@@ -1,31 +1,26 @@
-# coding=utf-8
-from zope.component import createObject, provideAdapter, adapts
-from zope.pagetemplate.pagetemplatefile import PageTemplateFile
+# -*- coding: utf-8 -*-
+from zope.cachedescriptors.property import Lazy
+from zope.component import adapts
 from zope.contentprovider.interfaces import UpdateNotCalled
 from zope.interface import Interface, implements
+from zope.pagetemplate.pagetemplatefile import PageTemplateFile
 from zope.publisher.interfaces.browser import IDefaultBrowserLayer
-from Products.CustomUserFolder.interfaces import IGSUserInfo
 from gs.group.member.invite.base.queries import InvitationQuery
+from gs.profile.base import ProfileContentProvider
 from invitation import Invitation
 from interfaces import IGSInvitationListContentProvider
 
-class InvitationList(object):
-    implements( IGSInvitationListContentProvider )
+
+class InvitationList(ProfileContentProvider):
+    implements(IGSInvitationListContentProvider)
     adapts(Interface,
         IDefaultBrowserLayer,
         Interface)
-        
-    def __init__(self, context, request, view):
-        self.__parent__ = self.view = view
+
+    def __init__(self, profile, request, view):
+        super(InvitationList, self).__init__(profile, request, view)
         self.__updated = False
 
-        self.context = context
-        self.request = request
-        self.userInfo = IGSUserInfo(context)
-        self.siteInfo = createObject('groupserver.SiteInfo', context)
-
-        self.__invitations = self.__invitationQuery = None
-        
     def update(self):
         self.__updated = True
 
@@ -35,22 +30,19 @@ class InvitationList(object):
 
         pageTemplate = PageTemplateFile(self.pageTemplateFileName)
         return pageTemplate(view=self)
-        
+
     #########################################
     # Non standard methods below this point #
     #########################################
 
-    @property
+    @Lazy
     def invitationQuery(self):
-        if self.__invitationQuery == None:
-            self.__invitationQuery = InvitationQuery()
-        return self.__invitationQuery
+        retval = InvitationQuery()
+        return retval
 
-    @property
+    @Lazy
     def invitations(self):
-        if self.__invitations == None:
-            gci = self.invitationQuery.get_current_invitiations_for_site
-            self.__invitations = [Invitation(self.context, i['invitation_id']) 
-                for i in gci(self.siteInfo.id, self.userInfo.id)]
-        return self.__invitations
-
+        gci = self.invitationQuery.get_current_invitiations_for_site
+        retval = [Invitation(self.context, i['invitation_id'])
+                    for i in gci(self.siteInfo.id, self.userInfo.id)]
+        return retval
