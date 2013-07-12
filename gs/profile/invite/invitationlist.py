@@ -1,21 +1,13 @@
 # -*- coding: utf-8 -*-
 from zope.cachedescriptors.property import Lazy
-from zope.component import adapts
 from zope.contentprovider.interfaces import UpdateNotCalled
-from zope.interface import Interface, implements
 from zope.pagetemplate.pagetemplatefile import PageTemplateFile
-from zope.publisher.interfaces.browser import IDefaultBrowserLayer
 from gs.group.member.invite.base.queries import InvitationQuery
 from gs.profile.base import ProfileContentProvider
 from invitation import Invitation
-from interfaces import IGSInvitationListContentProvider
 
 
 class InvitationList(ProfileContentProvider):
-    implements(IGSInvitationListContentProvider)
-    adapts(Interface,
-        IDefaultBrowserLayer,
-        Interface)
 
     def __init__(self, profile, request, view):
         super(InvitationList, self).__init__(profile, request, view)

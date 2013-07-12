@@ -43,10 +43,16 @@
   <interface 
     interface=".interfaces.IGSInvitationListContentProvider"
     type="zope.contentprovider.interfaces.ITALNamespaceData"/>
+  <class class=".invitationlist.InvitationList">
+    <implements interface=".interfaces.IGSInvitationListContentProvider"/>
+  </class>
   <adapter
+    name="groupserver.GroupInvitationList"
+    for="Products.CustomUserFolder.interfaces.ICustomUser
+         zope.publisher.interfaces.browser.IDefaultBrowserLayer
+         zope.interface.Interface"
     factory=".invitationlist.InvitationList"
-    provides="zope.contentprovider.interfaces.IContentProvider"
-    name="groupserver.GroupInvitationList"/>
+    provides="zope.contentprovider.interfaces.IContentProvider" />
 
   <utility 
     factory=".audit.AuditEventFactory"
