@@ -1,22 +1,24 @@
 <div xmlns="http://www.w3.org/1999/xhtml"
-  xmlns:tal="http://xml.zope.org/namespaces/tal" id="invitations"
-  tal:define="view options/view;
-    more python:len(view.invitations) &gt; 1"
-  tal:condition="options/view/invitations">
-  <h2>Invitations</h2>
+     xmlns:tal="http://xml.zope.org/namespaces/tal"
+     id="gs-profile-invite-invitationslist"
+     tal:define="view options/view;
+                 more python:len(view.invitations) &gt; 1"
+     tal:condition="options/view/invitations"
+     role="region" aria-labelledby="gs-profile-invite-invitationslist-h">
+  <h2 id="gs-profile-invite-invitationslist-h">Invitations</h2>
   <ul>
     <tal:block repeat="invitation view/invitations">
       <li class="invitation">
-        <a href="invitations_respond.html">
-          <span class="fn admin"
-            tal:content="invitation/adminInfo/name">An administrator</span>
-          has invited you to 
-          <strong>join
-            <span class="group"
-              tal:content="invitation/groupInfo/name">a group</span>.<strong>
+        <a href="invitations_respond.html"
+           tal:attributes="href string:${view/userInfo/url}/invitations_respond.html">
+          <strong class="fn admin"
+                tal:content="invitation/adminInfo/name">An administrator</strong>
+          has invited you to join
+          <cite class="group"
+                tal:content="invitation/groupInfo/name">a group</cite>.
         </a>
       </li>
     </tal:block>
   </ul>
-</div>
+</div><!--gs-profile-invite-invitationslist-->
 
