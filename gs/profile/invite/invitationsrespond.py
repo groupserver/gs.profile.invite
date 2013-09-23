@@ -12,7 +12,7 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-from zope.cachedescriptors.property import Lazy
+from zope.cachedescriptors.property import Lazy, cachedIn
 from zope.component import createObject
 from Products.XWFCore.XWFUtils import get_the_actual_instance_from_zope
 from gs.group.member.base.utils import user_member_of_group
@@ -50,7 +50,7 @@ class GSInviationsRespond(ProfilePage):
         retval = InvitationQuery()
         return retval
 
-    @Lazy
+    @cachedIn('_current_invitations')  # Note: @cachedIn, not @Lazy
     def currentInvitations(self):
         gci = self.invitationQuery.get_current_invitiations_for_site
         retval = [Invitation(self.ctx, i['invitation_id'])
@@ -111,6 +111,10 @@ class GSInviationsRespond(ProfilePage):
             assert type(result['error']) == bool
             assert 'message' in result, 'No "message" in the result'
             assert type(result['message']) == unicode
+
+            # Invalidate the current invitations property, so it is recomputed.
+            del self._current_invitations
+
         assert 'form' in result
         assert type(result['form']) == dict
         return result
