@@ -25,6 +25,7 @@ class DeclineNotifier(object):
     def __init__(self, user, request):
         self.context = self.user = user
         self.request = request
+        self.oldContentType = self.request.response.getHeader('Content-Type')
 
     @Lazy
     def textTemplate(self):
@@ -49,6 +50,7 @@ class DeclineNotifier(object):
                                     groupInfo=groupInfo)
         ms = MessageSender(self.context, adminInfo)
         ms.send_message(subject, text, html)
+        self.request.response.setHeader('Content-Type', self.oldContentType)
 
 
 class AcceptNotifier(DeclineNotifier):
@@ -64,3 +66,4 @@ class AcceptNotifier(DeclineNotifier):
                                     groupInfo=groupInfo)
         ms = MessageSender(self.context, adminInfo)
         ms.send_message(subject, text, html)
+        self.request.response.setHeader('Content-Type', self.oldContentType)
