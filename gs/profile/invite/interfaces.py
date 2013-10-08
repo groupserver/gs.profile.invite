@@ -12,9 +12,9 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-from zope.schema import *
-from zope.interface.interface import Interface
 from zope.contentprovider.interfaces import IContentProvider
+from zope.interface.interface import Interface
+from zope.schema import ASCIILine, Text, TextLine
 
 
 class IGSSetPasswordAdminInvite(Interface):
