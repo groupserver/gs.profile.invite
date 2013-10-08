@@ -1,45 +1,41 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <configure xmlns="http://namespaces.zope.org/zope"
-  xmlns:browser="http://namespaces.zope.org/browser"
-  xmlns:five="http://namespaces.zope.org/five"
-  i18n_domain="groupserver">
+           xmlns:browser="http://namespaces.zope.org/browser"
+           i18n_domain="groupserver">
   
-  <browser:page
-    name="invitation_accepted.html"
-    for="Products.CustomUserFolder.interfaces.ICustomUser"
-    class=".error.InvitationAccepted"
-    template="browser/templates/invitation_accepted.pt"
-    permission="zope2.ManageProperties" />
-
+  <!-- The traversal, that figures out which page to show -->
   <adapter 
+    name="rsvp"   
     for="Products.GSRedirect.interfaces.IGSRedirectTraversal"
     factory=".invitationredirect.GSInvitationResponseRedirect"
-    provides="Products.GSRedirect.interfaces.IGSRedirect"
-    name="rsvp" />
+    provides="Products.GSRedirect.interfaces.IGSRedirect" />
 
-   <browser:page
+  <!-- The initial response page (with Set password) -->
+  <browser:page
     name="initial_response.html"
     for="Products.CustomUserFolder.interfaces.ICustomUser"
     class=".initialresponse.InitialResponseForm"
     permission="zope2.ManageProperties" />
-   <browser:resource
-     name="gs-profile-invite-respond-20130626.js"
-     file="browser/javascript/respond.js" />
-
+  <browser:resource
+    name="gs-profile-invite-respond-20130626.js"
+    file="browser/javascript/respond.js" />
+  
   <browser:page
+    name="initial_decline.html"
     for="Products.GSContent.interfaces.IGSSiteFolder"
     template="browser/templates/initial_decline.pt"
     class="Products.GSContent.view.GSContentView"
-    name="initial_decline.html"
     permission="zope2.Public"/>
 
+  <!--The "main" response page. -->  
   <browser:page 
-    for="Products.CustomUserFolder.interfaces.ICustomUser"
     name="invitations_respond.html"
+    for="Products.CustomUserFolder.interfaces.ICustomUser"
     class=".invitationsrespond.GSInviationsRespond"
     template="browser/templates/invitationsrespond.pt" 
     permission="zope2.ManageProperties" />
 
+  <!-- The content provider that lists all the invitations -->
   <interface 
     interface=".interfaces.IGSInvitationListContentProvider"
     type="zope.contentprovider.interfaces.ITALNamespaceData"/>
@@ -54,35 +50,45 @@
     factory=".invitationlist.InvitationList"
     provides="zope.contentprovider.interfaces.IContentProvider" />
 
-  <utility 
-    factory=".audit.AuditEventFactory"
-    name="gs.profile.invite"
-    permission="zope.Public" />
-
   <!-- Error Pages -->
   <browser:page
+    name="invitation-responded.html"
     for="Products.GSContent.interfaces.IGSSiteFolder"
     template="browser/templates/invitation-responded.pt"
     class=".inviteissue.IssueView"
-    name="invitation-responded.html"
     permission="zope2.Public"/>
   <browser:page
+    name="invite-not-found.html"
     for="Products.GSContent.interfaces.IGSSiteFolder"
     template="browser/templates/invite-not-found.pt"
     class=".inviteissue.IssueView"
-    name="invite-not-found.html"
     permission="zope2.Public"/>
   <browser:page
+    name="invite-no-id.html"
     for="Products.GSContent.interfaces.IGSSiteFolder"
     template="browser/templates/invite-no-id.pt"
     class=".inviteissue.IssueView"
-    name="invite-no-id.html"
     permission="zope2.Public"/>
   <browser:page
+    name="invitation-withdrawn.html"
     for="Products.GSContent.interfaces.IGSSiteFolder"
     template="browser/templates/invitation-withdrawn.pt"
     class=".inviteissue.IssueView"
-    name="invitation-withdrawn.html"
     permission="zope2.Public"/>
+
+  <!-- The utility for the audit trail -->
+  <utility 
+    name="gs.profile.invite"
+    factory=".audit.AuditEventFactory"
+    permission="zope.Public" />
+
+  <!-- =mpj17= What is this page for? -->
+  <browser:page
+    name="invitation_accepted.html"
+    for="Products.CustomUserFolder.interfaces.ICustomUser"
+    class=".error.InvitationAccepted"
+    template="browser/templates/invitation_accepted.pt"
+    permission="zope2.ManageProperties" />
+
 </configure>
 
