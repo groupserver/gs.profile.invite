@@ -1,0 +1,14 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      metal:use-macro="context/@@groupserver_email_layout/page">
+  <head>
+    <title metal:fill-slot="title">Accept Notification:
+    <span tal:replace="view/siteInfo/name">Site</span></title>
+  </head>
+  <body>
+    <div id="a-page" metal:fill-slot="body">
+      <p>I am an accept notification, honest.</p>
+    </div><!--a-page-->
+  </body>
+</html>

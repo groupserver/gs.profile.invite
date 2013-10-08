@@ -17,18 +17,19 @@ from zope.cachedescriptors.property import Lazy
 from zope.formlib import form
 from Products.Five.browser.pagetemplatefile import ZopeTwoPageTemplateFile
 from Products.CustomUserFolder.interfaces import IGSUserInfo
+from gs.group.member.join import NotifyNewMember, NotifyAdmin
 from gs.group.member.join.interfaces import IGSJoiningUser
 from gs.profile.base import ProfileForm
-from gs.profile.notify.interfaces import IGSNotifyUser
 from gs.profile.password.interfaces import IGSPasswordUser
 from gs.profile.email.base.emailuser import EmailUser
 from gs.profile.email.verify.emailverificationuser import \
   EmailVerificationUser
 from Products.XWFCore.XWFUtils import get_the_actual_instance_from_zope
-from .interfaces import IGSResponseFields
-from .invitation import Invitation, FakeInvitation
 from .audit import Auditor, INVITE_RESPOND, INVITE_RESPOND_ACCEPT, \
     INVITE_RESPOND_DELCINE
+from .interfaces import IGSResponseFields
+from .invitation import Invitation, FakeInvitation
+from .notify import AcceptNotifier, DeclineNotifier
 
 
 class InitialResponseForm(ProfileForm):
@@ -64,7 +65,22 @@ class InitialResponseForm(ProfileForm):
             self.invitation.accept()
 
             joiningUser = IGSJoiningUser(self.userInfo)
-            joiningUser.join(self.groupInfo)
+            joiningUser.silent_join(self.groupInfo)
+
+            # Send the Welcome to the new member
+            notifier = NotifyNewMember(self.context, self.request)
+            notifier.notify(self.userInfo)
+
+            # Send the Invitation Accepted to the person who issued the invite
+            inviterNotifier = AcceptNotifier(self.context, self.request)
+            inviterNotifier .notify(self.invitation.adminInfo, self.userInfo,
+                                    self.invitation.groupInfo)
+
+            # Send the New Member to all the other admins
+            adminNotifier = NotifyAdmin(self.context, self.request)
+            for adminInfo in self.groupInfo.group_admins:
+                if adminInfo.id != self.invitation.adminInfo.id:
+                    adminNotifier.notify(adminInfo, self.userInfo)
 
         uri = '%s?welcome=1' % self.groupInfo.relativeURL
         self.request.RESPONSE.redirect(uri)
@@ -83,14 +99,10 @@ class InitialResponseForm(ProfileForm):
             auditor.info(INVITE_RESPOND, self.invitation.groupInfo,
                 self.invitation.adminInfo, INVITE_RESPOND_DELCINE)
             self.invitation.decline()
-            notifiedUser = IGSNotifyUser(self.invitation.adminInfo)
-            n_dict = {'userFn': self.userInfo.name,
-                        'adminFn': self.invitation.adminInfo.name,
-                        'siteName': self.siteInfo.name,
-                        'groupName': self.invitation.groupInfo.name,
-                        'groupURL': self.invitation.groupInfo.url, }
-            notifiedUser.send_notification('invite_join_group_declined',
-                                            'default', n_dict)
+
+            notifier = DeclineNotifier(self.context, self.request)
+            notifier.notify(self.invitation.adminInfo, self.userInfo,
+                            self.invitation.groupInfo)
         uri = '/initial_decline.html'
         # --=mpj17=-- When Zope redirects this instance is reloaded and
         #   *then* the redirection occurs. Trying to reload a user that

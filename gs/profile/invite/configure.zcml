@@ -50,6 +50,34 @@
     factory=".invitationlist.InvitationList"
     provides="zope.contentprovider.interfaces.IContentProvider" />
 
+  <!-- The notifications: HTML and text versions of accept and decline -->
+  <browser:page
+    name="gs-profile-invite-accept.html"
+    for="Products.CustomUserFolder.interfaces.ICustomUser"
+    template="browser/templates/accept-notification.pt"
+    class=".notifymessages.NotifyAcceptMessage"
+    permission="zope2.View"/>
+  <browser:page
+    name="gs-profile-invite-accept.txt"
+    for="Products.CustomUserFolder.interfaces.ICustomUser"
+    template="browser/templates/accept-notification-txt.pt"
+    class=".notifymessages.NotifyAcceptMessageText"
+    permission="zope2.View"/>
+
+  <browser:page
+    name="gs-profile-invite-decline.html"
+    for="Products.CustomUserFolder.interfaces.ICustomUser"
+    template="browser/templates/decline-notification.pt"
+    class=".notifymessages.NotifyDeclineMessage"
+    permission="zope2.View"/>
+  <browser:page
+    name="gs-profile-invite-decline.txt"
+    for="Products.CustomUserFolder.interfaces.ICustomUser"
+    template="browser/templates/decline-notification-txt.pt"
+    class=".notifymessages.NotifyDeclineMessageText"
+    permission="zope2.View"/>
+  
+
   <!-- Error Pages -->
   <browser:page
     name="invitation-responded.html"
