@@ -14,11 +14,11 @@
 ##############################################################################
 from urllib import quote
 from zope.cachedescriptors.property import Lazy
-from gs.content.email.base import SiteEmail
+from gs.content.email.base import GroupEmail
 UTF8 = 'utf-8'
 
 
-class NotifyAcceptMessage(SiteEmail):
+class NotifyAcceptMessage(GroupEmail):
     subject = u'Invitation accepted'
 
     @Lazy
