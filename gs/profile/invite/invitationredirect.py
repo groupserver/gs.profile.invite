@@ -12,13 +12,14 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
+from __future__ import absolute_import
 from urlparse import urlparse
 from zope.component import createObject
 from Products.GSRedirect.view import GSRedirectBase
 from Products.GSProfile.utils import login
 from Products.XWFCore.XWFUtils import get_the_actual_instance_from_zope
 from gs.profile.email.base.emailuser import EmailUser
-from invitation import Invitation
+from .invitation import Invitation
 
 
 class GSInvitationResponseRedirect(GSRedirectBase):

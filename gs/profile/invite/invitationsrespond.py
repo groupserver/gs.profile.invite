@@ -12,6 +12,7 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
+from __future__ import absolute_import
 from zope.cachedescriptors.property import Lazy, cachedIn
 from zope.component import createObject
 from Products.XWFCore.XWFUtils import get_the_actual_instance_from_zope
@@ -20,8 +21,8 @@ from gs.group.member.join.interfaces import IGSJoiningUser
 from gs.group.member.invite.base.queries import InvitationQuery
 from gs.profile.base import ProfilePage
 from gs.profile.notify.interfaces import IGSNotifyUser
-from invitation import Invitation
-from audit import Auditor, INVITE_RESPOND, INVITE_RESPOND_ACCEPT, \
+from .invitation import Invitation
+from .audit import Auditor, INVITE_RESPOND, INVITE_RESPOND_ACCEPT, \
     INVITE_RESPOND_DELCINE
 
 

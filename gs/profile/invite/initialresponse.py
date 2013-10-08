@@ -12,6 +12,7 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
+from __future__ import absolute_import
 from zope.cachedescriptors.property import Lazy
 from zope.formlib import form
 from Products.Five.browser.pagetemplatefile import ZopeTwoPageTemplateFile
@@ -23,11 +24,11 @@ from gs.profile.password.interfaces import IGSPasswordUser
 from gs.profile.email.base.emailuser import EmailUser
 from gs.profile.email.verify.emailverificationuser import \
   EmailVerificationUser
-from interfaces import IGSResponseFields
-from invitation import Invitation, FakeInvitation
-from audit import Auditor, INVITE_RESPOND, INVITE_RESPOND_ACCEPT, \
-    INVITE_RESPOND_DELCINE
 from Products.XWFCore.XWFUtils import get_the_actual_instance_from_zope
+from .interfaces import IGSResponseFields
+from .invitation import Invitation, FakeInvitation
+from .audit import Auditor, INVITE_RESPOND, INVITE_RESPOND_ACCEPT, \
+    INVITE_RESPOND_DELCINE
 
 
 class InitialResponseForm(ProfileForm):

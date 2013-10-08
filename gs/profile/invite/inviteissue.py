@@ -12,10 +12,11 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
+from __future__ import absolute_import
 from urllib import quote
 from zope.component import createObject
 from Products.GSContent.view import GSContentView
-from invitation import Invitation
+from .invitation import Invitation
 
 
 class IssueView(GSContentView):

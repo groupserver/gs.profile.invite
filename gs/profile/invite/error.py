@@ -12,11 +12,12 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
+from __future__ import absolute_import
 from urllib import quote
 from zope.cachedescriptors.property import Lazy
 from zope.component import createObject
 from gs.profile.base import ProfilePage
-from invitation import Invitation
+from .invitation import Invitation
 
 
 class InvitationAccepted(ProfilePage):
