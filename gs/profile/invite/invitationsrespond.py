@@ -17,13 +17,13 @@ from zope.cachedescriptors.property import Lazy, cachedIn
 from zope.component import createObject
 from Products.XWFCore.XWFUtils import get_the_actual_instance_from_zope
 from gs.group.member.base.utils import user_member_of_group
-from gs.group.member.join.interfaces import IGSJoiningUser
 from gs.group.member.invite.base.queries import InvitationQuery
 from gs.profile.base import ProfilePage
-from gs.profile.notify.interfaces import IGSNotifyUser
-from .invitation import Invitation
 from .audit import Auditor, INVITE_RESPOND, INVITE_RESPOND_ACCEPT, \
-    INVITE_RESPOND_DELCINE
+                    INVITE_RESPOND_DELCINE
+from .invitation import Invitation
+from .notify import DeclineNotifier
+from .utils import join_group
 
 
 class GSInviationsRespond(ProfilePage):
@@ -162,10 +162,9 @@ class GSInviationsRespond(ProfilePage):
             acceptedInvite.accept()
             auditor.info(INVITE_RESPOND, acceptedInvite.groupInfo,
                 acceptedInvite.adminInfo, INVITE_RESPOND_ACCEPT)
-            joiningUser = IGSJoiningUser(self.userInfo)
-            # --=mpj17=-- Joining will notify the admin, by side effect.
-            if not(user_member_of_group(self.userInfo, i.groupInfo)):
-                joiningUser.join(acceptedInvite.groupInfo)
+            groupInfo = acceptedInvite.groupInfo
+            if not(user_member_of_group(self.userInfo, groupInfo)):
+                join_group(acceptedInvite, self.request)
             # TODO: When anyone can invite anyone else to join more than
             #   the administrators will have to be informed.
             #   <https://projects.iopen.net/groupserver/ticket/436>
@@ -184,11 +183,7 @@ class GSInviationsRespond(ProfilePage):
             auditor.info(INVITE_RESPOND, declinedInvite.groupInfo,
                 declinedInvite.adminInfo, INVITE_RESPOND_DELCINE)
 
-            notifiedUser = IGSNotifyUser(declinedInvite.adminInfo)
-            n_dict = {'userFn': self.userInfo.name,
-                        'adminFn': declinedInvite.adminInfo.name,
-                        'siteName': self.siteInfo.name,
-                        'groupName': declinedInvite.groupInfo.name,
-                        'groupURL': declinedInvite.groupInfo.url, }
-            notifiedUser.send_notification('invite_join_group_declined',
-                'default', n_dict)
+            groupCtx = declinedInvite.groupInfo.groupObj
+            notifier = DeclineNotifier(groupCtx, self.request)
+            notifier.notify(declinedInvite.adminInfo, self.userInfo,
+                            declinedInvite.groupInfo)
