@@ -118,6 +118,9 @@ class GSInviationsRespond(ProfilePage):
 
         assert 'form' in result
         assert type(result['form']) == dict
+        # --=mpj17=-- Sorry
+        self.request.response.setHeader("Content-Type",
+                                        'text/html; charset=UTF-8')
         return result
 
     def accept_message(self, acceptedGroups):
