@@ -17,6 +17,7 @@ from zope.cachedescriptors.property import Lazy
 from zope.formlib import form
 from Products.Five.browser.pagetemplatefile import ZopeTwoPageTemplateFile
 from Products.CustomUserFolder.interfaces import IGSUserInfo
+from gs.group.member.base.utils import user_member_of_group
 from gs.profile.base import ProfileForm
 from gs.profile.password.interfaces import IGSPasswordUser
 from gs.profile.email.base.emailuser import EmailUser
@@ -62,7 +63,8 @@ class InitialResponseForm(ProfileForm):
             pu.set_password(data['password1'])
 
             self.invitation.accept()
-            join_group(self.invitation. self.request)
+            if not(user_member_of_group(self.userInfo, self.groupInfo)):
+                join_group(self.invitation, self.request)
 
         uri = '%s?welcome=1' % self.groupInfo.relativeURL
         self.request.RESPONSE.redirect(uri)
