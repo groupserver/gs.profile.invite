@@ -35,6 +35,11 @@
         <span tal:content="view/groupInfo/name">this group</span>.
         </li>
       </ul>
+      <p>
+        If you have any problems, email us at
+        <a href="#"
+           tal:attributes="href view/supportEmail"><code tal:content="view/siteInfo/get_support_email">this address</code>.</a>
+      </p>
       <p class="closing">
         Kind regards,<br/>
         <span>The 
