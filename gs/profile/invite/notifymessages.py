@@ -12,6 +12,7 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
+from textwrap import fill
 from urllib import quote
 from zope.cachedescriptors.property import Lazy
 from gs.content.email.base import GroupEmail
@@ -41,6 +42,12 @@ class NotifyAcceptMessageText(NotifyAcceptMessage):
         response.setHeader('Content-Disposition',
                             'inline; filename="%s"' % filename)
 
+    def fill(self, mesg):
+        print '\n\n{0}\n\n'.format(mesg)
+        retval = fill(mesg)
+        print '\n\n{0}\n\n'.format(retval)
+        return retval
+
 
 class NotifyDeclineMessage(NotifyAcceptMessage):
     subject = u'Invitation declined'
@@ -55,3 +62,7 @@ class NotifyDeclineMessageText(NotifyDeclineMessage):
         filename = 'gs-profile-invite-decline.txt'
         response.setHeader('Content-Disposition',
                             'inline; filename="%s"' % filename)
+
+    def fill(self, mesg):
+        retval = fill(mesg)
+        return retval
