@@ -1,2 +1,21 @@
-<tal:block xmlns:tal="http://xml.zope.org/namespaces/tal">I am also a
-decline notification, honest.</tal:block>
+<tal:block xmlns:tal="http://xml.zope.org/namespaces/tal"
+           define="adminInfo options/adminInfo | view/loggedInUserInfo;
+                   userInfo options/userInfo | view/loggedInUserInfo;">Dear <tal:block content="adminInfo/name">Admin</tal:block>,
+
+<tal:block define="m string:${userInfo/name} declined your invitation to join ${view/groupInfo/name}." 
+           replace="python:view.fill(m)">m</tal:block>
+
+Kind regards,
+  The <tal:block content="view/siteInfo/name">Site</tal:block> Team
+
+------------------------------------------------------------------------
+
+Privacy
+  <tal:block content="string:${view/siteInfo/url}/policies/privacy"/>
+
+Acceptable Use
+  <tal:block content="string:${view/siteInfo/url}/policies/aup"/>
+
+Terms of Service
+  <tal:block content="string:${view/siteInfo/url}/policies/tos"/>
+</tal:block>
