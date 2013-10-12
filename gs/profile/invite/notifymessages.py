@@ -12,10 +12,9 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-from textwrap import fill
 from urllib import quote
 from zope.cachedescriptors.property import Lazy
-from gs.content.email.base import GroupEmail
+from gs.content.email.base import GroupEmail, TextMixin
 UTF8 = 'utf-8'
 
 
@@ -32,37 +31,19 @@ class NotifyAcceptMessage(GroupEmail):
         return retval
 
 
-class NotifyAcceptMessageText(NotifyAcceptMessage):
+class NotifyAcceptMessageText(NotifyAcceptMessage, TextMixin):
     def __init__(self, context, request):
         super(NotifyAcceptMessageText, self).__init__(context, request)
-
-        response = request.response
-        response.setHeader("Content-Type", 'text/plain; charset=UTF-8')
-        filename = 'gs-profile-invite-accept.txt'
-        response.setHeader('Content-Disposition',
-                            'inline; filename="%s"' % filename)
-
-    def fill(self, mesg):
-        print '\n\n{0}\n\n'.format(mesg)
-        retval = fill(mesg)
-        print '\n\n{0}\n\n'.format(retval)
-        return retval
+        filename = 'gs-profile-invite-accept-{0}.txt'.format(self.groupInfo.id)
+        self.set_header(filename)
 
 
 class NotifyDeclineMessage(NotifyAcceptMessage):
     subject = u'Invitation declined'
 
 
-class NotifyDeclineMessageText(NotifyDeclineMessage):
+class NotifyDeclineMessageText(NotifyDeclineMessage, TextMixin):
     def __init__(self, context, request):
         super(NotifyDeclineMessageText, self).__init__(context, request)
-
-        response = request.response
-        response.setHeader("Content-Type", 'text/plain; charset=UTF-8')
-        filename = 'gs-profile-invite-decline.txt'
-        response.setHeader('Content-Disposition',
-                            'inline; filename="%s"' % filename)
-
-    def fill(self, mesg):
-        retval = fill(mesg)
-        return retval
+        filename = 'gs-profile-invite-decline-{0}.txt'.format(self.groupInfo.id)
+        self.set_header(filename)
