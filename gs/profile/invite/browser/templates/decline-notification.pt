@@ -17,11 +17,11 @@
         Dear <span class="fn" tal:content="adminInfo/name">Admin</span>,
       </p>
       <p>
-        <a class="fn" 
+        <a class="fn"
               tal:attributes="href string:${view/siteInfo/url}${userInfo/url}"
               tal:content="userInfo/name">The new member</a>
         declined your invitation to join
-        <a class="group" 
+        <a class="group"
            tal:attributes="href view/groupInfo/url"
            tal:content="view/groupInfo/name">this group</a>.
       </p>
@@ -32,7 +32,7 @@
       </p>
       <p class="closing">
         Kind regards,<br/>
-        <span>The 
+        <span>The
         <span class="site" tal:content="view/siteInfo/name">site</span>
         team.</span>
       </p>

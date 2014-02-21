@@ -2,7 +2,7 @@
            define="adminInfo options/adminInfo | view/loggedInUserInfo;
                    userInfo options/userInfo | view/loggedInUserInfo;">Dear <tal:block content="adminInfo/name">Admin</tal:block>,
 
-<tal:block define="m string:${userInfo/name} declined your invitation to join ${view/groupInfo/name}." 
+<tal:block define="m string:${userInfo/name} declined your invitation to join ${view/groupInfo/name}."
            replace="python:view.fill(m)">m</tal:block>
 
 Kind regards,

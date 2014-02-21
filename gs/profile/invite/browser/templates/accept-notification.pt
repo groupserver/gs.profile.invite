@@ -19,17 +19,17 @@
       <p>
         <span class="fn" tal:content="userInfo/name">The new member</span>
         accepted your invitation to join
-        <a class="group" 
+        <a class="group"
            tal:attributes="href view/groupInfo/url"
            tal:content="view/groupInfo/name">this group</a>.
       </p>
       <ul>
         <li tal:define="u string:${view/siteInfo/url}${userInfo/url}">
           View
-          <a href="#" tal:attributes="href u"><strong>the profile</strong> 
+          <a href="#" tal:attributes="href u"><strong>the profile</strong>
           for  <span tal:content="userInfo/name">a new member</span>.</a>
         </li>
-        <li>View 
+        <li>View
         <a tal:attributes="href string:${view/groupInfo/url}/members.html"><strong>the
         membership</strong></a> of
         <span tal:content="view/groupInfo/name">this group</span>.
@@ -42,7 +42,7 @@
       </p>
       <p class="closing">
         Kind regards,<br/>
-        <span>The 
+        <span>The
         <span class="site" tal:content="view/siteInfo/name">site</span>
         team.</span>
       </p>
