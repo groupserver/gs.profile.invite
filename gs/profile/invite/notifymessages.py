@@ -12,6 +12,7 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
+from __future__ import unicode_literals
 from urllib import quote
 from zope.cachedescriptors.property import Lazy
 from gs.content.email.base import GroupEmail, TextMixin
@@ -19,11 +20,11 @@ UTF8 = 'utf-8'
 
 
 class NotifyAcceptMessage(GroupEmail):
-    subject = u'Invitation accepted'
+    subject = 'Invitation accepted'
 
     @Lazy
     def supportEmail(self):
-        m = u'Hi!\n\nI am an administrator of the group {0}\n    {1}\nand...'
+        m = 'Hi!\n\nI am an administrator of the group {0}\n    {1}\nand...'
         msg = m.format(self.groupInfo.name, self.groupInfo.url)
         sub = quote(self.subject)
         retval = 'mailto:%s?Subject=%s&body=%s' % \
@@ -39,7 +40,7 @@ class NotifyAcceptMessageText(NotifyAcceptMessage, TextMixin):
 
 
 class NotifyDeclineMessage(NotifyAcceptMessage):
-    subject = u'Invitation declined'
+    subject = 'Invitation declined'
 
 
 class NotifyDeclineMessageText(NotifyDeclineMessage, TextMixin):

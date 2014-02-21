@@ -12,8 +12,10 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
+from __future__ import unicode_literals
 from zope.component import getMultiAdapter
 from zope.cachedescriptors.property import Lazy
+from gs.core import to_ascii
 from gs.profile.notify.sender import MessageSender
 UTF8 = 'utf-8'
 
@@ -25,7 +27,8 @@ class DeclineNotifier(object):
     def __init__(self, user, request):
         self.context = self.user = user
         self.request = request
-        self.oldContentType = self.request.response.getHeader('Content-Type')
+        h = self.request.response.getHeader('Content-Type')
+        self.oldContentType = to_ascii(h)
 
     @Lazy
     def textTemplate(self):
@@ -42,7 +45,7 @@ class DeclineNotifier(object):
         return retval
 
     def notify(self, adminInfo, userInfo, groupInfo):
-        s = u'Invitation to {0} declined'
+        s = 'Invitation to {0} declined'
         subject = s.format(groupInfo.name).encode(UTF8)
         text = self.textTemplate(userInfo=userInfo, adminInfo=adminInfo,
                                     groupInfo=groupInfo)
@@ -50,7 +53,8 @@ class DeclineNotifier(object):
                                     groupInfo=groupInfo)
         ms = MessageSender(self.context, adminInfo)
         ms.send_message(subject, text, html)
-        self.request.response.setHeader('Content-Type', self.oldContentType)
+        self.request.response.setHeader(to_ascii('Content-Type'),
+                                        self.oldContentType)
 
 
 class AcceptNotifier(DeclineNotifier):
@@ -58,7 +62,7 @@ class AcceptNotifier(DeclineNotifier):
     htmlTemplateName = 'gs-profile-invite-accept.html'
 
     def notify(self, adminInfo, userInfo, groupInfo):
-        s = u'Invitation to {0} accepted'
+        s = 'Invitation to {0} accepted'
         subject = s.format(groupInfo.name).encode(UTF8)
         text = self.textTemplate(userInfo=userInfo, adminInfo=adminInfo,
                                     groupInfo=groupInfo)
@@ -66,4 +70,5 @@ class AcceptNotifier(DeclineNotifier):
                                     groupInfo=groupInfo)
         ms = MessageSender(self.context, adminInfo)
         ms.send_message(subject, text, html)
-        self.request.response.setHeader('Content-Type', self.oldContentType)
+        self.request.response.setHeader(to_ascii('Content-Type'),
+                                        self.oldContentType)

@@ -1,11 +1,22 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!-- Copyright © 2013 OnlineGroups.net and Contributors. -->
+<!-- All Rights Reserved. -->
+
+<!-- This software is subject to the provisions of the Zope Public -->
+<!-- License, Version 2.1 (ZPL).  A copy of the ZPL should accompany this -->
+<!-- distribution. -->
+
+<!-- THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED -->
+<!-- WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED -->
+<!-- WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND -->
+<!-- FITNESS FOR A PARTICULAR PURPOSE. -->
 <configure xmlns="http://namespaces.zope.org/zope"
            xmlns:browser="http://namespaces.zope.org/browser"
            i18n_domain="groupserver">
-  
+
   <!-- The traversal, that figures out which page to show -->
-  <adapter 
-    name="rsvp"   
+  <adapter
+    name="rsvp"
     for="Products.GSRedirect.interfaces.IGSRedirectTraversal"
     factory=".invitationredirect.GSInvitationResponseRedirect"
     provides="Products.GSRedirect.interfaces.IGSRedirect" />
@@ -19,7 +30,7 @@
   <browser:resource
     name="gs-profile-invite-respond-20130626.js"
     file="browser/javascript/respond.js" />
-  
+
   <browser:page
     name="initial_decline.html"
     for="Products.GSContent.interfaces.IGSSiteFolder"
@@ -27,16 +38,16 @@
     class="Products.GSContent.view.GSContentView"
     permission="zope2.Public"/>
 
-  <!--The "main" response page. -->  
-  <browser:page 
+  <!--The "main" response page. -->
+  <browser:page
     name="invitations_respond.html"
     for="Products.CustomUserFolder.interfaces.ICustomUser"
     class=".invitationsrespond.GSInviationsRespond"
-    template="browser/templates/invitationsrespond.pt" 
+    template="browser/templates/invitationsrespond.pt"
     permission="zope2.ManageProperties" />
 
   <!-- The content provider that lists all the invitations -->
-  <interface 
+  <interface
     interface=".interfaces.IGSInvitationListContentProvider"
     type="zope.contentprovider.interfaces.ITALNamespaceData"/>
   <class class=".invitationlist.InvitationList">
@@ -76,7 +87,7 @@
     template="browser/templates/decline-notification-txt.pt"
     class=".notifymessages.NotifyDeclineMessageText"
     permission="zope2.View"/>
-  
+
   <!-- Error Pages -->
   <browser:page
     name="invitation-responded.html"
@@ -104,7 +115,7 @@
     permission="zope2.Public"/>
 
   <!-- The utility for the audit trail -->
-  <utility 
+  <utility
     name="gs.profile.invite"
     factory=".audit.AuditEventFactory"
     permission="zope.Public" />
@@ -118,4 +129,3 @@
     permission="zope2.ManageProperties" />
 
 </configure>
-
