@@ -12,7 +12,7 @@
     <div id="gs-profile-invite-accept" metal:fill-slot="body"
          tal:define="adminInfo options/adminInfo | view/loggedInUserInfo;
                      userInfo options/userInfo | view/loggedInUserInfo;">
-      <h2>Invitation accepted</h2>
+      <h2>Invitation declined</h2>
       <p>
         Dear <span class="fn" tal:content="adminInfo/name">Admin</span>,
       </p>
