@@ -12,18 +12,23 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
+import codecs
 import os
 from setuptools import setup, find_packages
 from version import get_version
 
 version = get_version()
 
+with codecs.open('README.txt', encoding='utf-8') as f:
+    long_description = f.read()
+with codecs.open(os.path.join("docs", "HISTORY.txt"), encoding='utf-8') as f:
+    long_description += '\n' + f.read()
+
 setup(name='gs.profile.invite',
     version=version,
     description="The user-profile pages on GroupServer that are "
       "required to accept invitations.",
-    long_description=open("README.txt").read() + "\n" +
-                    open(os.path.join("docs", "HISTORY.txt")).read(),
+    long_description=long_description,
     classifiers=[
         'Development Status :: 5 - Production/Stable',
         "Environment :: Web Environment",
@@ -31,14 +36,14 @@ setup(name='gs.profile.invite',
         "Intended Audience :: Developers",
         'License :: OSI Approved :: Zope Public License',
         "Natural Language :: English",
-        "Operating System :: POSIX :: Linux"
+        "Operating System :: POSIX :: Linux",
         "Programming Language :: Python",
         "Topic :: Software Development :: Libraries :: Python Modules",
     ],
     keywords='sign up, registration, profile, user, join, invitation',
     author='Michael JasonSmith',
     author_email='mpj17@onlinegroups.net',
-    url='http://groupserver.org',
+    url='https://source.iopen.net/groupserver/gs.profile.invite/',
     license='ZPL 2.1',
     packages=find_packages(exclude=['ez_setup']),
     namespace_packages=['gs', 'gs.profile'],
@@ -47,6 +52,7 @@ setup(name='gs.profile.invite',
     install_requires=[
         'setuptools',
         'pytz',
+        'zope.browserpage',
         'zope.cachedescriptors',
         'zope.component',
         'zope.contentprovider',
@@ -55,6 +61,8 @@ setup(name='gs.profile.invite',
         'zope.pagetemplate',
         'zope.publisher',
         'zope.schema',
+        'zope.tal',
+        'zope.tales',
         'Zope2',
         'gs.content.email.base',
         'gs.content.email.layout',
