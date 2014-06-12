@@ -12,6 +12,7 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
+from __future__ import absolute_import
 from gs.group.member.join import NotifyNewMember, NotifyAdmin
 from gs.group.member.join.interfaces import IGSJoiningUser
 from .notify import AcceptNotifier

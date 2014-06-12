@@ -58,7 +58,7 @@ setup(name='gs.profile.invite',
         'Zope2',
         'gs.content.email.base',
         'gs.content.email.layout',
-        'gs.content.form',
+        'gs.content.form.base',  # For the message content provider
         'gs.core',
         'gs.group.member.base',
         'gs.group.member.invite.base',
