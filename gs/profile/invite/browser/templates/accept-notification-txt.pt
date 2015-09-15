@@ -1,6 +1,6 @@
 <tal:block xmlns:tal="http://xml.zope.org/namespaces/tal"
            define="adminInfo options/adminInfo | view/loggedInUserInfo;
-                   userInfo options/userInfo | view/loggedInUserInfo;">Dear <tal:block replace="adminInfo/name">Admin</tal:block>,
+                   userInfo options/userInfo | view/loggedInUserInfo;">Hello <tal:block replace="adminInfo/name">Admin</tal:block>,
 
 <tal:block
   define="m string:${userInfo/name} accepted your invitation to join ${view/groupInfo/name}"

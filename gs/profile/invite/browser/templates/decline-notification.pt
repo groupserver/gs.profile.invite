@@ -14,7 +14,7 @@
                      userInfo options/userInfo | view/loggedInUserInfo;">
       <h2>Invitation declined</h2>
       <p>
-        Dear <span class="fn" tal:content="adminInfo/name">Admin</span>,
+        Hello <span class="fn" tal:content="adminInfo/name">Admin</span>,
       </p>
       <p>
         <a class="fn"
