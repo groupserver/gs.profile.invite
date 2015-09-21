@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 ##############################################################################
 #
-# Copyright © 2013 OnlineGroups.net and Contributors.
+# Copyright © 2013, 2015 OnlineGroups.net and Contributors.
 # All Rights Reserved.
 #
 # This software is subject to the provisions of the Zope Public License,
@@ -12,8 +12,7 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-from __future__ import unicode_literals
-from urllib import quote
+from __future__ import absolute_import, print_function, unicode_literals
 from zope.cachedescriptors.property import Lazy
 from gs.content.email.base import GroupEmail, TextMixin
 UTF8 = 'utf-8'
@@ -26,9 +25,8 @@ class NotifyAcceptMessage(GroupEmail):
     def supportEmail(self):
         m = 'Hi!\n\nI am an administrator of the group {0}\n    {1}\nand...'
         msg = m.format(self.groupInfo.name, self.groupInfo.url)
-        sub = quote(self.subject)
-        retval = 'mailto:%s?Subject=%s&body=%s' % \
-            (self.siteInfo.get_support_email(), sub, quote(msg.encode(UTF8)))
+        sub = self.subject
+        retval = self.mailto(self.siteInfo.get_support_email(), sub, msg)
         return retval
 
 
